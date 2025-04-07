@@ -3,6 +3,7 @@ import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/carousel/styles.css";
 import "../../styles/main.scss";
+import { Navbar, Footer } from "@/components/layout";
 
 export const metadata = {
   title: "Holidaze Booking",
@@ -14,9 +15,9 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <MantineProvider>
-          {/* <Navbar/> */}
-          {children}
-          {/* <Footer/> */}
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
         </MantineProvider>
       </body>
     </html>
