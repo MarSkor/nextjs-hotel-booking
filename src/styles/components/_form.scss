@@ -1,0 +1,44 @@
+@use "../mantine" as *;
+@use "../base/colors" as *;
+
+//login-signup form
+.auth-public {
+  &__wrapper {
+    max-width: rem(360px);
+    margin: 0 auto;
+    padding: rem(56px) 0 rem(120px);
+  }
+  &__heading {
+    text-align: center;
+  }
+  &__form {
+    margin: 0 auto;
+  }
+}
+
+.auth_link {
+  color: $clr-black-50;
+  font-weight: 500;
+}
+
+//global input styles
+.global {
+  &__input {
+    border-radius: 2px;
+    // font-size: rem(16px);
+  }
+  &__input.border-red {
+    border-color: $clr-red-800;
+    color: $clr-red-800;
+  }
+
+  &__inputLabel {
+    color: $clr-black-200;
+  }
+}
+
+.form-error-box {
+  border: 1px solid $clr-red-900;
+  padding: 8px;
+  border-radius: rem(4px);
+}

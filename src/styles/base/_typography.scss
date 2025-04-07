@@ -1,0 +1,139 @@
+@use "./colors" as *;
+
+@font-face {
+  font-family: "Canela";
+  font-weight: 400;
+  src: url(/font/Canela/Canela-Regular-Trial.otf);
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Canela";
+  font-weight: 400;
+  src: url(/font/Canela/Canela-RegularItalic-Trial.otf);
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Canela";
+  font-weight: 500;
+  src: url(/font/Canela/Canela-Medium-Trial.otf);
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Canela";
+  font-weight: 500;
+  src: url(/font/Canela/Canela-MediumItalic-Trial.otf);
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Canela";
+  font-weight: 700;
+  src: url(/font/Canela/Canela-Bold-Trial.otf);
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Canela";
+  font-weight: 700;
+  src: url(/font/Canela/Canela-BoldItalic-Trial.otf);
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-weight: 400 700;
+  src: url(/font/Montserrat/Montserrat-VariableFont_wght.ttf) format("ttf");
+  font-style: normal;
+}
+
+// --min: /* minimum value */
+// --val: /* preferred value = 5% viewport width */
+// --max: /* maximum value */
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: var(--mantine-font-family-headings);
+  /* minimum, preferred and maximum value */
+  font-size: clamp(var(--min), var(--val), var(--max));
+  line-height: 1.5;
+  color: $clr-black;
+}
+
+h1 {
+  --min: 1.75rem;
+  --val: 5vw;
+  --max: 3.5rem;
+}
+
+h2 {
+  --min: 1.5rem;
+  --val: 5vw;
+  --max: 2rem;
+}
+
+h3 {
+  --min: 1.35rem;
+  --val: 3vw;
+  --max: 1.6rem;
+}
+
+h4 {
+  --min: 1.32rem;
+  --val: 3vw;
+  --max: 1.5rem;
+}
+
+h5 {
+  --min: 1rem;
+  --val: 3vw;
+  --max: 1.4rem;
+}
+
+body {
+  font-family: "Montserrat";
+  color: $clr-black;
+  --min: 1rem;
+  --val: 3vw;
+  --max: 1.125rem;
+}
+
+// paragraphs
+p {
+  color: $clr-black-200;
+  line-height: 1.8;
+  --min: 1rem;
+  --val: 3vw;
+  --max: 1.125rem;
+}
+
+//headings
+
+.heading-light {
+  color: $clr-white-50;
+}
+
+.heading-dark {
+  color: $clr-black;
+}
+
+.text-light {
+  color: $clr-white-100;
+}
+
+.text-dark {
+  color: $clr-black-100;
+}
+
+.label-light {
+  color: $clr-white-200;
+}
+
+.text-red-500 {
+  color: $clr-red-800;
+}

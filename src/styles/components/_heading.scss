@@ -1,0 +1,32 @@
+@use "../base/colors" as *;
+// @use "../base/spacing" as *;
+@use "../mantine" as *;
+
+.heading {
+  padding-bottom: rem(24px);
+  @media (min-width: $mantine-breakpoint-sm) {
+    padding-bottom: rem(40px);
+  }
+
+  &__label {
+    color: $clr-grey-100;
+  }
+  &__title {
+    color: $clr-black;
+  }
+  &__description {
+    color: $clr-black-100;
+  }
+}
+
+.heading--center {
+  text-align: center;
+}
+
+.heading--left {
+  text-align: left;
+}
+
+.heading--right {
+  text-align: right;
+}

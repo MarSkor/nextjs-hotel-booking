@@ -1,0 +1,59 @@
+@use "../mantine" as *;
+@use "../base/index" as *;
+
+.card {
+  position: relative;
+
+  &__outer {
+    transition: 0.2s ease;
+    &:hover {
+      box-shadow: $mantine-shadow-sm;
+    }
+  }
+
+  &__image-section {
+    position: relative;
+
+    .card-image {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+      &:hover {
+        transform: scale(1.03);
+      }
+    }
+  }
+
+  &__favorite {
+    z-index: 6;
+    position: absolute;
+    right: var(--mantine-spacing-lg);
+    background: $clr-black-op-low;
+    padding: 8px;
+    border-radius: var(--mantine-radius-md);
+    cursor: pointer;
+  }
+
+  &__inner {
+    text-decoration: none;
+
+    &--title {
+      color: $clr-black;
+    }
+
+    &--description {
+      color: $clr-black-50;
+      text-align: left;
+    }
+
+    &--rating-badge-inner {
+      margin-right: rem(4px);
+      color: $clr-black-100;
+
+      svg {
+        margin-right: 2px;
+      }
+    }
+  }
+}

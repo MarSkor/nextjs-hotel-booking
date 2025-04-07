@@ -1,0 +1,164 @@
+@use "../base/colors" as *;
+@use "../utils/mixin" as *;
+@use "../mantine" as *;
+
+// --------------------------------------------------------
+.hero {
+  &__wrapper {
+    position: relative;
+    padding: rem(100px) 0 rem(50px);
+    background-image: url(/assets/hero_bg.jpg);
+    background-size: cover;
+    background-position: center;
+
+    @media (max-width: $mantine-breakpoint-xs) {
+      padding-top: rem(56px);
+      padding-bottom: rem(72px);
+    }
+  }
+
+  &__inner {
+    max-width: var(--breakpoint-lg);
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  &__title {
+    text-align: center;
+    letter-spacing: rem(-1px);
+    @include pl-pr;
+    @media (max-width: $mantine-breakpoint-xs) {
+      font-size: rem(28px);
+      text-align: center;
+    }
+  }
+  &__description {
+    font-family: "Montserrat";
+    color: $clr-white-50;
+    @media (max-width: $mantine-breakpoint-xs) {
+      font-size: var(--mantine-font-size-md);
+      text-align: center;
+    }
+  }
+}
+
+// --------------------------------------------------------
+
+.banner {
+  background-color: $clr-brown-300;
+  &__inner {
+    padding: 72px 16px;
+
+    &--title,
+    p {
+      @media (max-width: $mantine-breakpoint-md) {
+        text-align: center;
+      }
+    }
+  }
+
+  &__inner--title,
+  p,
+  &--line {
+    color: $clr-white-50;
+  }
+
+  &__line {
+    display: flex;
+    flex-grow: 1;
+    height: rem(1px);
+    border-width: 0;
+    z-index: 10;
+    margin-right: rem(-50px);
+  }
+
+  hr {
+    border-top-width: rem(1px);
+  }
+
+  &__paragraph {
+    max-width: 40rem;
+    text-align: right;
+    color: $clr-brown-100;
+  }
+}
+
+// --------------------------------------------------------
+
+.featured {
+  &__wrapper {
+    padding-top: rem(72px);
+    padding-bottom: rem(72px);
+    @media (min-width: $mantine-breakpoint-sm) {
+      padding-top: rem(120px);
+      padding-bottom: rem(120px);
+    }
+  }
+}
+
+// --------------------------------------------------------
+
+.about-us {
+  &__left-content {
+    max-width: 45ch;
+  }
+
+  &__wrapper {
+    padding: rem(140px) 0;
+    @media (max-width: $mantine-breakpoint-sm) {
+      padding: rem(40px) 0;
+    }
+  }
+
+  &__button {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    @media (min-width: $mantine-breakpoint-sm) {
+      justify-content: left;
+    }
+    button {
+      @media (max-width: $mantine-breakpoint-sm) {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.stats {
+  padding: 80px 0;
+  @media (max-width: $mantine-breakpoint-sm) {
+    padding: 40px 0;
+    text-align: center;
+  }
+
+  &__item {
+    &--number {
+      color: $clr-white;
+      font-size: rem(32px);
+      font-weight: 700;
+      font-family: "Canela";
+      font-size: clamp(1.75rem, 5vw, 3.5rem);
+    }
+
+    &--description {
+      max-width: 10rem;
+      color: $clr-white-100;
+    }
+  }
+}
+
+// --------------------------------------------------------
+
+.testimonials {
+  &__wrapper {
+    margin: rem(16px) 0;
+    @media (min-width: $mantine-breakpoint-sm) {
+      margin: rem(136px) 0;
+    }
+  }
+
+  &__carousel {
+    padding: 10px 0;
+  }
+}

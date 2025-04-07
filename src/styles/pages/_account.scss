@@ -1,0 +1,126 @@
+@use "../mantine" as *;
+@use "../base/colors" as *;
+
+.accountLayout {
+  background-color: #e8e6e5;
+  height: 100%;
+
+  &__container {
+    padding-top: rem(24px);
+  }
+
+  &__inner-wrap {
+    @media (min-width: $mantine-breakpoint-xs) {
+      padding: 32px 0 32px 0;
+    }
+    height: 600px;
+    max-height: 100%;
+  }
+
+  &__content {
+    width: 100%;
+    border-radius: 0 rem(6px) rem(6px) 0;
+
+    @media (min-width: $mantine-breakpoint-xs) {
+      background-color: $clr-white;
+      border: 1px solid #d2d2d2;
+    }
+  }
+}
+
+.accountNavbar {
+  @media (min-width: $mantine-breakpoint-xs) {
+    height: 100%;
+    width: 250px;
+    max-width: 100%;
+    background-color: rgb(243, 239, 239);
+    border-radius: rem(6px) 0 0 rem(6px);
+    border: 1px solid #d2d2d2;
+    border-right: 0;
+  }
+
+  @media (max-width: $mantine-breakpoint-xs) {
+    margin: 16px 0;
+  }
+
+  &__inner {
+    height: 100%;
+    @media (min-width: $mantine-breakpoint-xs) {
+      padding: 0 24px;
+    }
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    @media (max-width: $mantine-breakpoint-sm) {
+      display: flex;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      white-space: nowrap;
+
+      &::before {
+        content: "";
+        min-width: 16px;
+        max-width: 16px;
+      }
+      &::after {
+        content: "";
+        min-width: 16px;
+        max-width: 16px;
+      }
+    }
+
+    &--item {
+      @media (min-width: $mantine-breakpoint-xs) {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        &:last-child {
+          border-bottom: 0px;
+        }
+      }
+
+      @media (max-width: $mantine-breakpoint-xs) {
+        flex-shrink: 0;
+        overflow: hidden;
+        margin-right: rem(16px);
+        border-radius: rem(6px);
+        background-color: $clr-white;
+      }
+      a,
+      &--btn {
+        text-decoration: none;
+        font-size: var(--mantine-font-size-sm);
+        width: 100%;
+        display: block;
+        padding: 16px 0;
+        color: $clr-grey-200;
+        @media (max-width: $mantine-breakpoint-xs) {
+          padding: 16px 24px;
+        }
+
+        &.active {
+          color: $clr-brown-300;
+          font-weight: 700;
+        }
+      }
+    }
+  }
+}
+
+.accountOverview {
+  &__container {
+    background-color: $clr-white;
+    padding: 16px 0;
+
+    @media (max-width: $mantine-breakpoint-xs) {
+      border: 1px solid #c3c3c4;
+      border-radius: rem(6px);
+      padding: 8px;
+    }
+  }
+}

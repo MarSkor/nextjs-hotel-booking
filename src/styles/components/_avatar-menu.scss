@@ -1,0 +1,33 @@
+@use "../mantine" as *;
+@use "../base/index" as *;
+
+.avatarUser {
+  //   color: light-dark(var(--mantine-color-black), var(--mantine-color-dark-0));
+  //*  to change later
+  color: $clr-white-100;
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
+  border-radius: var(--mantine-radius-sm);
+  transition: background-color 100ms ease;
+  svg {
+    color: $clr-white-100;
+  }
+
+  &:hover {
+    background-color: $clr-black-50;
+    // background-color: light-dark(
+    //   var(--mantine-color-white),
+    //   var(--mantine-color-dark-8)
+    // );
+  }
+
+  @media (max-width: $mantine-breakpoint-xs) {
+    display: none;
+  }
+}
+
+// .avatarUserActive {
+//   background-color: light-dark(
+//     var(--mantine-color-white),
+//     var(--mantine-color-dark-8)
+//   );
+// }
