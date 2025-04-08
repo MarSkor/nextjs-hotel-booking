@@ -1,9 +1,10 @@
+import React from "react";
 import { signIn } from "@/actions/auth";
 
-const LogInForm = () => {
+const LoginPage = () => {
   return (
     <div>
-      <div>Login form here</div>
+      <h2>placeholder login form</h2>
       <form
         action={async () => {
           "use server";
@@ -16,4 +17,4 @@ const LogInForm = () => {
   );
 };
 
-export default LogInForm;
+export default LoginPage;
