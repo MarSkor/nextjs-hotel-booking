@@ -3,6 +3,7 @@ import Resend from "next-auth/providers/resend";
 import Google from "next-auth/providers/google";
 
 export const config = {
+  debug: true,
   providers: [
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
@@ -10,7 +11,7 @@ export const config = {
     }),
   ],
   pages: {
-    login: "/login",
+    signIn: "/login",
   },
 };
 

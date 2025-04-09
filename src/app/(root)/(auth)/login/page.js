@@ -1,5 +1,5 @@
 import React from "react";
-import { signIn } from "@/actions/auth";
+import { signIn } from "@/lib/auth";
 
 const LoginPage = () => {
   return (
