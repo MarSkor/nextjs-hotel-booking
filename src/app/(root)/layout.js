@@ -4,17 +4,27 @@ import "@mantine/dates/styles.css";
 import "@mantine/carousel/styles.css";
 import "../../styles/main.scss";
 import { Navbar, Footer } from "@/components/layout";
+import { theme } from "../../styles/mantineTheme";
 
 export const metadata = {
+  // metadataBase: new URL(),
   title: "Holidaze Booking",
   description: "Discover Hotels, B&B and guesthouses in Bergen.",
+  // keywords: [],
+  // authors: [
+  //   {name: "",
+  //     url: ""
+  //   }
+  // ],
+  // creator: "",
+  // manifest: "",
 };
 
 export default async function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <MantineProvider>
+        <MantineProvider theme={theme}>
           <Navbar />
           <main>{children}</main>
           <Footer />

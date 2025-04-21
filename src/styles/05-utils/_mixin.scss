@@ -1,0 +1,12 @@
+@use "../mantine" as *;
+
+@mixin navbar-link-after($height, $bottom) {
+  content: "";
+  position: absolute;
+  background-color: var(--clr-navbar-link-active);
+  height: rem($height);
+  width: 0;
+  left: 0;
+  bottom: $bottom;
+  transition: var(--transition-btn-3);
+}

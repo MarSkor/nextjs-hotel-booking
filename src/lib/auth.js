@@ -12,6 +12,8 @@ export const config = {
   ],
   pages: {
     signIn: "/login",
+    error: "/auth/error",
+    error
   },
 };
 

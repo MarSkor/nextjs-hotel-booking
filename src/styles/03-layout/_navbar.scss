@@ -1,0 +1,103 @@
+@use "../mantine" as *;
+@use "../05-utils/mixin" as *;
+
+.navbar-link-global {
+  color: var(--clr-navbar-link);
+  text-decoration: none;
+  letter-spacing: rem(0.5px);
+  font-size: rem(14px);
+}
+
+.navbar-lg {
+  &__outer {
+    background-color: var(--clr-navbar-bg);
+    position: sticky;
+    top: 0;
+    z-index: 99;
+  }
+
+  &__inner {
+    padding: 12px 20px;
+    @media (max-width: $mantine-breakpoint-sm) {
+      padding: 10px 16px;
+    }
+  }
+
+  &__list-item {
+    list-style: none;
+  }
+
+  &__link-lg {
+    position: relative;
+    padding: rem(10px) rem(8px);
+
+    &::after {
+      @include navbar-link-after(1px, 0);
+    }
+
+    &:hover::after {
+      width: 100%;
+    }
+
+    &.active::after {
+      color: var(--clr-navbar-link-active);
+      font-weight: 500;
+      width: 100%;
+    }
+  }
+}
+
+// navbar small
+//-------------------------------
+
+.navbar-sm {
+  &__list-items {
+    list-style: none;
+    padding: 0 rem(32px);
+  }
+
+  &__list-item {
+    margin: rem(8px) 0;
+  }
+
+  &__drawer-root {
+    &__content,
+    &__header {
+      background-color: var(--clr-navbar-bg);
+    }
+  }
+}
+
+.navbar-sm__link-sm {
+  text-align: right;
+  height: 100%;
+  display: inline-block;
+  padding: rem(10px) 0;
+  position: relative;
+  font-size: rem(18px);
+
+  &::after {
+    @include navbar-link-after(2px, -2px);
+  }
+
+  &.active::after {
+    width: 100%;
+  }
+}
+
+// navbar - when logged in
+//-------------------------------
+
+.avatarUser {
+  padding: rem(8px) rem(8px);
+  border-radius: var(--border-rd-small);
+  transition: var(--transition-btn-2);
+
+  &:hover {
+    background-color: var(--clr-navbar-dark-hover);
+  }
+
+  &__dropdown-link {
+    color: var(--clr-black-text);
+  }
+}

@@ -1,5 +1,3 @@
-import React from "react";
-
 // https://authjs.dev/guides/pages/error
 
 const AuthErrorPage = () => {

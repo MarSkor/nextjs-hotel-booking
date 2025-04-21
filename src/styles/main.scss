@@ -1,5 +1,5 @@
-@import "base";
-@import "components";
-@import "layout";
-@import "pages";
-@import "utils";
+@use "01-globals" as *;
+@use "02-components" as *;
+@use "03-layout" as *;
+@use "04-pages" as *;
+@use "05-utils" as *;

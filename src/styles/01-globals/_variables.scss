@@ -1,0 +1,30 @@
+@use "colors" as *;
+
+:root {
+  --clr-black-text: #{$clr-black};
+
+  --clr-navbar-bg: #{$clr-black};
+  --clr-navbar-link: #{$clr-brown-5};
+  --clr-navbar-link-dark: #{$clr-brown};
+  --clr-navbar-link-active: #{$clr-white};
+  --clr-navbar-dark-hover: #{$clr-black-3};
+
+  --clr-btn-navbar: #{$clr-brown-4};
+  --clr-btn-navbar-2: #{$clr-brown-3};
+  --clr-btn-navbar-3: #{$clr-brown-5};
+  --clr-btn-navbar-hover-bg: #{$clr-brown-2};
+  --clr-icon-logout: #{$clr-red-2};
+
+  --clr-semantic-info: #{$clr-blue};
+  --clr-semantic-error: #{$clr-red-2};
+  --clr-semantic-warning: #{$clr-yellow};
+  --clr-semantic-success: #{$clr-green};
+
+  //   --------------------
+  --transition-btn-2: 0.2s ease;
+  --transition-btn-3: 0.3s ease;
+
+  //   --------------------
+  --border-rd-small: 4px;
+  --border-rd-medium: 6px;
+}
