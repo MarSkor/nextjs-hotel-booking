@@ -18,6 +18,16 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
 body {
   /* 4. Add accessible line-height */
   line-height: 1.5;

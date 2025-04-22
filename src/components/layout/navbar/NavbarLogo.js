@@ -4,7 +4,7 @@ import { Box } from "@mantine/core";
 const NavbarLogo = () => {
   return (
     <Box className="navbar__logo">
-      <Link href={"/"} title="logo" className="navbar__logo--link">
+      <Link href={"/"} title="Return Home" className="navbar__logo--link">
         <picture>
           <source
             media="(max-width: 969px)"

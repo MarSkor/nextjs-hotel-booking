@@ -1,13 +1,18 @@
 @use "colors" as *;
 
 :root {
-  --clr-black-text: #{$clr-black};
+  --clr-dark-text: #{$clr-black};
+  --clr-gray-text: #{$clr-gray};
+  --clr-brown-text: #{$clr-brown-4};
+  --clr-brown-5: #{$clr-brown-5};
 
-  --clr-navbar-bg: #{$clr-black};
-  --clr-navbar-link: #{$clr-brown-5};
+  --clr-layout-bg: #{$clr-black};
+
+  --clr-navbar-link: var(--clr-brown-5);
   --clr-navbar-link-dark: #{$clr-brown};
-  --clr-navbar-link-active: #{$clr-white};
+  --clr-navbar-link-active: #{$clr-gray};
   --clr-navbar-dark-hover: #{$clr-black-3};
+  --clr-footer-link: var(--clr-brown-5);
 
   --clr-btn-navbar: #{$clr-brown-4};
   --clr-btn-navbar-2: #{$clr-brown-3};

@@ -10,3 +10,12 @@
   --val: 5vw;
   --max: 3rem;
 }
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex-grow: 1;
+}

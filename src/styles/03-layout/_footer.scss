@@ -1,0 +1,23 @@
+@use "../mantine" as *;
+
+.footer {
+  background-color: var(--clr-layout-bg);
+
+  &__link {
+    margin-bottom: rem(16px);
+    @media (max-width: $mantine-breakpoint-sm) {
+      margin-bottom: rem(24px);
+    }
+  }
+
+  &__logo {
+    display: flex;
+    flex-direction: column;
+
+    @media (max-width: $mantine-breakpoint-sm) {
+      justify-content: center;
+      text-align: center;
+      align-items: center;
+    }
+  }
+}

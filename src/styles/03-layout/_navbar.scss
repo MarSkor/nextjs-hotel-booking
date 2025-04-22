@@ -10,16 +10,16 @@
 
 .navbar-lg {
   &__outer {
-    background-color: var(--clr-navbar-bg);
+    background-color: var(--clr-layout-bg);
     position: sticky;
     top: 0;
     z-index: 99;
   }
 
   &__inner {
-    padding: 12px 20px;
+    padding: rem(12px) rem(16px);
     @media (max-width: $mantine-breakpoint-sm) {
-      padding: 10px 16px;
+      padding: rem(10px) rem(16px);
     }
   }
 
@@ -63,7 +63,7 @@
   &__drawer-root {
     &__content,
     &__header {
-      background-color: var(--clr-navbar-bg);
+      background-color: var(--clr-layout-bg);
     }
   }
 }
@@ -98,6 +98,6 @@
   }
 
   &__dropdown-link {
-    color: var(--clr-black-text);
+    color: var(--clr-dark-text);
   }
 }
