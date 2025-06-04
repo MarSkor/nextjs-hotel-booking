@@ -1,11 +1,22 @@
 import React from "react";
-import { Title, Text, Button } from "@mantine/core";
-import { Hero } from "@/features/home/components";
+import {
+  Hero,
+  Featured,
+  Banner,
+  About,
+  Stats,
+  Testimonials,
+} from "@/features/home/components";
 
 const HomePage = () => {
   return (
     <>
       <Hero />
+      <Featured />
+      <Banner />
+      <About />
+      <Stats />
+      <Testimonials />
     </>
   );
 };

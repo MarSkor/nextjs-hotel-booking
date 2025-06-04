@@ -1,0 +1,26 @@
+@use "../mantine" as *;
+
+.card {
+  position: relative;
+
+  &__favorite {
+    z-index: 6;
+    position: absolute;
+    top: var(--mantine-spacing-xs);
+    border-radius: var(--mantine-radius-md);
+    right: rem(12px);
+    padding: rem(8px);
+    cursor: pointer;
+    background-color: rgba(15, 13, 18, 0.7);
+  }
+
+  &__rating--text {
+    background-color: var(--clr-gray-2);
+    border-radius: rem(4px);
+    padding: 2px;
+  }
+
+  &__description {
+    text-align: left;
+  }
+}

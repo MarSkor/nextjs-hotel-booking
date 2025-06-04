@@ -1,131 +1,127 @@
 "use client";
 import { DatePickerInput } from "@mantine/dates";
-import { Flex, Button, Container, Text, Box, Select } from "@mantine/core";
 import {
-  IconArrowDown,
-  IconCalendar,
-  IconHouse,
-  IconMultipleUsers,
-} from "../../../components/icons";
-import BookingGuests from "./BookingGuests";
+  Flex,
+  Button,
+  Container,
+  Box,
+  Select,
+  NumberInput,
+  Grid,
+  GridCol,
+} from "@mantine/core";
+import { IconCalendar, IconHouse, IconMultipleUsers } from "@/components/icons";
 
 const BookingSearchField = (props) => {
   return (
-    <section className={`booking-sf-section ${props.position}`}>
-      <Box className={`booking-sf ${props.position}`}>
-        <Container className="container-full">
-          <form action="" className="booking-sf__form">
-            <div className="booking-sf__form--wrapper">
-              <div className="booking-sf__form--field">
-                <Flex
-                  direction="row"
-                  align="center"
-                  className="booking-sf__form--field-input-wrapper"
-                >
-                  <Box mr="xs">
-                    <IconHouse color="#3f3d41" />
-                  </Box>
-                  <Flex direction="column" w="100%">
-                    <div>
-                      <Text size="xs">Property Type</Text>
-                    </div>
-                    <div className="booking-sf__form--field-input-wrapper">
-                      <Select
-                        data={["Hotel", "Guesthouse", "Bed & Breakfast"]}
-                        rightSectionPointerEvents="none"
-                        rightSection={<IconArrowDown />}
-                        placeholder="Select property type"
-                        classNames={{
-                          input: "booking-sf__form--input",
-                        }}
-                      />
-                    </div>
-                  </Flex>
-                </Flex>
-              </div>
-              {/* <Divider orientation="vertical" /> */}
-              <div className="booking-sf__form--field">
-                <Flex
-                  direction="row"
-                  align="center"
-                  className="booking-sf__form--field-row"
-                >
-                  <Box mr="xs">
-                    <IconCalendar color="#3f3d41" />
-                  </Box>
-                  <Flex w="100%">
-                    <Flex
-                      w="100%"
-                      mr="xs"
-                      direction="column"
-                      className="booking-sf__form--field-col"
-                    >
-                      <div>
-                        <Text size="xs">Check in</Text>
-                      </div>
-                      <div className="booking-sf__form--field-input-wrapper">
-                        <DatePickerInput
-                          rightSection={<IconArrowDown />}
-                          clearable
-                          valueFormat="ddd, MM/DD/YY"
-                          placeholder="--/--/--"
-                          classNames={{
-                            input: "booking-sf__form--input",
-                          }}
-                        />
-                      </div>
-                    </Flex>
-                    {/* <Divider orientation="vertical" m="lg" /> */}
-                    <Flex
-                      w="100%"
-                      ml="xs"
-                      direction="column"
-                      className="booking-sf__form--field-col"
-                    >
-                      <div>
-                        <Text size="xs">Check out</Text>
-                      </div>
-                      <div className="booking-sf__form--field-input-wrapper">
-                        <DatePickerInput
-                          rightSection={<IconArrowDown />}
-                          clearable
-                          valueFormat="ddd, MM/DD/YY"
-                          placeholder="--/--/--"
-                          classNames={{
-                            input: "booking-sf__form--input",
-                          }}
-                        />
-                      </div>
-                    </Flex>
-                  </Flex>
-                </Flex>
-              </div>
-              {/* <Divider orientation="vertical" /> */}
-              <div className="booking-sf__form--field">
-                <Flex direction="row" align="center" w="100%">
-                  <Box mr="xs">
-                    <IconMultipleUsers color="#3f3d41" />
-                  </Box>
-                  <Flex direction="column" w="100%">
-                    <div>
-                      <Text size="xs">Guests</Text>
-                    </div>
-                    <div>
-                      <BookingGuests />
-                    </div>
-                  </Flex>
-                </Flex>
-              </div>
-              <div className="booking-sf__form--field">
-                <Button className="btn btn-primary" fullWidth>
-                  Search
-                </Button>
-              </div>
-            </div>
-          </form>
-        </Container>
-      </Box>
-    </section>
+    <Container
+      size="md"
+      component="section"
+      className={`booking-section b-s-${props.position}`}
+    >
+      <form>
+        <Grid className="booking-section__grid">
+          <GridCol span={{ base: 12, md: 3 }}>
+            <Flex
+              className="booking-section__form--field"
+              align={"center"}
+              w={"100%"}
+            >
+              <Box mr="sm">
+                <IconHouse color="var(--clr-brown-3)" />
+              </Box>
+              <Flex w={"100%"}>
+                <Select
+                  w={"100%"}
+                  classNames={{
+                    input: "booking-section__form--input",
+                    label: "booking-section__form--label",
+                  }}
+                  label="Property Type"
+                  placeholder="Select property"
+                  data={["Hotel", "Guesthouse", "Bed & Breakfast"]}
+                />
+              </Flex>
+            </Flex>
+          </GridCol>
+          <GridCol span={{ base: 12, md: 5 }}>
+            <Flex
+              className="booking-section__form--field"
+              align={"center"}
+              w={"100%"}
+            >
+              <Box mr="sm">
+                <IconCalendar color="var(--clr-brown-3)" />
+              </Box>
+              <Flex
+                direction={{ base: "column", xs: "column", sm: "row" }}
+                w={"100%"}
+              >
+                <Box mr={"sm"} w={"100%"}>
+                  <DatePickerInput
+                    label="Check in"
+                    clearable
+                    valueFormat="ddd, MM/DD/YY"
+                    placeholder="--/--/--"
+                    classNames={{
+                      input: "booking-section__form--input",
+                      label: "booking-section__form--label",
+                    }}
+                  />
+                </Box>
+                <Box w={"100%"}>
+                  <DatePickerInput
+                    label="Check out"
+                    clearable
+                    valueFormat="ddd, MM/DD/YY"
+                    placeholder="--/--/--"
+                    classNames={{
+                      input: "booking-section__form--input",
+                      label: "booking-section__form--label",
+                    }}
+                  />
+                </Box>
+              </Flex>
+            </Flex>
+          </GridCol>
+          <GridCol span={{ base: 12, md: "auto" }}>
+            <Flex
+              className="booking-section__form--field"
+              align={"center"}
+              w={"100%"}
+            >
+              <Box mr="sm">
+                <IconMultipleUsers color="var(--clr-brown-3)" />
+              </Box>
+              <Flex w={"100%"}>
+                <NumberInput
+                  w={"100%"}
+                  label="Guests"
+                  placeholder="idk"
+                  min={1}
+                  max={6}
+                  classNames={{
+                    input: "booking-section__form--input",
+                    label: "booking-section__form--label",
+                  }}
+                />
+              </Flex>
+            </Flex>
+          </GridCol>
+          <GridCol span={{ base: 12, md: "content" }}>
+            <Flex
+              className="booking-section__form--field"
+              align={"center"}
+              h={"100%"}
+            >
+              <Button className="booking-section__search-button" fullWidth>
+                Search
+              </Button>
+            </Flex>
+          </GridCol>
+        </Grid>
+      </form>
+    </Container>
   );
 };
 

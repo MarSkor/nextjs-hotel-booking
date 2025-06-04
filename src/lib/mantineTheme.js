@@ -1,4 +1,4 @@
-import { createTheme, DEFAULT_THEME } from "@mantine/core";
+import { createTheme, DEFAULT_THEME, rem } from "@mantine/core";
 
 export const theme = createTheme({
   fontFamily: `Montserrat, ${DEFAULT_THEME.fontFamily}`,

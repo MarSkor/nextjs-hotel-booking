@@ -9,21 +9,19 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@auth/mongodb-adapter": "^3.8.0",
-    "@mantine/carousel": "^7.17.3",
-    "@mantine/core": "^7.17.3",
-    "@mantine/dates": "^7.17.3",
-    "@mantine/form": "^7.17.3",
-    "@mantine/hooks": "^7.17.3",
+    "@mantine/carousel": "^8.0.2",
+    "@mantine/core": "^8.0.2",
+    "@mantine/dates": "^8.0.2",
+    "@mantine/form": "^8.0.2",
+    "@mantine/hooks": "^8.0.2",
     "bcryptjs": "^3.0.2",
     "dayjs": "^1.11.13",
-    "embla-carousel-react": "^8.6.0",
-    "mongodb": "^6.15.0",
-    "mongoose": "^8.13.2",
+    "embla-carousel": "^8.5.2",
+    "embla-carousel-react": "^8.5.2",
     "next": "15.2.4",
-    "next-auth": "^5.0.0-beta.25",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-responsive-masonry": "^2.7.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

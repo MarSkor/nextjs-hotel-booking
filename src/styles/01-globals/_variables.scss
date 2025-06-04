@@ -1,10 +1,15 @@
 @use "colors" as *;
 
 :root {
-  --clr-dark-text: #{$clr-black};
-  --clr-gray-text: #{$clr-gray};
-  --clr-brown-text: #{$clr-brown-4};
+  --clr-dark: #{$clr-black};
+  --clr-gray: #{$clr-gray};
+  --clr-brown: #{$clr-brown};
+  --clr-brown-2: #{$clr-brown-2};
+  --clr-brown-3: #{$clr-brown-3};
+  --clr-brown-4: #{$clr-brown-4};
   --clr-brown-5: #{$clr-brown-5};
+  --clr-gray-2: #{$clr-gray-2};
+  --clr-gray-3: #{$clr-gray-3};
 
   --clr-layout-bg: #{$clr-black};
 
@@ -32,4 +37,6 @@
   //   --------------------
   --border-rd-small: 4px;
   --border-rd-medium: 6px;
+
+  //   --------------------
 }

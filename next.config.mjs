@@ -8,6 +8,14 @@ const nextConfig = {
       .join(process.cwd(), "./src/styles/_mantine")
       .replace(/\\/g, "/")}" as mantine;`,
   },
+  images: {
+    localPatterns: [
+      {
+        pathname: "/assets/**",
+        search: "",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

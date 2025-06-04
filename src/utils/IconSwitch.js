@@ -9,15 +9,15 @@ import {
 const IconSwitch = (icon) => {
   switch (icon) {
     case "single-bed":
-      return <IconSingleBed color="$clr-brown-200" />;
+      return <IconSingleBed height={14} width={14} color="$clr-brown-2" />;
     case "double-bed":
-      return <IconDoubleBed color="$clr-brown-200" />;
+      return <IconDoubleBed height={14} width={14} color="$clr-brown-2" />;
     case "multiple-users":
-      return <IconMultipleUsers color="$clr-brown-200" />;
+      return <IconMultipleUsers height={14} width={14} color="$clr-brown-2" />;
     case "single-user":
-      return <IconUser color="$clr-brown-200" />;
+      return <IconUser height={14} width={14} color="$clr-brown-2" />;
     default:
-      <IconInfoCircle color="$clr-brown-200" />;
+      <IconInfoCircle />;
       break;
   }
 };

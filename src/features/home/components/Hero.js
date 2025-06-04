@@ -1,11 +1,26 @@
-import { Container, Box, Flex, Text, Title } from "@mantine/core";
+import { Container, Text, Title, Overlay } from "@mantine/core";
+import { BookingSearchField } from "@/features/accommodations/forms";
 
 const Hero = () => {
   return (
-    <section>
-      <Container size="lg">
-        <Title className="hero-title">Hello world</Title>
-      </Container>
+    <section className="home-hero__wrapper">
+      <Overlay color="#000" opacity={0.65} zIndex={1} />
+
+      <div className="home-hero__inner">
+        <Title className="home-hero__inner--title">
+          Elevate your holidays with Holidaze.
+        </Title>
+
+        <Container size={640} mb="xl">
+          <Text size="lg" className="home-hero__description">
+            Explore, Book, and
+            <span className="home-hero__description--highlight"> Relax </span>
+            in Bergen, Norway.
+          </Text>
+        </Container>
+
+        <BookingSearchField />
+      </div>
     </section>
   );
 };

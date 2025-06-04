@@ -59,16 +59,16 @@ const Footer = () => {
         size="xl"
       >
         <Flex
-          direction={{ base: "column", sm: "column", md: "row" }}
+          direction={{ base: "column", xs: "column", sm: "row" }}
           justify="space-between"
         >
-          <Box className="footer__logo" mb={{ base: "md", sm: "sm", md: "0" }}>
+          <Box className="footer__logo" mb={{ base: "md", xs: "sm", sm: "0" }}>
             <NavbarLogo />
             <Text
               mt="md"
               size="sm"
               className="footer__description"
-              c="var(--clr-gray-text"
+              c="var(--clr-gray)"
             >
               Explore, book and unwind with Holidaze.
             </Text>
@@ -76,15 +76,15 @@ const Footer = () => {
               mt="xs"
               size="sm"
               className="footer__description"
-              c="var(--clr-gray-text"
+              c="var(--clr-gray)"
             >
               Your gateway to unforgettable stays in Bergen, Norway.
             </Text>
           </Box>
           <Flex
             className="footer__groups"
-            direction={{ base: "column", sm: "column", md: "row" }}
-            align={{ base: "center", sm: "center", md: "flex-start" }}
+            direction={{ base: "column", xs: "column", sm: "row" }}
+            align={{ base: "center", xs: "center", sm: "flex-start" }}
             gap={{ base: "xs", sm: "sm", md: "xl" }}
           >
             {groups}
@@ -106,7 +106,7 @@ const Footer = () => {
           direction={{ base: "column", md: "row" }}
         >
           <Text
-            c="var(--clr-brown-text)"
+            c="var(--clr-brown-4)"
             size="sm"
             mb={{ base: "md", sm: "md", md: "0" }}
           >
@@ -114,7 +114,8 @@ const Footer = () => {
           </Text>
 
           <Anchor
-            c="var(--clr-brown-text)"
+            href="#"
+            c="var(--clr-brown-4)"
             size="sm"
             mb={{ base: "md", sm: "md", md: "0" }}
             underline="hover"
@@ -125,21 +126,21 @@ const Footer = () => {
           <Group className="footer__social" justify="flex-end" wrap="nowrap">
             <ActionIcon size="lg" variant="subtle">
               <IconTwitter
-                color="var(--clr-brown-text)"
+                color="var(--clr-brown-4)"
                 style={{ width: rem(26), height: rem(26) }}
                 stroke={1.5}
               />
             </ActionIcon>
             <ActionIcon size="lg" variant="subtle">
               <IconFacebook
-                color="var(--clr-brown-text)"
+                color="var(--clr-brown-4)"
                 style={{ width: rem(26), height: rem(26) }}
                 stroke={1.5}
               />
             </ActionIcon>
             <ActionIcon size="lg" variant="subtle">
               <IconInstagram
-                color="var(--clr-brown-text)"
+                color="var(--clr-brown-4)"
                 style={{ width: rem(26), height: rem(26) }}
                 stroke={1.5}
               />

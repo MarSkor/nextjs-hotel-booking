@@ -4,7 +4,7 @@ import "@mantine/dates/styles.css";
 import "@mantine/carousel/styles.css";
 import "../../styles/main.scss";
 import { Navbar, Footer } from "@/components/layout";
-import { theme } from "../../styles/mantineTheme";
+import { theme } from "../../lib/mantineTheme";
 
 export const metadata = {
   // metadataBase: new URL(),
