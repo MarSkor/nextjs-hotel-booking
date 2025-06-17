@@ -6,6 +6,7 @@ import "../../styles/main.scss";
 import { Navbar, Footer } from "@/components/layout";
 import { theme } from "../../lib/mantineTheme";
 
+// https://nextjs.org/docs/app/getting-started/metadata-and-og-images#generated-metadata
 export const metadata = {
   // metadataBase: new URL(),
   title: "Holidaze Booking",

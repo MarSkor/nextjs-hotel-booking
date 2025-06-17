@@ -1,0 +1,16 @@
+@use "../mantine" as *;
+
+.accommodations-header {
+  &__top-header {
+    &--title {
+      text-align: center;
+    }
+  }
+}
+
+.sortby__wrapper {
+  width: 50%;
+  @media (min-width: $mantine-breakpoint-sm) {
+    width: 20%;
+  }
+}

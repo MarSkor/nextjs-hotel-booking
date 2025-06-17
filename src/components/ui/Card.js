@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useState } from "react";
 import {
   Badge,
@@ -11,13 +12,13 @@ import {
   Flex,
   Title,
   rem,
+  Tooltip,
+  Box,
 } from "@mantine/core";
 import { IconLocation, IconStar, IconHeart } from "../icons";
-import Link from "next/link";
-import { mockData } from "./data";
 import IconSwitch from "@/utils/IconSwitch";
 
-const AccommodationCard = () => {
+const AccommodationCard = (props) => {
   const [isActive, setIsActive] = useState(false);
 
   const {
@@ -29,7 +30,9 @@ const AccommodationCard = () => {
     slug,
     description,
     featured_image,
-  } = mockData;
+  } = props;
+
+  console.log("ac props", badges);
 
   const linkProps = { href: "#", target: "_blank", rel: "noopener noreferrer" };
 
@@ -54,17 +57,19 @@ const AccommodationCard = () => {
       <CardSection component={Link} {...linkProps}>
         <Image alt="housing" src={featured_image} />
       </CardSection>
-      <div align="center" className="card__favorite">
-        <div onClick={() => setIsActive(!isActive)}>
-          {isActive ? (
-            <IconHeart color="red" fill="red" title="save" />
-          ) : (
-            <IconHeart color="#fbfbfb" title="save" />
-          )}
-        </div>
-      </div>
+      <Tooltip label="Save to favorites">
+        <Box align="center" className="card__favorite">
+          <Box onClick={() => setIsActive(!isActive)}>
+            {isActive ? (
+              <IconHeart color="red" fill="red" title="save" />
+            ) : (
+              <IconHeart color="#fbfbfb" title="save" />
+            )}
+          </Box>
+        </Box>
+      </Tooltip>
       <Group mt="sm" justify="space-between">
-        <Title order={4}>{title}</Title>
+        <Title order={3}>{title}</Title>
         <Flex className="card__rating" align="center">
           <Flex>
             <IconStar />
@@ -95,18 +100,17 @@ const AccommodationCard = () => {
       <Group mt="xs" mb="xs">
         {features}
       </Group>
-      <Text className="card__description" size="sm" lineClamp={2}>
-        {description}
-      </Text>
-      <Flex mt="md" justify="space-between" align="center">
+      <Flex justify="space-between" align="center">
         <Flex align="baseline">
-          <Title order={5} mr={rem("2px")}>
+          <Title order={5} size="h4" mr={rem("2px")}>
             ${price}{" "}
           </Title>{" "}
-          <Text> /night</Text>
+          <Text size="sm"> /night</Text>
         </Flex>
 
-        <Button radius="md">View</Button>
+        <Button variant="outline" radius="md">
+          View
+        </Button>
       </Flex>
     </Card>
   );

@@ -7,19 +7,18 @@ const Hero = () => {
       <Overlay color="#000" opacity={0.65} zIndex={1} />
 
       <div className="home-hero__inner">
-        <Title className="home-hero__inner--title">
-          Elevate your holidays with Holidaze.
-        </Title>
-
-        <Container size={640} mb="xl">
+        <Container size={740}>
           <Text size="lg" className="home-hero__description">
             Explore, Book, and
             <span className="home-hero__description--highlight"> Relax </span>
             in Bergen, Norway.
           </Text>
+          <Title className="home-hero__inner--title">
+            Elevate your holidays with Holidaze.
+          </Title>
         </Container>
 
-        <BookingSearchField />
+        <BookingSearchField size="md" page="home" />
       </div>
     </section>
   );

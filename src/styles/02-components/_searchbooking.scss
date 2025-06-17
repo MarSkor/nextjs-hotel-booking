@@ -1,0 +1,33 @@
+@use "../mantine" as *;
+
+.booking-section__form {
+  &--label {
+    margin-bottom: rem(2px);
+    color: var(--clr-brown-2);
+    font-size: rem(12px);
+    font-weight: 600;
+  }
+}
+
+.bsf-section {
+  padding-bottom: rem(10px);
+  border-radius: var(--border-rd-medium);
+
+  button {
+    @media (max-width: $mantine-breakpoint-md) {
+      width: 100%;
+    }
+  }
+}
+
+.bsf-section-home {
+  background-color: var(--clr-brown-5);
+}
+
+.bsf-section-home {
+  margin-top: rem(32px);
+}
+
+.bsf-section-acs {
+  background-color: var(--clr-brown-4);
+}

@@ -10,14 +10,14 @@ import {
 
 const HomePage = () => {
   return (
-    <>
+    <article>
       <Hero />
       <Featured />
       <Banner />
       <About />
       <Stats />
       <Testimonials />
-    </>
+    </article>
   );
 };
 

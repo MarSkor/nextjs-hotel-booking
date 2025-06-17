@@ -18,7 +18,7 @@ const TestimonialCard = ({ image, name, review, rating }) => (
     <Flex className="testimonial-card__heading">
       <Avatar mr={"sm"} size={"lg"} src={image} />
       <Flex direction={"column"}>
-        <Title order={5} mb={rem("4px")}>
+        <Title order={5} mb={"4px"}>
           {name}
         </Title>
         <Rating

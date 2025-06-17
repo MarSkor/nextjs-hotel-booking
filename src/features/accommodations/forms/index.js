@@ -1,1 +1,1 @@
-export { default as BookingSearchField } from "../../../features/accommodations/forms/BookingSearchField";
+export { default as BookingSearchField } from "./BookingSearchField";

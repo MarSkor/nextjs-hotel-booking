@@ -1,8 +1,6 @@
 "use client";
-import Link from "next/link";
 import { useState } from "react";
-import { usePathname } from "next/navigation";
-import { Flex, Box, Group, Burger, Container, Text } from "@mantine/core";
+import { Flex, Burger, Container } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import NavbarLogo from "./NavbarLogo";
 import NavbarSmall from "./NavbarSmall";
