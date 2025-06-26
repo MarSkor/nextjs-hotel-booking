@@ -21,20 +21,14 @@ import IconSwitch from "@/utils/IconSwitch";
 const AccommodationCard = (props) => {
   const [isActive, setIsActive] = useState(false);
 
-  const {
-    title,
-    location,
-    badges,
-    price,
-    ratings,
-    slug,
-    description,
-    featured_image,
-  } = props;
+  const { title, location, badges, price, ratings, slug, featured_image } =
+    props;
 
-  console.log("ac props", badges);
-
-  const linkProps = { href: "#", target: "_blank", rel: "noopener noreferrer" };
+  const linkProps = {
+    href: `/accommodation/${slug}`,
+    // target: "_blank",
+    rel: "noopener noreferrer",
+  };
 
   const features = badges.map((badge) => (
     <Badge
@@ -108,7 +102,7 @@ const AccommodationCard = (props) => {
           <Text size="sm"> /night</Text>
         </Flex>
 
-        <Button variant="outline" radius="md">
+        <Button component={Link} {...linkProps} variant="outline" radius="md">
           View
         </Button>
       </Flex>

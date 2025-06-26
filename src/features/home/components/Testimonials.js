@@ -37,6 +37,8 @@ const TestimonialCard = ({ image, name, review, rating }) => (
 );
 
 const Testimonials = () => {
+  //fixing a "view more" option here?
+
   return (
     <Container
       component="section"

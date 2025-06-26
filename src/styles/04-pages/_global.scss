@@ -1,5 +1,4 @@
 @use "../mantine" as *;
-// @use "../base/colors" as *;
 
 .hero-title {
   font-size: clamp(var(--min), var(--val), var(--max));

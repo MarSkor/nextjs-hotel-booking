@@ -1,5 +1,6 @@
 export const mockData = [
   {
+    slug: "lorem-hotel-1",
     id: 1,
     title: "Lorem Hotel 1",
     location: "Somewhere in Bergen",
@@ -23,6 +24,7 @@ export const mockData = [
     ],
   },
   {
+    slug: "lorem-hotel-2",
     id: 2,
     title: "Lorem Hotel 2",
     location: "Somewhere in Bergen",
@@ -46,6 +48,7 @@ export const mockData = [
     ],
   },
   {
+    slug: "lorem-hotel-3",
     id: 3,
     title: "Lorem Hotel 3",
     location: "Somewhere in Bergen",
@@ -69,6 +72,7 @@ export const mockData = [
     ],
   },
   {
+    slug: "lorem-hotel-4",
     id: 4,
     title: "Lorem Hotel 4",
     location: "Somewhere in Bergen",
@@ -92,6 +96,7 @@ export const mockData = [
     ],
   },
   {
+    slug: "lorem-hotel-5",
     id: 5,
     title: "Lorem Hotel 5",
     location: "Somewhere in Bergen",
@@ -115,6 +120,7 @@ export const mockData = [
     ],
   },
   {
+    slug: "lorem-hotel-6",
     id: 6,
     title: "Lorem Hotel 6",
     location: "Somewhere in Bergen",
@@ -138,6 +144,7 @@ export const mockData = [
     ],
   },
   {
+    slug: "lorem-hotel-7",
     id: 7,
     title: "Lorem Hotel 7",
     location: "Somewhere in Bergen",
@@ -161,6 +168,7 @@ export const mockData = [
     ],
   },
   {
+    slug: "lorem-hotel-8",
     id: 8,
     title: "Lorem Hotel 8",
     location: "Somewhere in Bergen",
@@ -184,6 +192,7 @@ export const mockData = [
     ],
   },
   {
+    slug: "lorem-hotel-9",
     id: 9,
     title: "Lorem Hotel 9",
     location: "Somewhere in Bergen",
@@ -207,6 +216,7 @@ export const mockData = [
     ],
   },
   {
+    slug: "lorem-hotel-10",
     id: 10,
     title: "Lorem Hotel 10",
     location: "Somewhere in Bergen",
@@ -230,6 +240,7 @@ export const mockData = [
     ],
   },
   {
+    slug: "lorem-hotel-11",
     id: 11,
     title: "Lorem Hotel 11",
     location: "Somewhere in Bergen",
@@ -253,6 +264,7 @@ export const mockData = [
     ],
   },
   {
+    slug: "lorem-hotel-12",
     id: 12,
     title: "Lorem Hotel 12",
     location: "Somewhere in Bergen",

@@ -14,3 +14,36 @@
     width: 20%;
   }
 }
+
+.details__carousel-control {
+  background-color: var(--clr-brown-5);
+}
+
+.details__carousel-indicator {
+  outline: 2px solid var(--clr-gray-2);
+  width: 12px;
+  height: 4px;
+  transition: width 250ms ease;
+
+  &[data-active] {
+    width: 40px;
+  }
+}
+
+// .details-booking {
+//   background-color: pink;
+// }
+
+.details {
+  &__booking-top {
+    background-color: var(--clr-brown-5);
+  }
+  &__booking-body {
+    background-color: var(--clr-brown-5);
+    height: 100%;
+  }
+}
+
+.facilities-card {
+  background-color: var(--clr-brown-5);
+}

@@ -6,8 +6,6 @@ const Featured = () => {
   //add featured YES/NO to the mockdata later
   const mockDataArray = mockData.slice(0, 3);
 
-  const accommodations = mockDataArray.map((item) => <Card key={item.id} />);
-
   return (
     <Container
       component="section"
@@ -22,9 +20,15 @@ const Featured = () => {
       </Box>
       <Container className="no-side-padding" size="xl" mt="xl">
         <Grid>
-          <GridCol align="center" span={{ base: 12, xs: 6, md: 4 }}>
-            {accommodations}
-          </GridCol>
+          {mockDataArray.map((item) => (
+            <GridCol
+              key={item.id}
+              align="center"
+              span={{ base: 12, xs: 6, md: 4 }}
+            >
+              <Card {...item} />
+            </GridCol>
+          ))}
         </Grid>
       </Container>
     </Container>
