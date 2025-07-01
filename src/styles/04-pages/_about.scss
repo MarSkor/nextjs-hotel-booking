@@ -1,0 +1,9 @@
+@use "../mantine" as *;
+
+.about {
+  &__column {
+    &--img {
+      max-width: 100%;
+    }
+  }
+}
