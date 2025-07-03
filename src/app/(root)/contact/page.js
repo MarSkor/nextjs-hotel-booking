@@ -1,4 +1,4 @@
-import { SimpleGrid, Container } from "@mantine/core";
+import { SimpleGrid, Container, Flex } from "@mantine/core";
 import { ContactInformation } from "@/features/contact/components";
 import { ContactForm } from "@/features/contact/forms";
 
@@ -14,7 +14,9 @@ const ContactPage = () => {
       >
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing={"lg"}>
           <ContactInformation />
-          <ContactForm />
+          <Flex className="contactform__container" justify={"center"}>
+            <ContactForm />
+          </Flex>
         </SimpleGrid>
       </Container>
     </article>

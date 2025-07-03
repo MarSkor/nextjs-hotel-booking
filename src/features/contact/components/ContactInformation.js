@@ -36,12 +36,12 @@ const ContactIcon = ({
   );
 };
 
-export function ContactIconsList() {
+const ContactIconsList = () => {
   const items = CONTACT_US.map((item, index) => (
     <ContactIcon key={index} {...item} />
   ));
   return <Stack mt={"sm"}>{items}</Stack>;
-}
+};
 
 const ContactInformation = () => {
   const icons = social.map((Icon, index) => (
