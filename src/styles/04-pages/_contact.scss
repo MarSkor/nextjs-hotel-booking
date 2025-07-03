@@ -1,0 +1,46 @@
+@use "../mantine" as *;
+
+.contact-wrapper {
+  @media (min-width: $mantine-breakpoint-md) {
+    margin-top: rem(80px);
+    margin-bottom: rem(80px);
+  }
+}
+
+.contactinformation {
+  max-width: rem(550px);
+}
+
+.contacticon {
+  &__icon-wrapper {
+    background-color: var(--clr-brown);
+    margin-right: var(--mantine-spacing-md);
+    padding: rem(10px);
+    border-radius: rem(4px);
+  }
+  &__icon {
+    background-color: transparent;
+    color: var(--clr-brown-4);
+  }
+  &__title {
+    letter-spacing: 1px;
+    font-size: rem(14px);
+    color: var(--clr-black-2);
+  }
+  &__description {
+    color: var(--clr-black);
+  }
+}
+
+.contactform {
+  max-width: rem(450px);
+  &__wrapper {
+    background-color: var(--clr-brown-5);
+    border-radius: var(--mantine-radius-md);
+    padding: var(--mantine-spacing-sm);
+    @media (min-width: $mantine-breakpoint-md) {
+      padding: var(--mantine-spacing-xl);
+      box-shadow: var(--mantine-shadow-sm);
+    }
+  }
+}
