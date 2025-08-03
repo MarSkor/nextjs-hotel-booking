@@ -1,11 +1,11 @@
 "use client";
-import { useState } from "react";
-import { Flex, Burger, Container } from "@mantine/core";
+import { Flex, Burger, Container, Group, Button } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import NavbarLogo from "./NavbarLogo";
 import NavbarSmall from "./NavbarSmall";
-import NavbarRight from "./NavbarRight";
 import NavLink from "./NavLink";
+import Link from "next/link";
+import UserAvatar from "./UserAvatar";
 
 export const NavLinks = [
   { href: "/", label: "Home" },
@@ -14,10 +14,11 @@ export const NavLinks = [
   { href: "/contact", label: "Contact us" },
 ];
 
-const Navbar = () => {
+const Navbar = ({ session }) => {
   const [opened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
-  const [user, setUser] = useState(true);
+
+  console.log("session", session);
 
   return (
     <nav className="navbar-lg__outer">
@@ -34,7 +35,23 @@ const Navbar = () => {
               />
             ))}
           </Flex>
-          <NavbarRight />
+          <Group visibleFrom="md" className="navbar__right">
+            {/* <SearchBar/> */}
+            {session?.user ? (
+              <Link href={"/my-account"}>
+                <UserAvatar session={session} />
+              </Link>
+            ) : (
+              <NavLink href="/login" label="Log in" vp="lg" />
+            )}
+            <Button
+              className="btn btn-navbar btn-500"
+              component={Link}
+              href={"/accommodation"}
+            >
+              Explore Rooms
+            </Button>
+          </Group>
           <Burger
             opened={opened}
             onClick={toggleDrawer}
@@ -42,7 +59,7 @@ const Navbar = () => {
             color="#c5bcb3"
           />
         </Flex>
-        <NavbarSmall user={user} opened={opened} onClose={closeDrawer} />
+        <NavbarSmall session={session} opened={opened} onClose={closeDrawer} />
       </Container>
     </nav>
   );
