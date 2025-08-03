@@ -1,10 +1,5 @@
-import { MantineProvider } from "@mantine/core";
-import "@mantine/core/styles.css";
-import "@mantine/dates/styles.css";
-import "@mantine/carousel/styles.css";
-import "../../styles/main.scss";
 import { Navbar, Footer } from "@/components/layout";
-import { theme } from "../../lib/mantineTheme";
+import { auth } from "../../../auth";
 
 // https://nextjs.org/docs/app/getting-started/metadata-and-og-images#generated-metadata
 export const metadata = {
@@ -21,16 +16,16 @@ export const metadata = {
   // manifest: "",
 };
 
-export default async function RootLayout({ children }) {
+const PublicLayout = async ({ children }) => {
+  const session = await auth();
+
   return (
-    <html lang="en">
-      <body>
-        <MantineProvider theme={theme}>
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
-        </MantineProvider>
-      </body>
-    </html>
+    <>
+      <Navbar session={session} />
+      <main>{children}</main>
+      <Footer />
+    </>
   );
-}
+};
+
+export default PublicLayout;

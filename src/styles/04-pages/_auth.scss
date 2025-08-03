@@ -1,0 +1,100 @@
+@use "../mantine" as *;
+
+.auth-pages {
+  display: flex;
+
+  @media (min-width: $mantine-breakpoint-sm) {
+    justify-content: space-between;
+  }
+  @media (max-width: $mantine-breakpoint-sm) {
+    flex-direction: column-reverse;
+  }
+
+  &__form-wrapper {
+    width: 50%;
+    height: 100svh;
+    background-color: var(--clr-brown-5);
+
+    @media (max-width: $mantine-breakpoint-sm) {
+      width: 100%;
+    }
+  }
+
+  &__illustration {
+    width: 50%;
+
+    @media (max-width: $mantine-breakpoint-sm) {
+      width: 100%;
+      height: rem(80px);
+    }
+
+    &--image {
+      @media (max-width: $mantine-breakpoint-sm) {
+        position: sticky;
+        width: 100%;
+        top: 0;
+        height: rem(80px);
+        flex: 1 1 0%;
+      }
+    }
+  }
+
+  &__illustration,
+  &__illustration--image {
+    height: 100svh;
+    @media (max-width: $mantine-breakpoint-sm) {
+      height: rem(80px);
+    }
+  }
+
+  // -----------------------------------------
+
+  &__form-content {
+    margin: 0 auto;
+    width: 100%;
+    margin-top: rem(140px);
+    @media (max-width: $mantine-breakpoint-sm) {
+      margin-top: rem(40px);
+    }
+  }
+
+  &__form {
+    width: 100%;
+    background-color: var(--clr-gray);
+    padding: 16px;
+    border-radius: rem(4px);
+    @media (min-width: $mantine-breakpoint-sm) {
+      max-width: rem(420px);
+      padding: 24px;
+    }
+  }
+
+  &__form-error {
+    border: rem(1px) solid var(--clr-semantic-error);
+    padding: rem(8px);
+    border-radius: rem(4px);
+    background-color: inherit;
+    // background-color: var(--clr-semantic-error);
+    p {
+      // color: white;
+      font-weight: 500;
+    }
+  }
+
+  &__return-link {
+    margin: rem(16px) 0 0 rem(8px);
+    display: flex;
+    align-items: center;
+    font-size: rem(14px);
+    color: var(--clr-brown-2);
+  }
+
+  &__illustration--image {
+    background-size: cover;
+    object-fit: cover;
+  }
+
+  &__title {
+    font-weight: 500;
+  }
+}
