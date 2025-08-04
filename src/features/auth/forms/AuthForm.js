@@ -12,13 +12,14 @@ import {
   Box,
   Title,
   rem,
-  Paper,
 } from "@mantine/core";
 import { FIELD_NAMES } from "./data";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useState } from "react";
 import { IconInfoCircle } from "@/components/icons";
+import FieldError from "./FieldError";
+import z from "zod";
 
 const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
   const isLogin = type === "LOGIN";
@@ -28,7 +29,7 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
   const {
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(schema),
     defaultValues: defaultValues,
@@ -46,17 +47,13 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
           : "You have successfully registered with Holidaze",
       });
       router.push("/");
-    } else {
-      // toast(`Error ${isLogin ? "logging in" : "creating account"}.`, {
-      //   // description: result.error ?? "An error occured.",
-      //   description: "An error occured.",
-      //   variant: "destructive",
-      // });
     }
     setFormError(result.error);
+
     console.log("result-", result);
   };
 
+  // console.log("errors", z.flattenError(errors).fieldErrors);
   console.log("errors", errors);
 
   return (
@@ -87,38 +84,31 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
                   control={control}
                   render={({ field }) =>
                     field.name === "password" ? (
-                      <PasswordInput
-                        {...field}
-                        size="sm"
-                        required
-                        label={FIELD_NAMES[field.name]}
-                        // error={errors?.[field.name]?.message}
-                        error={
-                          errors?.[field.name]?.types
-                            ? Object.values(errors[field.name].join("\n"))
-                            : errors.password?.message || null
-                        }
-                        className=""
-
-                        //       errors.password?.types
-                        // ? Object.values(errors.password.types).join('\n')
-                        // : errors.password?.message || null
-                      />
+                      <>
+                        <PasswordInput
+                          {...field}
+                          size="sm"
+                          required
+                          label={FIELD_NAMES[field.name]}
+                          className=""
+                          // error={errors?.[field.name]?.message} //only displays the first error
+                          error={!!errors.password}
+                        />
+                        {FieldError(errors[field.name])}
+                      </>
                     ) : (
-                      // {errors.password?.types &&
-                      //   Object.values(errors.password.types).map((msg, idx) => (
-                      //     <p key={idx} className="text-red-500 text-sm">
-                      //       {msg}
-                      //     </p>
-                      // ))}
-                      <TextInput
-                        {...field}
-                        size="sm"
-                        required
-                        label={FIELD_NAMES[field.name]}
-                        error={errors?.[field.name]?.message}
-                        className=""
-                      />
+                      <>
+                        <TextInput
+                          {...field}
+                          size="sm"
+                          required
+                          label={FIELD_NAMES[field.name]}
+                          className=""
+                          // error={errors?.[field.name]?.message} //only displays the first error
+                          error={!!errors[field.name]}
+                        />
+                        {FieldError(errors[field.name])}
+                      </>
                     )
                   }
                 />
@@ -132,6 +122,7 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
             size="md"
             radius="md"
             type="submit"
+            disabled={isSubmitting}
           >
             {isLogin ? "Log in" : "Create Account"}
           </Button>
@@ -141,20 +132,13 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
       {formError && (
         <Box className="auth-pages__form-error" mt={"lg"}>
           <Flex align={"center"}>
-            <IconInfoCircle />
+            <IconInfoCircle color="var(--clr-semantic-error)" />
             <Text size={"xs"} ml={"xs"}>
               {formError}
             </Text>
           </Flex>
         </Box>
       )}
-
-      {errors?.password?.types &&
-        Object.values(errors.password.types).map((msg, idx) => (
-          <p key={idx} className="text-red-500 text-sm">
-            {msg}
-          </p>
-        ))}
 
       <Text ta="center" mt="xl" size="sm">
         {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}

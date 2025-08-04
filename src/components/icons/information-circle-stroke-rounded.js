@@ -6,7 +6,7 @@ const InformationCircleIcon = (props) => (
     viewBox="0 0 24 24"
     width={20}
     height={20}
-    color={"#000000"}
+    color={props.color ? props.color : "#0f0d12"}
     fill={"none"}
     {...props}
   >
