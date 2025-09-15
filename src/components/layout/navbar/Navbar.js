@@ -38,9 +38,7 @@ const Navbar = ({ session }) => {
           <Group visibleFrom="md" className="navbar__right">
             {/* <SearchBar/> */}
             {session?.user ? (
-              <Link href={"/my-account"}>
-                <UserAvatar session={session} />
-              </Link>
+              <UserAvatar session={session} />
             ) : (
               <NavLink href="/login" label="Log in" vp="lg" />
             )}

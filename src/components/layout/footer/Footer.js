@@ -37,12 +37,7 @@ const Footer = () => {
         align={{ base: "center", sm: "center", md: "flex-start" }}
         direction="column"
       >
-        <Title
-          mb="md"
-          order={4}
-          c="var(--clr-gray-text"
-          className="footer__title"
-        >
+        <Title mb="md" order={4} c="var(--clr-gray)" className="footer__title">
           {group.title}
         </Title>
         {links}
