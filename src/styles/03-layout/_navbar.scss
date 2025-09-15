@@ -88,16 +88,8 @@
 // navbar - when logged in
 //-------------------------------
 
-.avatarUser {
-  padding: rem(8px) rem(8px);
-  border-radius: var(--border-rd-small);
-  transition: var(--transition-btn-2);
-
-  &:hover {
-    background-color: var(--clr-navbar-dark-hover);
-  }
-
-  &__dropdown-link {
-    color: var(--clr-dark);
+.userAvatar {
+  &__link {
+    text-decoration: none;
   }
 }
