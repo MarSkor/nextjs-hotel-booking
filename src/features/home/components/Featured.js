@@ -1,6 +1,15 @@
-import { Container, Box, Title, Text, Grid, GridCol } from "@mantine/core";
+import {
+  Container,
+  Box,
+  Title,
+  Text,
+  Grid,
+  GridCol,
+  Anchor,
+} from "@mantine/core";
 import { Card } from "@/components/ui";
 import { mockData } from "@/features/accommodations/components/mockdata";
+import Link from "next/link";
 
 const Featured = () => {
   //add featured YES/NO to the mockdata later
@@ -16,7 +25,12 @@ const Featured = () => {
     >
       <Box className="home-featured__heading">
         <Text size="sm">Top rated accommodations</Text>
-        <Title order={2}>Featured Housing</Title>
+        <Title order={2} mb={"md"}>
+          Featured Housing
+        </Title>
+        <Anchor component={Link} href={"/accommodation"}>
+          View All
+        </Anchor>
       </Box>
       <Container className="no-side-padding" size="xl" mt="xl">
         <Grid>
