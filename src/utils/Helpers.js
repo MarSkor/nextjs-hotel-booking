@@ -1,5 +1,5 @@
 export const getInitials = (name) => {
-  name
+  return name
     .split(" ")
     .map((part) => part[0])
     .join("")
