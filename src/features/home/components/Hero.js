@@ -4,7 +4,7 @@ import { BookingSearchField } from "@/features/accommodations/forms";
 const Hero = () => {
   return (
     <section className="home-hero__wrapper">
-      <Overlay color="#000" opacity={0.65} zIndex={1} />
+      <Overlay color="#000" opacity={0.75} zIndex={1} />
 
       <div className="home-hero__inner">
         <Container size={740}>
