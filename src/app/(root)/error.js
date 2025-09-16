@@ -19,17 +19,25 @@ const Error = () => {
         mb={"100px"}
       >
         <Title ta={"center"} order={1}>
-          Oops, something went wrong!
+          Oops! Something went wrong
         </Title>
         <Text c="dimmed" size="lg" ta="center" mt={"lg"} mb={"lg"}>
-          Unfortunately, this is only a 404 page. You may have mistyped the
-          address, or the page has been moved to another URL.
+          We ran into an unexpected error. Please try refreshing the page, or
+          head back to the homepage.
         </Text>
-        <Group justify="center">
-          <Button component={Link} href={"/"} variant="subtle" size="md">
+        <Flex direction={"column"} justify="center">
+          <Button component={Link} href={"/"} variant="light" size="sm">
             Take me back to home page
           </Button>
-        </Group>
+          <Button
+            mt={"lg"}
+            variant="subtle"
+            size="sm"
+            onClick={() => window.location.reload()}
+          >
+            Refresh page
+          </Button>
+        </Flex>
       </Flex>
     </Container>
   );
