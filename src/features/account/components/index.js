@@ -1,2 +1,2 @@
 export { default as AccountOverview } from "./AccountOverview";
-export { default as AccountNavbar } from "./accountNavbar/AccountNavbar";
+export { default as AccountNav } from "./accountNav/AccountNav";

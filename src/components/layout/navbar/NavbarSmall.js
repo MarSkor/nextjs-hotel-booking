@@ -13,8 +13,9 @@ import {
 import { IconCancel } from "@/components/icons";
 import { NavLinks } from "./Navbar";
 import NavLink from "./NavLink";
+import { LogOutButton } from "@/components/ui";
 
-const NavbarSmall = ({ opened, onClose, user }) => {
+const NavbarSmall = ({ opened, onClose, session }) => {
   const pathname = usePathname();
 
   useEffect(() => {
@@ -71,8 +72,8 @@ const NavbarSmall = ({ opened, onClose, user }) => {
           gap="lg"
           align="end"
         >
-          {user ? (
-            <NavLink href="/account" label="My Account" vp="sm" />
+          {session?.user ? (
+            <NavLink href="/my-account" label="My Account" vp="sm" />
           ) : (
             <NavLink href="/login" label="Log in" vp="sm" />
           )}
@@ -91,6 +92,7 @@ const NavbarSmall = ({ opened, onClose, user }) => {
           >
             Explore Rooms
           </Button>
+          {session?.user && <LogOutButton color="var(--clr-brown-5)" />}
         </Flex>
       </ScrollArea>
     </Drawer>
