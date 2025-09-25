@@ -77,7 +77,7 @@ export const register = async (params) => {
 
     return { success: true };
   } catch (error) {
-    console.log("register error", error);
+    // console.log("register error", error);
     return {
       success: false,
       error: "Unable to register at the moment. Please try again later.",

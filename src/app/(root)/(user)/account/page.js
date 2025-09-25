@@ -10,6 +10,7 @@ import {
 } from "@mantine/core";
 import { auth } from "../../../../../auth";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 const MyAccountPage = async () => {
   const session = await auth();

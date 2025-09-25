@@ -1,4 +1,4 @@
-![Logo](/assets/logo/logo.png)
+![Logo](/public/assets/logo/logo.png)
 
 # Holidaze
 
