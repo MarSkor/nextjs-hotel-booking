@@ -6,7 +6,7 @@ const UserAvatar = ({ session }) => {
   if (!session?.user) return null;
   // console.log("useravatar", session);
   return (
-    <Link href={"/my-account"} className="userAvatar__link">
+    <Link href={"/account"} className="userAvatar__link">
       <Box className="userAvatar__inner">
         <Avatar
           className="userAvatar__avatar"

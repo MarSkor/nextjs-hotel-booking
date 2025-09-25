@@ -73,7 +73,7 @@ const NavbarSmall = ({ opened, onClose, session }) => {
           align="end"
         >
           {session?.user ? (
-            <NavLink href="/my-account" label="My Account" vp="sm" />
+            <NavLink href="/account" label="My Account" vp="sm" />
           ) : (
             <NavLink href="/login" label="Log in" vp="sm" />
           )}
