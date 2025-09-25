@@ -1,3 +1,5 @@
+![Logo](/assets/logo/logo.png)
+
 # Holidaze
 
-## A accommodation booking website.
+A accommodation booking website.
