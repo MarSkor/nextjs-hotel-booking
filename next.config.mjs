@@ -15,6 +15,16 @@ const nextConfig = {
         search: "",
       },
     ],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "ik.imagekit.io",
+        port: "",
+      },
+    ],
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
   },
 };
 

@@ -1,27 +1,31 @@
 import { Container, Flex, Title, Text, Button } from "@mantine/core";
 import Link from "next/link";
 
-const TooFastPage = () => {
+const NotFound = () => {
   return (
     <main>
-      <Container component="section" size="sm" h={"100svh"}>
+      <Container
+        component="section"
+        size="sm"
+        className="accommodations-container"
+        h={"100svh"}
+      >
         <Flex
           justify={"center"}
           direction={"column"}
           align={"center"}
           h={"100%"}
         >
-          <Title order={1}>Whoa there, slow down!</Title>
+          <Title order={2} size={"h1"} mb={"md"}>
+            404
+          </Title>
+          <Title order={1}>Oops! We couldn’t find that page.</Title>
           <Text c="dimmed" size="lg" ta="center" mt={"lg"} mb={"lg"}>
-            You’ve made too many requests in a short period of time. To keep
-            things running smoothly, we’ve temporarily limited your access.
+            Looks like the link is broken or the page moved.
           </Text>
           <Flex justify="center" direction={"column"}>
-            <Text c="dimmed" size="lg" ta="center" mb={"lg"}>
-              Try again in a few minutes.
-            </Text>
             <Button component={Link} href="/" variant="light" size="md">
-              Take me back to home page
+              Go back home
             </Button>
           </Flex>
         </Flex>
@@ -30,4 +34,4 @@ const TooFastPage = () => {
   );
 };
 
-export default TooFastPage;
+export default NotFound;

@@ -19,7 +19,6 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { IconInfoCircle } from "@/components/icons";
 import FieldError from "./FieldError";
-import z from "zod";
 
 const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
   const isLogin = type === "LOGIN";
@@ -39,6 +38,7 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
   const onSubmit = async (data) => {
     const result = await handleFormonSubmit(data);
 
+    //fix position on smaller vp
     if (result.success) {
       toast("Success", {
         label: "Success",

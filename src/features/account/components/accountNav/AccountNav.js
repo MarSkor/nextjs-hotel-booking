@@ -15,7 +15,6 @@ const AccountNav = () => {
         className="accountnav__inner"
         direction={{ base: "row", sm: "column" }}
         justify={"space-between"}
-        // h={"100%"}
       >
         <Flex
           direction={{ base: "row", sm: "column" }}
