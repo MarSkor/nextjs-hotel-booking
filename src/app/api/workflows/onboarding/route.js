@@ -1,6 +1,7 @@
 import { serve } from "@upstash/workflow/nextjs";
 import { sendEmail } from "@/lib/workflow";
 import { db } from "@/database/drizzle";
+import { eq } from "drizzle-orm";
 import { users } from "@/database/schema/users";
 
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
