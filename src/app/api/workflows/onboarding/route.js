@@ -1,5 +1,7 @@
 import { serve } from "@upstash/workflow/nextjs";
 import { sendEmail } from "@/lib/workflow";
+import { db } from "@/database/drizzle";
+import { users } from "@/database/schema/users";
 
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 const THREE_DAYS_IN_MS = 3 * ONE_DAY_IN_MS;
@@ -30,7 +32,6 @@ export const { POST } = serve(async (context) => {
   const { email, fullName } = context.requestPayload;
 
   //Welcome email
-
   await context.run("new-signup", async () => {
     await sendEmail({
       email,
