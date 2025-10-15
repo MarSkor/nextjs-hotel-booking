@@ -28,3 +28,5 @@ export { default as IconSettings } from "./settings-02-stroke-rounded";
 export { default as IconHouse4 } from "./house-04-stroke-rounded";
 export { default as IconArrowDown } from "./arrow-down-01-stroke-rounded";
 export { default as IconHeart } from "./favourite-stroke-rounded.js";
+export { default as Logout05Icon } from "./logout-05-stroke-rounded";
+export { default as IconUpload } from "./upload-01-stroke-rounded";

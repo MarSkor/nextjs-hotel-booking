@@ -35,3 +35,79 @@ export const registerSchema = z.object({
     })
     .trim(),
 });
+
+export const accommodationSchema = z
+  .object({
+    title: z.string().trim().min(3).max(150),
+    excerpt: z.string().trim().min(10).max(300),
+    propertyType: z.string(),
+    bodyText: z
+      .string()
+      .min(20, "Description must be at least 20 characters")
+      .max(2000, "Description cannot exceed 2000 characters")
+      .trim()
+      .refine((val) => /\s/.test(val), {
+        message: "Description must contain at least two words",
+      }),
+    pricePerNight: z.number().positive().min(1, "Price must be at least $1"),
+    guests: z.number().int().positive().max(5),
+    queenBeds: z.coerce.number().min(0, "Cannot be negative"),
+    fullBeds: z.coerce.number().min(0, "Cannot be negative"),
+    twinBeds: z.coerce.number().min(0, "Cannot be negative"),
+    amenities: z
+      .array(z.string().min(1, "Tag cannot be empty"))
+      .min(1, "At least one amenity is required")
+      .max(15, "You can add up to 10 amenities"),
+    featuredImage: z.any(),
+    // imageGallery: z.array(imageSchema).min(1).max(5),
+    street: z
+      .string()
+      .trim()
+      .refine(
+        (val) => {
+          const words = val.trim().split(/\s+/);
+          return words.length >= 1 && words.every((w) => w.length >= 1);
+        },
+        {
+          message:
+            "Street must contain at least 1 word, each with at least 1 character",
+        }
+      )
+      .regex(/^[a-zA-Z0-9\s.,'-]+$/, "Street name contains invalid characters"),
+    buildingNumber: z.number().min(1),
+    isFeatured: z.boolean().optional(),
+  })
+  .superRefine((data, ctx) => {
+    const totalBeds = data.queenBeds + data.fullBeds + data.twinBeds;
+
+    if (totalBeds === 0) {
+      const message = "At least one queen/full/twin bed must be specified";
+      ctx.addIssue({
+        code: "custom",
+        path: ["queenBeds"],
+        message,
+      });
+      ctx.addIssue({
+        code: "custom",
+        path: ["fullBeds"],
+        message,
+      });
+      ctx.addIssue({
+        code: "custom",
+        path: ["twinBeds"],
+        message,
+      });
+    }
+  });
+
+export const reviewSchema = z.object({
+  id: z.uuid().optional(),
+  propertyId: z.uuid(),
+  guestId: z.uuid(),
+  rating: z.number().min(1).max(5),
+  comment: z
+    .string()
+    .min(10, { error: "Comment must be at least 10 characters" }),
+  media: z.array(z.url()).optional(),
+  createdAt: z.iso.datetime(),
+});

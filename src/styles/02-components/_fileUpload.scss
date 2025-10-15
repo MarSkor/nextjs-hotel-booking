@@ -1,0 +1,6 @@
+@use "../mantine" as *;
+@use "../05-utils/mixin" as *;
+
+.hidden {
+  display: none;
+}
