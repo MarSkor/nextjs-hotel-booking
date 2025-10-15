@@ -8,7 +8,6 @@ const RegisterPage = () => (
     type="REGISTER"
     schema={registerSchema}
     defaultValues={{ fullName: "", email: "", password: "" }}
-    // onSubmit={register}
     handleFormonSubmit={register}
   />
 );
