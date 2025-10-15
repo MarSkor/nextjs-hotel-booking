@@ -1,0 +1,1 @@
+ALTER TABLE "accommodations" ALTER COLUMN "average_rating" SET DATA TYPE numeric(2, 2);
