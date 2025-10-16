@@ -24,3 +24,7 @@
     text-align: left;
   }
 }
+
+.carousel__slide {
+  border-radius: calc(0.25rem * var(--mantine-scale));
+}

@@ -12,18 +12,21 @@ import {
 } from "@mantine/core";
 import { BookingSearchField } from "../forms";
 import { Card } from "@/components/ui";
-import { mockData } from "./mockdata";
 // import SortBy from "./SortBy";
 
 const ITEMS_PER_PAGE = 6;
 
-const Accommodations = () => {
+const Accommodations = ({ data }) => {
   const [page, setPage] = useState(1);
   const [sortOrder, setSortOrder] = useState("asc");
 
+  console.log("data", data);
+
   const sortedItems = useMemo(() => {
-    return [...mockData].sort((a, b) =>
-      sortOrder === "asc" ? a.price - b.price : b.price - a.price
+    return [...data].sort((a, b) =>
+      sortOrder === "asc"
+        ? a.pricePerNight - b.pricePerNight
+        : b.pricePerNight - a.pricePerNight
     );
   }, [sortOrder]);
 
@@ -86,7 +89,7 @@ const Accommodations = () => {
 
         <Flex className="accommodations-header__acs-number">
           <Text size="xs" c="dimmed">
-            {/* Dynamic number */} 1234 Accommodations
+            {data?.length} Accommodations
           </Text>
         </Flex>
       </Flex>

@@ -31,17 +31,40 @@ const AccommodationCard = (item) => {
     featuredImage,
   } = item;
 
-  console.log("props", item);
-
   const linkProps = {
     href: `/accommodation/${slug}`,
     rel: "noopener noreferrer",
   };
 
+  const beds = bedTypes
+    .filter((bed) => (item?.[bed.key] ?? 0) > 0)
+    .slice(0, 2)
+    .map((bed) => {
+      const count = item[bed.key];
+      return (
+        <Badge
+          variant="light"
+          radius="sm"
+          size="sm"
+          key={bed.key}
+          leftSection={bed.icon}
+          classNames={{
+            root: "card-badge__root",
+            label: "card-badge__label",
+          }}
+        >
+          {count} {bed.label}
+          {count > 1 ? "s" : ""}
+        </Badge>
+      );
+    });
+
   return (
     <Card shadow="sm">
       <CardSection
-        style={{ position: "relative", aspectRatio: "16/9", cursor: "pointer" }}
+        component={Link}
+        {...linkProps}
+        style={{ position: "relative", aspectRatio: "16/9" }}
       >
         <IKImage
           alt="accommodation cover"
@@ -95,27 +118,7 @@ const AccommodationCard = (item) => {
         </Group>
       </Flex>
       <Group mt="xs" mb="xs">
-        {bedTypes.map((bed) => {
-          const count = item[bed.key];
-          return (
-            count > 0 && (
-              <Badge
-                variant="light"
-                radius="sm"
-                size="sm"
-                key={bed.key}
-                leftSection={bed.icon}
-                classNames={{
-                  root: "card-badge__root",
-                  label: "card-badge__label",
-                }}
-              >
-                {count} {bed.label}
-                {count > 1 ? "s" : ""}
-              </Badge>
-            )
-          );
-        })}
+        {beds}
       </Group>
       <Flex justify="space-between" align="center">
         <Flex align="baseline">
