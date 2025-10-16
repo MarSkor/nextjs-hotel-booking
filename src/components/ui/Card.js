@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useState } from "react";
 import {
   Badge,
-  Image,
   Group,
   Text,
   Button,
@@ -16,40 +15,45 @@ import {
   Box,
 } from "@mantine/core";
 import { IconLocation, IconStar, IconHeart } from "../icons";
-import IconSwitch from "@/utils/IconSwitch";
+import { bedTypes, mathRound } from "@/utils/Helpers";
+import { IKImage } from "imagekitio-next";
+import config from "@/lib/config";
 
-const AccommodationCard = (props) => {
+const AccommodationCard = (item) => {
   const [isActive, setIsActive] = useState(false);
+  const {
+    title,
+    street,
+    buildingNumber,
+    pricePerNight,
+    averageRating,
+    slug,
+    featuredImage,
+  } = item;
 
-  const { title, location, badges, price, ratings, slug, featured_image } =
-    props;
+  console.log("props", item);
 
   const linkProps = {
     href: `/accommodation/${slug}`,
-    // target: "_blank",
     rel: "noopener noreferrer",
   };
 
-  const features = badges.map((badge) => (
-    <Badge
-      variant="light"
-      radius="sm"
-      size="sm"
-      key={badge.type}
-      leftSection={IconSwitch(badge.slug)}
-      classNames={{
-        root: "card-badge__root",
-        label: "card-badge__label",
-      }}
-    >
-      {badge.quantity} {badge.type}
-    </Badge>
-  ));
-
   return (
-    <Card className="card" shadow="sm">
-      <CardSection component={Link} {...linkProps}>
-        <Image alt="housing" src={featured_image} />
+    <Card shadow="sm">
+      <CardSection
+        style={{ position: "relative", aspectRatio: "16/9", cursor: "pointer" }}
+      >
+        <IKImage
+          alt="accommodation cover"
+          path={featuredImage}
+          urlEndpoint={config.env.imagekit.urlEndpoint}
+          fill
+          loading="lazy"
+          lqip={{ active: true }}
+          style={{
+            objectFit: "cover",
+          }}
+        />
       </CardSection>
       <Tooltip label="Save to favorites">
         <Box align="center" className="card__favorite">
@@ -62,46 +66,64 @@ const AccommodationCard = (props) => {
           </Box>
         </Box>
       </Tooltip>
-      <Group mt="sm" justify="space-between">
-        <Title order={3}>{title}</Title>
-        <Flex className="card__rating" align="center">
-          <Flex>
-            <IconStar />
-            <Text fw={500} size="sm" ml="4px">
-              {ratings.total_rating}
-            </Text>
+      <Title mt={"sm"} order={3}>
+        {title}
+      </Title>
+      <Flex mt={"sm"} justify={"space-between"} align={"center"}>
+        <Group>
+          <Flex align={"center"}>
+            <IconLocation />
+            <Flex>
+              <Text ml={rem("4px")} size="xs">
+                {street}
+              </Text>
+              <Text ml={rem("4px")} size="xs">
+                {buildingNumber}
+              </Text>
+            </Flex>
           </Flex>
-          <Text
-            className="card__rating--text"
-            component={Link}
-            href="#"
-            c="#363637"
-            size="sm"
-            ml={rem("4px")}
-          >
-            ({ratings.total_reviews})
-          </Text>
-        </Flex>
-      </Group>
-      <Group mt={"xs"}>
-        <Flex align={"center"}>
-          <IconLocation />
-          <Text ml={rem("4px")} size="xs">
-            {location}
-          </Text>
-        </Flex>
-      </Group>
+        </Group>
+        <Group justify="space-between">
+          <Flex className="card__rating" align="center">
+            <Flex>
+              <IconStar />
+              <Text fw={500} size="sm" ml="4px">
+                {mathRound(averageRating)}
+              </Text>
+            </Flex>
+          </Flex>
+        </Group>
+      </Flex>
       <Group mt="xs" mb="xs">
-        {features}
+        {bedTypes.map((bed) => {
+          const count = item[bed.key];
+          return (
+            count > 0 && (
+              <Badge
+                variant="light"
+                radius="sm"
+                size="sm"
+                key={bed.key}
+                leftSection={bed.icon}
+                classNames={{
+                  root: "card-badge__root",
+                  label: "card-badge__label",
+                }}
+              >
+                {count} {bed.label}
+                {count > 1 ? "s" : ""}
+              </Badge>
+            )
+          );
+        })}
       </Group>
       <Flex justify="space-between" align="center">
         <Flex align="baseline">
           <Title order={5} size="h4" mr={rem("2px")}>
-            ${price}{" "}
+            ${pricePerNight}{" "}
           </Title>{" "}
           <Text size="sm"> /night</Text>
         </Flex>
-
         <Button component={Link} {...linkProps} variant="outline" radius="md">
           View
         </Button>
