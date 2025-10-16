@@ -8,13 +8,9 @@ import {
   Anchor,
 } from "@mantine/core";
 import { Card } from "@/components/ui";
-import { mockData } from "@/features/accommodations/components/mockdata";
 import Link from "next/link";
 
-const Featured = () => {
-  //add featured YES/NO to the mockdata later
-  const mockDataArray = mockData.slice(0, 3);
-
+const Featured = ({ data }) => {
   return (
     <Container
       component="section"
@@ -34,12 +30,8 @@ const Featured = () => {
       </Box>
       <Container className="no-side-padding" size="xl" mt="xl">
         <Grid>
-          {mockDataArray.map((item) => (
-            <GridCol
-              key={item.id}
-              align="center"
-              span={{ base: 12, xs: 6, md: 4 }}
-            >
+          {data.map((item) => (
+            <GridCol key={item.id} span={{ base: 12, xs: 6, md: 4 }}>
               <Card {...item} />
             </GridCol>
           ))}
