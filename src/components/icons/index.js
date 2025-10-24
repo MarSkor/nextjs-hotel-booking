@@ -30,3 +30,7 @@ export { default as IconArrowDown } from "./arrow-down-01-stroke-rounded";
 export { default as IconHeart } from "./favourite-stroke-rounded.js";
 export { default as Logout05Icon } from "./logout-05-stroke-rounded";
 export { default as IconUpload } from "./upload-01-stroke-rounded";
+export { default as IconDelete } from "./delete-02-stroke-rounded";
+export { default as IconEdit } from "./edit-02-stroke-rounded";
+export { default as IconAlert } from "./alert-circle-stroke-rounded";
+export { default as IconCheckmark } from "./checkmark-circle-02-stroke-rounded";
