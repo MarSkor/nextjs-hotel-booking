@@ -2,7 +2,7 @@ import { IconAlert, IconCheckmark } from "@/components/icons";
 import { notifications } from "@mantine/notifications";
 
 export const mantineNotify = {
-  success: (message, title = "Success") =>
+  success: (title = "Success", message) =>
     notifications.show({
       withBorder: true,
       title,
@@ -16,7 +16,7 @@ export const mantineNotify = {
         />
       ),
     }),
-  error: (message, title = "Error") =>
+  error: (title = "Error", message) =>
     notifications.show({
       withBorder: true,
       title,
@@ -30,7 +30,7 @@ export const mantineNotify = {
         />
       ),
     }),
-  info: (message, title = "Info") =>
+  info: (title = "Info", message) =>
     notifications.show({
       withBorder: true,
       title,

@@ -1,10 +1,13 @@
 "use client";
 import config from "@/lib/config";
-import { IKImage, ImageKitProvider, IKUpload, IKVideo } from "imagekitio-next";
-import { useRef, useState } from "react";
-import { IconUpload } from "../icons";
-import { toast } from "sonner";
-import { FileInput, Progress, Pill, PillGroup } from "@mantine/core";
+import { ImageKitProvider, IKUpload } from "imagekitio-next";
+import { useRef, useState, useEffect, useTransition } from "react";
+import { IconUpload } from "@/components/icons";
+import { FileInput, Progress } from "@mantine/core";
+import ImageThumbnail from "../components/ImageThumbnail";
+import InputPill from "@/features/admin/components/InputPill";
+import { mantineNotify } from "@/lib/mantineNotify";
+import { getDisplayName } from "@/utils/Helpers";
 
 const {
   env: {
@@ -27,24 +30,6 @@ const authenticator = async () => {
   }
 };
 
-const ValueComponent = ({ value }) => {
-  if (value === null) {
-    return null;
-  }
-
-  if (Array.isArray(value)) {
-    return (
-      <PillGroup>
-        {value.map((file, index) => (
-          <Pill key={index}>{file.name}</Pill>
-        ))}
-      </PillGroup>
-    );
-  }
-
-  return <Pill>{value.name}</Pill>;
-};
-
 const FileUpload = ({
   onFileChange,
   type = "image",
@@ -55,24 +40,30 @@ const FileUpload = ({
   multiple = false,
   folder,
   error,
+  value,
+  accId,
+  onDelete,
 }) => {
   const ikUploadRef = useRef(null);
-  const [file, setFile] = useState([]); //to view the images locally
+  const [file, setFile] = useState(value || null); //to view the images locally
   const [progress, setProgress] = useState(0);
+  const [isPending] = useTransition();
 
   const onValidate = (file) => {
     if (type === "image") {
       if (file.size > 5 * 1024 * 1024) {
-        toast.error("File size too large", {
-          description: "File must be less than 5MB in size",
-        });
+        mantineNotify.error(
+          "File size too large",
+          "File must be less than 5MB in size"
+        );
         return false;
       }
     } else if (type === "video") {
       if (file.size > 50 * 1024 * 1024) {
-        toast.error("File size too large", {
-          description: "File must be less than 50MB in size.",
-        });
+        mantineNotify.error(
+          "File size too large",
+          "File must be less than 50MB in size."
+        );
         return false;
       }
     }
@@ -81,26 +72,53 @@ const FileUpload = ({
 
   const onError = (error) => {
     console.log("fileupload error-", error);
-    toast.error(`${type} upload failed.`, {
-      description: "Your image could not be uploaded. Please try again.",
-      action: {
-        label: "Close",
-      },
-      position: "top-center",
-    });
+    mantineNotify.error(
+      `${type} upload failed.`,
+      "Your image could not be uploaded. Please try again."
+    );
   };
 
   const onSuccess = (res) => {
     // console.log("res", res);
-    setFile(res);
+    const uploadedFile = {
+      fileId: res.fileId,
+      filePath: res.filePath,
+      url: `${config.env.imagekit.urlEndpoint}${res.filePath}`,
+    };
+
+    if (onFileChange) {
+      onFileChange(uploadedFile);
+    }
+    setFile(uploadedFile);
     setProgress(100);
-    // onFileChange(res);
-    onFileChange(res.filePath);
-    toast.success(`${type} uploaded successfully.`, {
-      description: `${res.filePath} uploaded successfully`,
-      position: "top-center",
-    });
+    mantineNotify.success(
+      `${type} uploaded successfully.`,
+      `${res.filePath} uploaded successfully`
+    );
   };
+
+  const handleDelete = async (fileId) => {
+    const res = await onDelete(fileId);
+    if (res?.success) {
+      setFile(null);
+    }
+    return res;
+  };
+
+  useEffect(() => {
+    if (value && value !== file) {
+      if (typeof value === "string") {
+        setFile({
+          fileId: null,
+          filePath: value,
+          url: `${config.env.imagekit.urlEndpoint}${value}`,
+        });
+      } else {
+        setFile(value);
+      }
+    }
+    // console.log("FileUpload value:", value);
+  }, [value]);
 
   return (
     <ImageKitProvider
@@ -125,14 +143,14 @@ const FileUpload = ({
       />
       <FileInput
         mb={"sm"}
-        clearable
+        size="sm"
         label={label}
         description={description}
         placeholder={placeholder}
         value={file}
         onChange={setFile}
         multiple={multiple} /* look at multiple file uploads later */
-        valueComponent={ValueComponent}
+        valueComponent={InputPill}
         leftSection={
           <IconUpload width={20} height={20} color="var(--button-color)" />
         }
@@ -146,7 +164,7 @@ const FileUpload = ({
       />
 
       {/* UI for progress upload  */}
-      {progress > 0 && progress !== 100 && (
+      {progress > 0 && progress < 100 && (
         <Progress.Root size={"lg"} mb={"lg"} pos={"relative"}>
           <Progress.Section
             aria-label="Uploading progress"
@@ -168,23 +186,15 @@ const FileUpload = ({
           </Progress.Label>
         </Progress.Root>
       )}
-
-      {/* UI to view images  */}
-      {!Array.isArray(file) && file?.filePath && type === "image" ? (
-        <IKImage
-          alt={file.filePath}
-          path={file.filePath}
-          width={500}
-          height={300}
-          style={{ objectFit: "cover" }}
+      {value && (
+        <ImageThumbnail
+          accId={accId}
+          value={value}
+          type={type}
+          onDelete={handleDelete}
+          disabled={isPending}
         />
-      ) : type === "video" ? (
-        <IKVideo
-          path={file.filePath}
-          controls={true}
-          style={{ objectFit: "cover" }}
-        />
-      ) : null}
+      )}
     </ImageKitProvider>
   );
 };

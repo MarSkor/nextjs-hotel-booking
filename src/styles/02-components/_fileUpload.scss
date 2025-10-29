@@ -4,3 +4,14 @@
 .hidden {
   display: none;
 }
+
+.fileUpload {
+  &__wrapper {
+    position: relative;
+  }
+  &__delete {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}
