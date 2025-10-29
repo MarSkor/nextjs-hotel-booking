@@ -1,28 +1,12 @@
 import AccommodationForm from "@/features/admin/forms/AccommodationForm";
-import { Box, Button, Container, Title } from "@mantine/core";
-import Link from "next/link";
+import { Container } from "@mantine/core";
 
-const Page = () => {
+const NewAccommodationPage = () => {
   return (
     <Container size={"sm"} component="section" className="">
-      <Box mt={"sm"} mb={"sm"}>
-        <Button
-          style={{ width: "max-content" }}
-          component={Link}
-          href={"/admin/accommodations"}
-          variant="light"
-        >
-          Go back
-        </Button>
-        <Box component="section">
-          <Title order={1} mt={"md"} mb={"md"}>
-            Create new Accommodation
-          </Title>
-          <AccommodationForm />
-        </Box>
-      </Box>
+      <AccommodationForm pageTitle="Create new Accommodation" />
     </Container>
   );
 };
 
-export default Page;
+export default NewAccommodationPage;

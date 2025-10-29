@@ -18,7 +18,12 @@ export default async function RootLayout({ children }) {
       <SessionProvider session={session}>
         <body>
           <MantineProvider theme={theme}>
-            <Notifications position="top-center" limit={3} />
+            <Notifications
+              position="top-center"
+              limit={3}
+              zIndex={9999}
+              autoClose={6000}
+            />
             <ModalsProvider>{children}</ModalsProvider>
           </MantineProvider>
         </body>
