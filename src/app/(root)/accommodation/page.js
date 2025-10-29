@@ -1,11 +1,19 @@
 import { Accommodations } from "@/features/accommodations/components";
-import { db } from "@/database/drizzle";
-import { accommodations } from "@/database/schema/accommodations";
+import getAccommodations from "@/actions/accommodationQueries";
 
-const AccommodationPage = async () => {
-  const accommodationsList = await db.select().from(accommodations);
+const AccommodationPage = async ({ searchParams }) => {
+  const params = await searchParams;
 
-  return <Accommodations data={accommodationsList} />;
+  const { type, guests, sort, page } = params;
+
+  const accData = await getAccommodations({
+    type,
+    guests,
+    sort,
+    page: Number(page) || 1,
+  });
+
+  return <Accommodations {...accData} />;
 };
 
 export default AccommodationPage;

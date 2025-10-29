@@ -8,11 +8,9 @@ import { Box } from "@mantine/core";
 import { db } from "@/database/drizzle";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { auth } from "../../../../../auth";
 
 const AccommodationDetailsPage = async ({ params }) => {
   const slug = (await params).slug;
-  const session = await auth();
 
   const [accDetails] = await db
     .select()
@@ -21,18 +19,11 @@ const AccommodationDetailsPage = async ({ params }) => {
     .limit(1);
   if (!accDetails) redirect("/404");
 
-  // console.log(accommodationDetails);
+  // console.log("accdetails", accDetails);
+
   return (
     <Box component="section">
-      <AccommodationOverview
-        title={accDetails.title}
-        excerpt={accDetails.excerpt}
-        pricePerNight={accDetails.pricePerNight}
-        featuredImage={accDetails.featuredImage}
-        images={accDetails.images}
-        isAvailable={accDetails.isAvailable}
-        averageRating={accDetails.averageRating}
-      />
+      <AccommodationOverview {...accDetails} />
       <AccommodationDetails {...accDetails} />
       <Review />
     </Box>
