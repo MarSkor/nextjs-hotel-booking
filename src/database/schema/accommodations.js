@@ -8,8 +8,9 @@ import {
   integer,
   boolean,
   numeric,
+  jsonb,
 } from "drizzle-orm/pg-core";
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import { bookings } from "./bookings.js";
 import { reviews } from "./reviews.js";
 
@@ -38,12 +39,10 @@ export const accommodations = pgTable("accommodations", {
   amenities: varchar("amenities").array().notNull(),
   street: varchar("street", { length: 255 }).notNull(),
   buildingNumber: integer("building_number").notNull(),
-  featuredImage: text("featured_image").notNull(),
-  images: text("images")
-    .array()
-    .default(sql`ARRAY[]::text[]`)
-    .notNull(),
+  featuredImage: jsonb("featured_image").default(),
+  images: jsonb("images").default([]),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   isAvailable: boolean("is_available").default(true).notNull(),
   isFeatured: boolean("is_featured").default(false).notNull(),
   averageRating: numeric("average_rating", { precision: 4, scale: 2 })

@@ -1,14 +1,13 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { startTransition, useState } from "react";
-
+import { useState } from "react";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { accommodationSchema } from "@/lib/validations";
 import FileUpload from "./FileUpload";
 import { slugify } from "@/utils/Helpers";
-import { IconInfoCircle, IconArrowLeft } from "@/components/icons";
+import { IconArrowLeft } from "@/components/icons";
 import DeleteModal from "../components/DeleteModal";
 import { mantineNotify } from "@/lib/mantineNotify";
 import {
@@ -16,6 +15,8 @@ import {
   deleteAccommodation,
   updateAccommodation,
 } from "@/actions/accommodation";
+import { deleteImageFile, deleteTempImageFile } from "@/actions/images";
+import { ErrorMessage } from "@/components/ui";
 import {
   TextInput,
   Button,
@@ -31,7 +32,6 @@ import {
   Alert,
   Title,
 } from "@mantine/core";
-import { deleteImageFile, deleteTempImageFile } from "@/actions/images";
 
 const AccommodationForm = ({ accommodation = null, pageTitle = "" }) => {
   const isEditing = Boolean(accommodation?.id);
@@ -85,9 +85,9 @@ const AccommodationForm = ({ accommodation = null, pageTitle = "" }) => {
           router.refresh();
         } else {
           setFormError(res.message || "Failed to update the accommodation.");
-          mantineNotify.error("Error", {
-            description: res.message || "Failed to update the accommodation.",
-          });
+          mantineNotify.error(
+            res.message || "Failed to update the accommodation."
+          );
         }
       } else {
         const res = await createAccommodation({
@@ -112,26 +112,6 @@ const AccommodationForm = ({ accommodation = null, pageTitle = "" }) => {
     }
   };
 
-  const handleAccDelete = () => {
-    if (!accommodation?.id) {
-      mantineNotify.error("Missing Accommodation ID");
-      return;
-    }
-    startTransition(async () => {
-      try {
-        const res = await deleteAccommodation(accommodation.id);
-        if (res.success) {
-          mantineNotify.success(`${accommodation.title} successfully deleted.`);
-        } else {
-          mantineNotify.error("Could not delete accommodation");
-        }
-      } catch (error) {
-        console.error("Could not delete Accommodation", error);
-        mantineNotify.error("Unexpected error", error);
-      }
-    });
-  };
-
   const handleDelete = async (fileId) => {
     if (!fileId) return;
 
@@ -142,7 +122,7 @@ const AccommodationForm = ({ accommodation = null, pageTitle = "" }) => {
       } else {
         res = await deleteTempImageFile(fileId);
       }
-
+      console.log("Delete result:", res);
       if (res.success) {
         mantineNotify.success("Image successfully deleted");
         setValue("featuredImage", null);
@@ -174,12 +154,13 @@ const AccommodationForm = ({ accommodation = null, pageTitle = "" }) => {
           </Button>
           {isEditing && (
             <DeleteModal
+              id={accommodation.id}
+              resourceName="accommodation"
               title="Delete Accommodation"
-              message={`Are you sure you want to delete "${accommodation.title}"?`}
-              onConfirm={() => deleteAccommodation(accommodation.id)}
-              triggerType="button"
-              buttonLabel="Delete"
-              color="red"
+              message={`Are you sure you want to delete "${accommodation.title}"? This action cannot be undone.`}
+              deleteAction={deleteAccommodation}
+              redirectAfter="/admin/accommodations"
+              triggerType={"button"}
             />
           )}
         </Flex>
@@ -485,23 +466,7 @@ const AccommodationForm = ({ accommodation = null, pageTitle = "" }) => {
           />
         </Box>
 
-        {formError && (
-          <Alert
-            icon={
-              <IconInfoCircle
-                height={20}
-                width={20}
-                color={"var(--mantine-color-red-light-color)"}
-              />
-            }
-            title="Error"
-            color="red"
-            variant="light"
-            mt="xl"
-          >
-            {formError}
-          </Alert>
-        )}
+        {formError && <ErrorMessage title="Error" message={formError} />}
 
         {/* Submit and Delete  */}
         <Box>
@@ -525,11 +490,13 @@ const AccommodationForm = ({ accommodation = null, pageTitle = "" }) => {
           </Button>
           {isEditing && (
             <DeleteModal
+              id={accommodation.id}
+              resourceName="accommodation"
               title="Delete Accommodation"
-              message={`Are you sure you want to delete "${accommodation.title}"?`}
-              onConfirm={handleDelete}
+              message={`Are you sure you want to delete "${accommodation.title}"? This action cannot be undone.`}
+              deleteAction={deleteAccommodation}
+              redirectAfter="/admin/accommodations"
               triggerType="button"
-              buttonLabel="Delete"
               fullWidth
               size={"md"}
               color="red"

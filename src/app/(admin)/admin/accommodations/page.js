@@ -1,9 +1,37 @@
-import { Box, Button, Container, Flex, Title, Text } from "@mantine/core";
+import { sql } from "drizzle-orm";
+import { db } from "@/database/drizzle";
+import { accommodations } from "@/database/schema";
+import { Box, Button, Container, Flex, Title } from "@mantine/core";
 import Link from "next/link";
+import AccommodationTable from "@/features/admin/components/AccommodationTable";
 
-const Page = () => {
+const ACCS_PER_PAGE = 15;
+
+const Page = async ({ searchParams }) => {
+  const params = await searchParams;
+  const page = Number(params.page) || 1;
+  const offset = (page - 1) * ACCS_PER_PAGE;
+
+  const accRows = await db
+    .select()
+    .from(accommodations)
+    .orderBy(accommodations.createdAt, "desc")
+    .limit(ACCS_PER_PAGE)
+    .offset(offset)
+    .execute();
+
+  const totalAccs = await db
+    .select({ count: sql`count(*)`.as("count") })
+    .from(accommodations)
+    .execute();
+
+  const totalCount = Number(totalAccs?.[0]?.count ?? 0);
+  const totalPages = Math.ceil(totalCount / ACCS_PER_PAGE);
+
+  // console.log("totalAccs", totalAccs);
+
   return (
-    <Container fluid component="section" className="">
+    <Container fluid component="section" mb={"88px"}>
       <Flex
         direction={"column"}
         wrap="wrap"
@@ -23,7 +51,11 @@ const Page = () => {
         </Button>
       </Flex>
       <Box mt={"lg"}>
-        <Text>table</Text>
+        <AccommodationTable
+          rows={accRows}
+          totalPages={totalPages}
+          currentPage={page}
+        />
       </Box>
     </Container>
   );
