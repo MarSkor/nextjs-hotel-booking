@@ -51,45 +51,45 @@ export const deleteImageFile = async (fileId, accId) => {
       };
     }
 
+    if (accommodation.featuredImage) {
+      console.warn(
+        "Accommodation has no featuredImage - deleting only from imagekit"
+      );
+      await imagekit.deleteFile(fileId);
+      return {
+        success: true,
+        message: "Image deleted from ImageKit (no database update)",
+      };
+    }
+
     if (accommodation.featuredImage?.fileId !== fileId) {
       console.warn({
         dbFileId: accommodation.featuredImage?.fileId,
         receivedFileId: fileId,
       });
-      return {
-        success: false,
-        message: "FileID does not match the accommodation's featured image.",
-      };
-    }
-
-    try {
-      await imagekit.deleteFile(fileId);
-    } catch (error) {
-      let message = "Failed to delete image.";
-      if (error?.message?.includes("invalid input syntax")) {
-        message = "Invalid database update — check featuredImage column type.";
-      } else if (error?.message) {
-        message = error.message.split("\n")[0]; // only first line
+      try {
+        await imagekit.deleteFile(fileId);
+      } catch (error) {
+        return {
+          success: false,
+          message: "FileID does not match the accommodation's featured image.",
+        };
       }
-
-      return {
-        success: false,
-        message,
-      };
     }
-
     const updatedRes = await db
       .update(accommodations)
       .set({ featuredImage: null })
       .where(eq(accommodations.id, accId))
       .returning();
 
-    revalidatePath(`/admin/accommodations/edit/${accId}`);
+    if (!updatedRes.length) {
+      return { success: false, message: "Failed to update database." };
+    }
 
+    revalidatePath(`/admin/accommodations/edit/${accId}`);
     return {
       success: true,
       message: "Image Deleted.",
-      data: updatedRes[0],
     };
   } catch (error) {
     // console.error("Delete error:", error);

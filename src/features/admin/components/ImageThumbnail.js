@@ -2,8 +2,6 @@ import { useState } from "react";
 import { SimpleGrid, ActionIcon, Box } from "@mantine/core";
 import { IKImage, IKVideo } from "imagekitio-next";
 import { IconDelete } from "@/components/icons";
-import { deleteImageFile } from "@/actions/images";
-import { mantineNotify } from "@/lib/mantineNotify";
 
 const ImageThumbnail = ({ value, type = "image", onDelete, disabled }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -49,8 +47,6 @@ const ImageThumbnail = ({ value, type = "image", onDelete, disabled }) => {
   }
 
   const handleDelete = async () => {
-    // console.log("🖼️ value in ImageThumbnail:", value);
-    // console.log("📂 value.fileId being passed:", value?.fileId);
     if (!value?.fileId) return;
     setIsDeleting(true);
     const res = await onDelete(value.fileId);
@@ -84,7 +80,6 @@ const ImageThumbnail = ({ value, type = "image", onDelete, disabled }) => {
           variant="filled"
           aria-label="Delete"
           type="button"
-          // onClick={() => onDelete(value.fileId)}
           disabled={isDeleting || disabled}
           loading={isDeleting || disabled}
           loaderProps={{ type: "oval" }}
@@ -99,6 +94,7 @@ const ImageThumbnail = ({ value, type = "image", onDelete, disabled }) => {
       </Box>
     );
   } else if (
+    // needs testing
     type === "video" && value?.filePath ? (
       <Box className="fileUpload__wrapper">
         <IKVideo

@@ -7,7 +7,6 @@ import { FileInput, Progress } from "@mantine/core";
 import ImageThumbnail from "../components/ImageThumbnail";
 import InputPill from "@/features/admin/components/InputPill";
 import { mantineNotify } from "@/lib/mantineNotify";
-import { getDisplayName } from "@/utils/Helpers";
 
 const {
   env: {
@@ -45,6 +44,7 @@ const FileUpload = ({
   onDelete,
 }) => {
   const ikUploadRef = useRef(null);
+  const fileInputRef = useRef(null);
   const [file, setFile] = useState(value || null); //to view the images locally
   const [progress, setProgress] = useState(0);
   const [isPending] = useTransition();
@@ -101,6 +101,12 @@ const FileUpload = ({
     const res = await onDelete(fileId);
     if (res?.success) {
       setFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = null;
+      }
+      if (ikUploadRef.current) {
+        ikUploadRef.current.value = null;
+      }
     }
     return res;
   };
@@ -144,6 +150,7 @@ const FileUpload = ({
       <FileInput
         mb={"sm"}
         size="sm"
+        ref={fileInputRef}
         label={label}
         description={description}
         placeholder={placeholder}
