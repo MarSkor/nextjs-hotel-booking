@@ -1,4 +1,5 @@
-import { bedTypes, formatText } from "@/utils/Helpers";
+import { formatText } from "@/utils/Helpers";
+import { bedTypes } from "@/utils/constants";
 import {
   Container,
   Flex,
@@ -13,9 +14,10 @@ import {
   Badge,
   Group,
 } from "@mantine/core";
+import { IconLocation } from "@/components/icons";
 
 const AccommodationDetails = (accdetails) => {
-  const { title, bodyText, amenities, street, buildingNumber, isAvailable } =
+  const { title, bodyText, amenities, guests, street, buildingNumber } =
     accdetails;
 
   const beds = bedTypes
@@ -61,11 +63,14 @@ const AccommodationDetails = (accdetails) => {
             </Flex>
           </GridCol>
           <GridCol span={{ base: 12, md: 4 }}>
-            <Paper component="article" w={"100%"} h={"100%"} p={"md"}>
-              <Flex direction={"column"}>
-                <Title order={5} mb={"xs"}>
-                  Address
-                </Title>
+            <Paper mt={"sm"} radius={"sm"} w={"100%"} p={"md"} mb={"sm"}>
+              <Flex direction={"column"} align={"baseline"}>
+                <Flex align={"center"} mb={"xs"}>
+                  <IconLocation />
+                  <Title ml={"4px"} order={4}>
+                    Address
+                  </Title>
+                </Flex>
                 <Flex component="address" align={"center"}>
                   <Text size="sm" mr={"xs"}>
                     {street}{" "}
@@ -73,8 +78,10 @@ const AccommodationDetails = (accdetails) => {
                   <Text size="sm">{buildingNumber}</Text>
                 </Flex>
               </Flex>
-              <Flex component="section" direction={"column"} mt="md" mb={"md"}>
-                <Title order={5} mb={"xs"}>
+            </Paper>
+            <Paper component="article" w={"100%"} p={"md"} mb={"sm"}>
+              <Flex component="section" direction={"column"}>
+                <Title order={4} mb={"xs"}>
                   Beds
                 </Title>
                 <Group>{beds}</Group>
@@ -91,7 +98,7 @@ const AccommodationDetails = (accdetails) => {
           Amenities
         </Title>
         <SimpleGrid
-          cols={{ base: 2, sm: 2, lg: 4 }}
+          cols={{ base: 1, xs: 2, sm: 3, lg: 4 }}
           spacing={{ base: 10, sm: "xl" }}
           verticalSpacing={{ base: "md", sm: "md" }}
         >
