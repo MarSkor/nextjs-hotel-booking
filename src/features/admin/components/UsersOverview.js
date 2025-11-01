@@ -3,14 +3,14 @@ import { parseDate } from "@/utils/date";
 import { deleteUser } from "@/actions/user";
 import DataTable from "./DataTable";
 
-const UsersOverview = ({ users, totalPages = 1 }) => {
+const UsersOverview = ({ users, totalPages, currentPage }) => {
   return (
     <DataTable
       data={users}
       title="Users"
       enableEdit={false}
       totalPages={totalPages}
-      currentPage={1}
+      currentPage={currentPage}
       columns={[
         { key: "fullName", label: "Name" },
         {

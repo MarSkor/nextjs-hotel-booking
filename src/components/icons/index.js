@@ -34,3 +34,4 @@ export { default as IconDelete } from "./delete-02-stroke-rounded";
 export { default as IconEdit } from "./edit-02-stroke-rounded";
 export { default as IconAlert } from "./alert-circle-stroke-rounded";
 export { default as IconCheckmark } from "./checkmark-circle-02-stroke-rounded";
+export { default as IconAppointment } from "./appointment-01-stroke-rounded";

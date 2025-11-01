@@ -6,7 +6,6 @@ import { revalidatePath } from "next/cache";
 
 export const deleteUser = async (id) => {
   if (!id) return { success: false, message: "User ID is required" };
-  // console.log("user id", id);
 
   try {
     const user = await db.query.users.findFirst({
@@ -32,7 +31,9 @@ export const deleteUser = async (id) => {
       message: "User Successfully Deleted.",
     };
   } catch (error) {
-    // console.error("Unexpected error trying to delete user.");
-    return { success: false, message: error.message };
+    return {
+      success: false,
+      message: error.message || "Unexpected error trying to delete user.",
+    };
   }
 };

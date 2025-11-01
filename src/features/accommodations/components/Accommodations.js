@@ -1,5 +1,7 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { DatePickerInput } from "@mantine/dates";
 import {
   Box,
   Container,
@@ -9,37 +11,36 @@ import {
   SimpleGrid,
   Select,
   Pagination,
+  Grid,
+  GridCol,
+  Button,
 } from "@mantine/core";
-import { BookingSearchField } from "../forms";
 import { Card } from "@/components/ui";
-// import SortBy from "./SortBy";
+import { propertyType, guestAmount, sortByData } from "@/utils/constants";
+import { buildSearchParams } from "@/utils/Helpers";
 
-const ITEMS_PER_PAGE = 6;
+const Accommodations = ({ accList, totalPages, totalCount }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [type, setType] = useState(searchParams.get("type") || "all");
+  const [guests, setGuests] = useState(searchParams.get("guests") || "all");
+  const [sort, setSort] = useState(searchParams.get("sort") || "price_asc");
+  const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
 
-const Accommodations = ({ data }) => {
-  const [page, setPage] = useState(1);
-  const [sortOrder, setSortOrder] = useState("asc");
+  useEffect(() => {
+    const query = buildSearchParams({
+      type: type !== "all" ? type : null,
+      guests: guests !== "all" ? guests : null,
+      sort: sort !== "price_asc" ? sort : null,
+      page: page > 1 ? page : null,
+    });
+    const newUrl = `?${query}`;
+    if (window.location.search !== newUrl) {
+      router.replace(newUrl);
+    }
+  }, [type, guests, sort, page, router]);
 
-  console.log("data", data);
-
-  const sortedItems = useMemo(() => {
-    return [...data].sort((a, b) =>
-      sortOrder === "asc"
-        ? a.pricePerNight - b.pricePerNight
-        : b.pricePerNight - a.pricePerNight
-    );
-  }, [sortOrder]);
-
-  const totalPages = Math.ceil(sortedItems.length / ITEMS_PER_PAGE);
-
-  const paginatedAccommodations = sortedItems.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
-  );
-
-  const accommodations = paginatedAccommodations.map((item) => (
-    <Card key={item.id} {...item} />
-  ));
+  // console.log("accList", accList);
 
   return (
     <Container
@@ -59,14 +60,119 @@ const Accommodations = ({ data }) => {
         <Title className="accommodations-header__top-header--title" order={1}>
           Find the right stay for you
         </Title>
-        {/* search field, implementing later  */}
+        {/*----- search field -----*/}
         <Box mt={"xl"}>
-          <BookingSearchField page="acs" size="lg" />
+          <Container
+            component={"section"}
+            className={`bsf-section bsf-section-acs`}
+            fluid
+          >
+            <form>
+              <Grid align="center">
+                <GridCol span={{ base: 12, md: 3 }}>
+                  <Flex
+                    classNames={`booking-section-acs__form--field`}
+                    align={"center"}
+                    w={"100%"}
+                  >
+                    <Select
+                      clearable
+                      w={"100%"}
+                      classNames={{
+                        input: "booking-section__form--input",
+                        label: "booking-section__form--label",
+                      }}
+                      label="Property Type"
+                      placeholder="Select Property"
+                      value={type}
+                      onChange={(value) => {
+                        setType(value);
+                        setPage(1);
+                      }}
+                      data={propertyType}
+                    />
+                  </Flex>
+                </GridCol>
+                <GridCol span={{ base: 12, md: 5 }}>
+                  <Flex
+                    classNames={`booking-section-acs__form--field`}
+                    align={"center"}
+                    w={"100%"}
+                  >
+                    <Flex direction={{ base: "column", xs: "row" }} w={"100%"}>
+                      <Box mr={"sm"} w={"100%"}>
+                        <DatePickerInput
+                          label="Check in"
+                          clearable
+                          valueFormat="ddd, MM/DD/YY"
+                          placeholder="--/--/--"
+                          classNames={{
+                            input: "booking-section__form--input",
+                            label: "booking-section__form--label",
+                          }}
+                        />
+                      </Box>
+                      <Box w={"100%"}>
+                        <DatePickerInput
+                          label="Check out"
+                          clearable
+                          valueFormat="ddd, MM/DD/YY"
+                          placeholder="--/--/--"
+                          classNames={{
+                            input: "booking-section__form--input",
+                            label: "booking-section__form--label",
+                          }}
+                        />
+                      </Box>
+                    </Flex>
+                  </Flex>
+                </GridCol>
+
+                <GridCol span={{ base: 12, md: "auto" }}>
+                  <Flex
+                    classNames={`booking-section-acs__form--field`}
+                    align={"center"}
+                    justify={"center"}
+                    w={"100%"}
+                  >
+                    <Select
+                      w={"100%"}
+                      label="Guests"
+                      placeholder="Guests"
+                      value={guests}
+                      min={1}
+                      max={5}
+                      onChange={(v) => {
+                        setGuests(v);
+                        setPage(1);
+                      }}
+                      data={guestAmount}
+                      classNames={{
+                        input: "booking-section__form--input",
+                        label: "booking-section__form--label",
+                      }}
+                    />
+                  </Flex>
+                </GridCol>
+                <GridCol span={{ base: 12, md: "content" }}>
+                  <Button
+                    onClick={() => {
+                      setType("all");
+                      setGuests("all");
+                      setSort("price_asc");
+                      setPage(1);
+                    }}
+                  >
+                    Reset
+                  </Button>
+                </GridCol>
+              </Grid>
+            </form>
+          </Container>
         </Box>
       </Flex>
-      {/* sorting and results  */}
+      {/*----- sorting and results  -----*/}
       <Flex justify={"space-between"} align={"center"} mt={"lg"} mb={"lg"}>
-        {/* <SortBy /> */}
         <Box className="sortby__wrapper">
           <Select
             w={"100%"}
@@ -75,13 +181,10 @@ const Accommodations = ({ data }) => {
               label: "booking-section__form--label",
             }}
             placeholder="Sort By"
-            data={[
-              { label: "Price (lowest first)", value: "asc" },
-              { label: "Price (highest first)", value: "desc" },
-            ]}
-            value={sortOrder}
+            data={sortByData}
+            value={sort}
             onChange={(value) => {
-              setSortOrder(value);
+              setSort(value);
               setPage(1);
             }}
           />
@@ -89,19 +192,23 @@ const Accommodations = ({ data }) => {
 
         <Flex className="accommodations-header__acs-number">
           <Text size="xs" c="dimmed">
-            {data?.length} Accommodations
+            {/* {accList?.length} accommodations of  */}
+            {totalCount} Accommodations
           </Text>
         </Flex>
       </Flex>
-      {/* accommodations result */}
+      {/*----- accommodations result -----*/}
       <SimpleGrid
         cols={{ base: 1, sm: 2, lg: 3 }}
         spacing={{ base: 10, sm: "xl" }}
         verticalSpacing={{ base: "md", sm: "xl" }}
       >
-        {accommodations}
+        {accList.map((item) => (
+          <Card key={item.id} {...item} />
+        ))}
       </SimpleGrid>
-      {/* pagination  */}
+
+      {/*----- pagination  -----*/}
       <Flex justify={"center"} mt={"48px"} mb={"48px"} align={"center"}>
         <Pagination
           value={page}

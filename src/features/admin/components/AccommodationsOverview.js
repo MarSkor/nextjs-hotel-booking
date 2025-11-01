@@ -3,7 +3,7 @@ import { deleteAccommodation } from "@/actions/accommodation";
 import { parseDate } from "@/utils/date";
 import DataTable from "./DataTable";
 
-const AccommodationsOverview = ({ data, totalPages = 1 }) => {
+const AccommodationsOverview = ({ data, totalPages, currentPage }) => {
   return (
     <DataTable
       data={data}
@@ -11,7 +11,7 @@ const AccommodationsOverview = ({ data, totalPages = 1 }) => {
       enableEdit={true}
       editBasePath="/admin/accommodations/edit"
       totalPages={totalPages}
-      currentPage={1}
+      currentPage={currentPage}
       columns={[
         { key: "title", label: "Title" },
         {
