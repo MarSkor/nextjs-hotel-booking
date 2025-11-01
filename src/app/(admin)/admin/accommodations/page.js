@@ -3,7 +3,7 @@ import { db } from "@/database/drizzle";
 import { accommodations } from "@/database/schema";
 import { Box, Button, Container, Flex, Title } from "@mantine/core";
 import Link from "next/link";
-import AccommodationTable from "@/features/admin/components/AccommodationTable";
+import AccommodationsOverview from "@/features/admin/components/AccommodationsOverview";
 
 const ACCS_PER_PAGE = 15;
 
@@ -31,7 +31,7 @@ const Page = async ({ searchParams }) => {
   // console.log("totalAccs", totalAccs);
 
   return (
-    <Container fluid component="section" mb={"88px"}>
+    <Container size={"xl"} component="section" pb={"88px"}>
       <Flex
         direction={"column"}
         wrap="wrap"
@@ -51,8 +51,8 @@ const Page = async ({ searchParams }) => {
         </Button>
       </Flex>
       <Box mt={"lg"}>
-        <AccommodationTable
-          rows={accRows}
+        <AccommodationsOverview
+          data={accRows}
           totalPages={totalPages}
           currentPage={page}
         />

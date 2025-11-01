@@ -12,9 +12,9 @@ const DeleteModal = ({
   resourceName = "item",
   deleteAction,
   redirectAfter = null,
+  role,
   title,
   message,
-  onConfirm,
   confirmText = "Delete",
   cancelText = "Cancel",
   triggerType = "icon" | "button",
@@ -25,12 +25,12 @@ const DeleteModal = ({
   size,
 }) => {
   const [isPending, startTransition] = useTransition();
-  const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
+
+  const isProtected = role === "ADMIN";
 
   const handleDelete = () => {
     startTransition(async () => {
-      setIsDeleting(true);
       try {
         const res = await deleteAction(id);
 
@@ -52,13 +52,24 @@ const DeleteModal = ({
           `An unexpected error occured deleting ${resourceName}`
         );
       } finally {
-        setIsDeleting(false);
         modals.closeAll();
       }
     });
   };
 
   const openDeleteModal = () => {
+    if (isProtected) {
+      modals.open({
+        title: "Action not allowed.",
+        centered: true,
+        children: (
+          <Text size="sm" c={"red"}>
+            You don't have permission for this action.
+          </Text>
+        ),
+      });
+      return;
+    }
     modals.openConfirmModal({
       title: title || resourceName,
       centered: true,
@@ -87,7 +98,7 @@ const DeleteModal = ({
         )
       }
       onClick={openDeleteModal}
-      disabled={isPending}
+      disabled={isProtected || isPending}
       fullWidth={fullWidth}
       size={size}
     >
@@ -99,7 +110,7 @@ const DeleteModal = ({
       color={color}
       aria-label={`Delete ${resourceName}`}
       onClick={openDeleteModal}
-      disabled={isPending}
+      disabled={isProtected || isPending}
     >
       {icon || (
         <IconDelete
