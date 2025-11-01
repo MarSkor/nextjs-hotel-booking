@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition, useState } from "react";
+import { useTransition } from "react";
 import { ActionIcon, Text, Button } from "@mantine/core";
 import { IconDelete } from "@/components/icons";
 import { modals } from "@mantine/modals";
@@ -47,7 +47,7 @@ const DeleteModal = ({
           );
         }
       } catch (error) {
-        console.error(`Error deleting ${resourceName}: `, error);
+        // console.error(`Error deleting ${resourceName}: `, error);
         mantineNotify.error(
           `An unexpected error occured deleting ${resourceName}`
         );

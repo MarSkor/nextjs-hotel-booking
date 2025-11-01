@@ -32,7 +32,6 @@ const DataTable = ({
   const router = useRouter();
 
   if (!Array.isArray(data)) {
-    console.error("Expected rows to be an array, got:", rows);
     return <Text>No data found.</Text>;
   }
 

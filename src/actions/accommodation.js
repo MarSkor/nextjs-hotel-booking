@@ -125,7 +125,6 @@ export const updateAccommodation = async (params) => {
 };
 
 export const deleteAccommodation = async (id) => {
-  console.log("delete accommodation ID", id);
   if (!id)
     return {
       success: false,
@@ -145,7 +144,10 @@ export const deleteAccommodation = async (id) => {
       try {
         await imagekit.deleteFile(acc.featuredImage.fileId);
       } catch (err) {
-        console.warn("Image already deleted in ImageKit.");
+        // console.warn("Image already deleted in ImageKit.");
+        return {
+          success: false,
+        };
       }
     }
 
@@ -157,10 +159,9 @@ export const deleteAccommodation = async (id) => {
       success: true,
     };
   } catch (error) {
-    console.error("Failed to delete accommodation: ", error);
     return {
       success: false,
-      message: error.message,
+      message: error.message || "Failed to delete accommodation.",
     };
   }
 };

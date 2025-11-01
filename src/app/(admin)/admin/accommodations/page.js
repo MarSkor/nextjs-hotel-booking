@@ -28,8 +28,6 @@ const Page = async ({ searchParams }) => {
   const totalCount = Number(totalAccs?.[0]?.count ?? 0);
   const totalPages = Math.ceil(totalCount / ACCS_PER_PAGE);
 
-  // console.log("totalAccs", totalAccs);
-
   return (
     <Container size={"xl"} component="section" pb={"88px"}>
       <Flex
