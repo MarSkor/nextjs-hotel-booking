@@ -23,6 +23,7 @@ const AccommodationImages = ({ featuredImage, images = [] }) => {
   const imageRender = (path, i) => {
     const isPlaceholder = !path || path === placeholderImagePath;
     const imagePath = path || placeholderImagePath;
+
     return (
       <Box
         key={i}
@@ -36,9 +37,13 @@ const AccommodationImages = ({ featuredImage, images = [] }) => {
       >
         {!loadedImages[i] && !isPlaceholder && (
           <Skeleton
+            width="100%"
             height={"100%"}
             radius="md"
             style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 1,
               opacity: loadedImages[i] ? 0 : 1,
               transition: "opacity 300ms ease",
             }}
@@ -49,19 +54,19 @@ const AccommodationImages = ({ featuredImage, images = [] }) => {
           alt="Accommodation Cover"
           path={imagePath}
           urlEndpoint={config.env.imagekit.urlEndpoint}
-          fill
           loading="lazy"
           onLoad={() => handleImage(i)}
           lqip={{ active: true }}
           style={{
-            opacity: loadedImages[i] || isPlaceholder ? 1 : 0,
-            transition: "opacity 300ms ease",
+            transition: "opacity 0.3s ease",
             objectFit: "cover",
             objectPosition: "center",
             width: "100%",
             height: "100%",
             position: "absolute",
+            display: "block",
             inset: 0,
+            zIndex: 0,
           }}
           transformation={[
             { width: "1200", height: "800", crop: "maintain_ratio" },

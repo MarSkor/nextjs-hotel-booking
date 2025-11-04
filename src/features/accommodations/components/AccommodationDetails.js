@@ -17,8 +17,7 @@ import {
 import { IconLocation } from "@/components/icons";
 
 const AccommodationDetails = (accdetails) => {
-  const { title, bodyText, amenities, guests, street, buildingNumber } =
-    accdetails;
+  const { title, bodyText, amenities, street, buildingNumber } = accdetails;
 
   const beds = bedTypes
     .filter((bed) => (accdetails?.[bed.key] ?? 0) > 0)

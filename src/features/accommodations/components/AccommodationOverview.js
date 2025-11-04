@@ -19,13 +19,11 @@ import {
 
 const AccommodationOverview = (accDetails) => {
   const {
-    id,
     title,
     excerpt,
     pricePerNight,
     featuredImage,
     images,
-    isAvailable,
     averageRating,
   } = accDetails;
 
@@ -91,15 +89,8 @@ const AccommodationOverview = (accDetails) => {
                   <Text size="sm">{""}/night</Text>
                 </Flex>
               </Paper>
-              {/* booking dates  */}
-              <Paper
-                radius={"sm"}
-                className="details__booking-body"
-                w={"100%"}
-                p={"md"}
-              >
-                <Booking accommodationId={id} price={pricePerNight} />
-              </Paper>
+              {/* booking form  */}
+              <Booking accommodation={accDetails} />
             </Flex>
           </GridCol>
         </Grid>
