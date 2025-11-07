@@ -4,9 +4,14 @@ import { parseDate } from "@/utils/date";
 import DataTable from "./DataTable";
 
 const AccommodationsOverview = ({ data, totalPages, currentPage }) => {
+  const formattedAccData = data.map((b) => ({
+    ...b,
+    pricePerNight: `$${Number(b.pricePerNight)}`,
+  }));
+
   return (
     <DataTable
-      data={data}
+      data={formattedAccData}
       title="Accommodations"
       enableEdit={true}
       editBasePath="/admin/accommodations/edit"

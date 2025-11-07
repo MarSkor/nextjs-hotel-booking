@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { sql, desc } from "drizzle-orm";
 import { db } from "@/database/drizzle";
 import { accommodations } from "@/database/schema";
 import { Box, Button, Container, Flex, Title } from "@mantine/core";
@@ -12,20 +12,17 @@ const Page = async ({ searchParams }) => {
   const page = Number(params.page) || 1;
   const offset = (page - 1) * ACCS_PER_PAGE;
 
-  const accRows = await db
-    .select()
-    .from(accommodations)
-    .orderBy(accommodations.createdAt, "desc")
-    .limit(ACCS_PER_PAGE)
-    .offset(offset)
-    .execute();
+  const [{ count }] = await db
+    .select({ count: sql`count(*)` })
+    .from(accommodations);
 
-  const totalAccs = await db
-    .select({ count: sql`count(*)`.as("count") })
-    .from(accommodations)
-    .execute();
+  const allAccommodations = await db.query.accommodations.findMany({
+    limit: ACCS_PER_PAGE,
+    offset,
+    orderBy: [desc(accommodations.createdAt)],
+  });
 
-  const totalCount = Number(totalAccs?.[0]?.count ?? 0);
+  const totalCount = Number(count ?? 0);
   const totalPages = Math.ceil(totalCount / ACCS_PER_PAGE);
 
   return (
@@ -50,7 +47,7 @@ const Page = async ({ searchParams }) => {
       </Flex>
       <Box mt={"lg"}>
         <AccommodationsOverview
-          data={accRows}
+          data={allAccommodations}
           totalPages={totalPages}
           currentPage={page}
         />

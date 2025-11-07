@@ -1,5 +1,6 @@
 import { IconEdit } from "@/components/icons";
 import DeleteModal from "./DeleteModal";
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableScrollContainer,
@@ -14,7 +15,6 @@ import {
   Pagination,
   ActionIcon,
 } from "@mantine/core";
-import { useRouter } from "next/navigation";
 
 const DataTable = ({
   title,
@@ -109,10 +109,10 @@ const DataTable = ({
               ))
             ) : (
               <TableTr>
-                <TableTd colSpan={columns.lengt + 1}>
+                <TableTd colSpan={columns.length + 1}>
                   <Text ta={"center"} c={"dimmed"} py={"md"}>
                     {" "}
-                    No {title || resourceName}s Found.
+                    No {title || resourceName} Found.
                   </Text>
                 </TableTd>
               </TableTr>

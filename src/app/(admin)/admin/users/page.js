@@ -1,5 +1,5 @@
 import { db } from "@/database/drizzle";
-import { sql } from "drizzle-orm";
+import { sql, desc } from "drizzle-orm";
 import { users } from "@/database/schema";
 import { Box, Text, Container, Flex, Title } from "@mantine/core";
 import UsersOverview from "@/features/admin/components/UsersOverview";
@@ -11,20 +11,15 @@ const Page = async ({ searchParams }) => {
   const page = Number(params.page) || 1;
   const offset = (page - 1) * USERS_PER_PAGE;
 
-  const userRows = await db
-    .select()
-    .from(users)
-    .orderBy(users.createdAt, "desc")
-    .limit(USERS_PER_PAGE)
-    .offset(offset)
-    .execute();
+  const [{ count }] = await db.select({ count: sql`count(*)` }).from(users);
 
-  const totalUsers = await db
-    .select({ count: sql`count(*)`.as("count") })
-    .from(users)
-    .execute();
+  const allAccommodations = await db.query.users.findMany({
+    limit: USERS_PER_PAGE,
+    offset,
+    orderBy: [desc(users.createdAt)],
+  });
 
-  const totalCount = Number(totalUsers?.[0]?.count ?? 0);
+  const totalCount = Number(count ?? 0);
   const totalPages = Math.ceil(totalCount / USERS_PER_PAGE);
 
   return (
@@ -43,7 +38,7 @@ const Page = async ({ searchParams }) => {
       </Flex>
       <Box mt={"lg"}>
         <UsersOverview
-          users={userRows}
+          users={allAccommodations}
           totalPages={totalPages}
           currentPage={page}
         />
