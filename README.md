@@ -6,6 +6,8 @@ A accommodation booking website.
 
 ## Demo
 
+## About the Project
+
 ## Technologies
 
 - [Next.js](link)
@@ -38,15 +40,14 @@ A accommodation booking website.
 `STRIPE_SECRET_KEY`
 `STRIPE_WEBHOOK_SECRET`
 
-## To Implement
+## To Implement / In Progress
 
-- [ ] Image carousel for accommodation.
+- [x] Image carousel for accommodation.
 - [ ] Reviews
 - [ ] Skeleton for loading.js file
 - [ ] Search bar typeahead (auto dropdown with hotel names that match what has been typed)
-- [ ] Book accommodation
-- [ ] An enquiry page either modal or separate page
+- [x] Book accommodation
+- [x] An enquiry page either modal or separate page
 - [ ] A contact page (different to enquiry page) which goes to the admin for Holidaze
-- [ ] (Admin) List of enquiries and new enquiries appear when user submits the form on the enquiry page
-- [ ] (Admin) List of messages from contact form
-- [ ] in accommodation details page, if image array is just 1 image show no indicators
+- [x] (Admin) List of enquiries
+- [ ] (Admin) List of messages
