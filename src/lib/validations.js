@@ -100,6 +100,62 @@ export const accommodationSchema = z
     }
   });
 
+export const bookingSchema = z
+  .object({
+    // checkIn: z.preprocess(
+    //   (val) => (typeof val === "string" ? new Date(val) : val),
+    //   z.date({ required_error: "Check-in date is required" })
+    // ),
+    // checkOut: z.preprocess(
+    //   (val) => (typeof val === "string" ? new Date(val) : val),
+    //   z.date({ required_error: "Check-out date is required" })
+    // ),
+    checkIn: z.preprocess(
+      (val) => (val instanceof Date ? val : val ? new Date(val) : null),
+      z
+        .date({
+          required_error: "Check-in date is required",
+          invalid_type_error: "",
+        })
+        .refine((val) => val !== null, "Check-in date is required")
+    ),
+    checkOut: z.preprocess(
+      (val) => (val instanceof Date ? val : val ? new Date(val) : null),
+      z
+        .date({ required_error: "Check-out date is required" })
+        .refine((val) => val !== null, "Check-out date is required")
+    ),
+  })
+  .refine((data) => data.checkOut > data.checkIn, {
+    message: "Check-out date must be after check-in date",
+    path: ["checkOut"],
+  });
+
+export const bookingEnquirySchema = z.object({
+  email: z.email({ error: "Please enter a valid email address." }).trim(),
+  name: z
+    .string({ required_error: required_error })
+    .min(2, "Full name must be at least 2 characters")
+    .max(50, "Full name must be less than 50 characters")
+    .regex(
+      /^[a-zA-Z\s'-]+$/,
+      "Full name can only contain letters, spaces, hyphens, or apostrophes"
+    )
+    .trim(),
+  phone: z
+    .string({ required_error: required_error })
+    .trim()
+    .max(30, "Phone Number is too long.")
+    .regex(/^[0-9+\-()\s]{6,30}$/, {
+      message: "Invalid phone number format",
+    }),
+  message: z
+    .string()
+    .max(500, "Message is too long.")
+    .optional()
+    .or(z.literal("")),
+});
+
 export const reviewSchema = z.object({
   id: z.uuid().optional(),
   propertyId: z.uuid(),

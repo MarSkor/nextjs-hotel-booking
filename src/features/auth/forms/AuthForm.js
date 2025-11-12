@@ -15,10 +15,10 @@ import {
 } from "@mantine/core";
 import { FIELD_NAMES } from "./data";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { useState } from "react";
 import { IconInfoCircle } from "@/components/icons";
 import FieldError from "./FieldError";
+import { mantineNotify } from "@/lib/mantineNotify";
 
 const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
   const isLogin = type === "LOGIN";
@@ -38,23 +38,20 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
   const onSubmit = async (data) => {
     const result = await handleFormonSubmit(data);
 
-    //fix position on smaller vp
     if (result.success) {
-      toast("Success", {
-        label: "Success",
-        description: isLogin
+      mantineNotify.success(
+        isLogin
           ? "You have successfully logged in"
-          : "You have successfully registered with Holidaze",
-      });
+          : "You have successfully regisreted with Holidaze."
+      );
       router.push("/");
     }
-    setFormError(result.error);
 
-    console.log("result-", result);
+    setFormError(result.error);
   };
 
   // console.log("errors", z.flattenError(errors).fieldErrors);
-  console.log("errors", errors);
+  // console.log("errors", errors);
 
   return (
     <Flex className="auth-pages__form" direction={"column"}>
@@ -91,7 +88,6 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
                           required
                           label={FIELD_NAMES[field.name]}
                           className=""
-                          // error={errors?.[field.name]?.message} //only displays the first error
                           error={!!errors.password}
                         />
                         {FieldError(errors[field.name])}
@@ -104,7 +100,6 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
                           required
                           label={FIELD_NAMES[field.name]}
                           className=""
-                          // error={errors?.[field.name]?.message} //only displays the first error
                           error={!!errors[field.name]}
                         />
                         {FieldError(errors[field.name])}

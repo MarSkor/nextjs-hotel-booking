@@ -42,13 +42,12 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.60.0",
-    "react-responsive-masonry": "^2.7.1",
     "stripe": "^19.1.0",
     "zod": "^4.0.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "drizzle-kit": "^0.31.4",
+    "drizzle-kit": "^0.31.6",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
     "postcss": "^8.5.3",

@@ -71,7 +71,7 @@ const FileUpload = ({
   };
 
   const onError = (error) => {
-    console.log("fileupload error-", error);
+    // console.log("fileupload error-", error);
     mantineNotify.error(
       `${type} upload failed.`,
       "Your image could not be uploaded. Please try again."

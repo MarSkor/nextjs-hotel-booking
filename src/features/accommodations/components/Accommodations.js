@@ -27,6 +27,8 @@ const Accommodations = ({ accList, totalPages, totalCount }) => {
   const [sort, setSort] = useState(searchParams.get("sort") || "price_asc");
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
 
+  // console.log("acclist: ", accList);
+
   useEffect(() => {
     const query = buildSearchParams({
       type: type !== "all" ? type : null,

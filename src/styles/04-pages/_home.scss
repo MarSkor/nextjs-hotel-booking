@@ -22,12 +22,11 @@
     position: relative;
     z-index: 1;
     &--title {
-      font-size: rem(40px);
+      font-size: rem(48px);
       letter-spacing: rem(-1px);
       padding-left: var(--mantine-spacing-md);
       padding-right: var(--mantine-spacing-md);
       color: var(--clr-gray);
-      margin-bottom: var(--mantine-spacing-xs);
       text-align: center;
 
       @media (max-width: $mantine-breakpoint-xs) {

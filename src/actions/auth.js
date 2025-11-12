@@ -8,7 +8,7 @@ import { signIn } from "../../auth";
 import ratelimit from "@/lib/rateLimit";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { workflowClient } from "@/lib/workflow";
+import { workflowClient } from "@/lib/email";
 import config from "@/lib/config";
 
 export const loginWithCredentials = async (params) => {
@@ -29,7 +29,6 @@ export const loginWithCredentials = async (params) => {
     }
     return { success: true };
   } catch (error) {
-    // console.log(error, "Login error");
     return {
       success: false,
       error: "Something went wrong. Please try again later.",
@@ -77,7 +76,6 @@ export const register = async (params) => {
 
     return { success: true };
   } catch (error) {
-    // console.log("register error", error);
     return {
       success: false,
       error: "Unable to register at the moment. Please try again later.",

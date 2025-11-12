@@ -1,7 +1,7 @@
-import { Container, Box } from "@mantine/core";
-import { AccountNav } from "@/features/account/components";
+import { Container } from "@mantine/core";
 import { auth } from "../../../../../auth";
 import { redirect } from "next/navigation";
+import { UserBreadCrumb } from "@/components/ui";
 
 const UserLayout = async ({ children }) => {
   const session = await auth();
@@ -13,15 +13,13 @@ const UserLayout = async ({ children }) => {
   return (
     <Container
       component="section"
-      size="lg"
+      size="sm"
       className="account__col-wrapper"
-      mt="lg"
-      mb="lg"
+      pt={"sm"}
+      pb={"sm"}
     >
-      <Box className="account__col account__left-col">
-        <AccountNav />
-      </Box>
-      <Box className="account__col account__right-col">{children}</Box>
+      <UserBreadCrumb />
+      {children}
     </Container>
   );
 };

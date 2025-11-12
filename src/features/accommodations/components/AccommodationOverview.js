@@ -1,7 +1,7 @@
 "use client";
 import { IconArrowLeft } from "@/components/icons";
 import Link from "next/link";
-import Booking from "./Booking";
+import Booking from "@/features/booking/components/Booking";
 import AccommodationImages from "./AccommodationImages";
 import {
   Container,

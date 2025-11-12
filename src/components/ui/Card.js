@@ -1,6 +1,11 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { IconLocation, IconStar, IconHeart } from "../icons";
+import { mathRound } from "@/utils/Helpers";
+import { bedTypes } from "@/utils/constants";
+import { IKImage } from "imagekitio-next";
+import config from "@/lib/config";
 import {
   Badge,
   Group,
@@ -14,10 +19,6 @@ import {
   Tooltip,
   Box,
 } from "@mantine/core";
-import { IconLocation, IconStar, IconHeart } from "../icons";
-import { bedTypes, mathRound } from "@/utils/Helpers";
-import { IKImage } from "imagekitio-next";
-import config from "@/lib/config";
 
 const AccommodationCard = (item) => {
   const [isActive, setIsActive] = useState(false);
@@ -30,6 +31,9 @@ const AccommodationCard = (item) => {
     slug,
     featuredImage,
   } = item;
+
+  const placeholderImagePath = "/defaults/600x400_DxM717i9q.svg";
+  const hasFeaturedImage = featuredImage && featuredImage.filePath;
 
   const linkProps = {
     href: `/accommodation/${slug}`,
@@ -67,11 +71,12 @@ const AccommodationCard = (item) => {
         style={{ position: "relative", aspectRatio: "16/9" }}
       >
         <IKImage
-          alt="accommodation cover"
-          path={featuredImage}
+          alt={`${title} cover`}
+          path={
+            hasFeaturedImage ? featuredImage.filePath : placeholderImagePath
+          }
           urlEndpoint={config.env.imagekit.urlEndpoint}
           fill
-          loading="lazy"
           lqip={{ active: true }}
           style={{
             objectFit: "cover",
@@ -89,7 +94,7 @@ const AccommodationCard = (item) => {
           </Box>
         </Box>
       </Tooltip>
-      <Title mt={"sm"} order={3}>
+      <Title mt={"sm"} order={3} lineClamp={1}>
         {title}
       </Title>
       <Flex mt={"sm"} justify={"space-between"} align={"center"}>

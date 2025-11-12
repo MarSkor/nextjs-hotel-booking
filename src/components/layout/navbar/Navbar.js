@@ -18,8 +18,6 @@ const Navbar = ({ session }) => {
   const [opened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
 
-  console.log("session", session);
-
   return (
     <nav className="navbar-lg__outer">
       <Container size="xl" className="navbar-lg__inner">

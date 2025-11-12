@@ -35,3 +35,5 @@ export { default as IconEdit } from "./edit-02-stroke-rounded";
 export { default as IconAlert } from "./alert-circle-stroke-rounded";
 export { default as IconCheckmark } from "./checkmark-circle-02-stroke-rounded";
 export { default as IconAppointment } from "./appointment-01-stroke-rounded";
+export { default as IconCheckIn } from "./calendar-check-in-01-stroke-rounded";
+export { default as IconCheckOut } from "./calendar-check-out-01-stroke-rounded";

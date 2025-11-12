@@ -1,16 +1,20 @@
+import { auth, signOut } from "../../../../../auth";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { db } from "@/database/drizzle";
+import { eq } from "drizzle-orm";
+import { users } from "@/database/schema";
 import {
   Box,
   Title,
   Text,
   Flex,
-  Anchor,
   Grid,
   GridCol,
-  Divider,
+  Paper,
+  Button,
 } from "@mantine/core";
-import { auth } from "../../../../../auth";
-import Link from "next/link";
-import { redirect } from "next/navigation";
+import { IconLogOut } from "@/components/icons";
 
 const MyAccountPage = async () => {
   const session = await auth();
@@ -19,59 +23,98 @@ const MyAccountPage = async () => {
     redirect("/login");
   }
 
+  const isAdmin = await db
+    .select({ isAdmin: users.role })
+    .from(users)
+    .where(eq(users.id, session.user.id))
+    .limit(1)
+    .then((res) => res[0]?.isAdmin === "ADMIN");
+
+  const PaperLink = ({ title, href, description }) => (
+    <Link href={href} className="account-paperLink">
+      <Paper p={"sm"} withBorder className="account-paperLinkPaper">
+        <Flex direction={"column"}>
+          <Title mb={"xs"} order={4}>
+            {title}
+          </Title>
+          <Text c={"dimmed"}>{description}</Text>
+        </Flex>
+      </Paper>
+    </Link>
+  );
+
   return (
     <Box component={"section"} className="account__page-wrapper">
       <Box component="header" mb={"lg"}>
-        <Title order={1}>Welcome</Title>
-        <Text size="sm" mt={"xs"}>
-          Discover stays handpicked for comfort, style, and unforgettable
-          experiences.
+        <Title mb={"xs"} order={1}>
+          Welcome!
+        </Title>
+        <Text>
+          Here you can find an overview over your information, your booking
+          history or edit your personal details.
         </Text>
       </Box>
-      <Flex mb={"xl"}>
-        <Title order={2}>My Personal Information</Title>
-      </Flex>
-      <Grid gutter={{ base: 5, xs: "md", md: "xl", xl: 50 }}>
+      <Grid>
         <GridCol span={{ base: 12, md: 6 }}>
-          <Flex direction={"column"}>
-            <Box component="header">
-              <Flex align={"center"} justify={"space-between"}>
-                <Title order={3}>Contact Information</Title>
-                <Anchor component={Link} href={"/account/account-details"}>
-                  Edit
-                </Anchor>
-              </Flex>
-              <Divider my="md" />
-            </Box>
-            <Box>
-              <Text>{session?.user.name}</Text>
-              <Text>{session?.user.email}</Text>
-            </Box>
-          </Flex>
+          <PaperLink
+            title={"Account Details"}
+            description={"View and edit your account details."}
+            href={"/account/account-details"}
+          />
         </GridCol>
         <GridCol span={{ base: 12, md: 6 }}>
-          <Flex direction={"column"}>
-            <Box component="header">
-              <Title order={3}>Billing/Shipping Address</Title>
-              <Divider my="md" />
-            </Box>
-          </Flex>
+          <PaperLink
+            title={"Booking History"}
+            description={"List of your recent bookings."}
+            href={"/account/booking-history"}
+          />
         </GridCol>
         <GridCol span={{ base: 12, md: 6 }}>
-          <Box component="header">
-            <Title order={3}>Recent Travels</Title>
-            <Divider my="md" />
-          </Box>
-          <Box>travel list here</Box>
+          <PaperLink
+            title={"Settings"}
+            description={"lorem ipsum"}
+            href={"/account/settings"}
+          />
         </GridCol>
         <GridCol span={{ base: 12, md: 6 }}>
-          <Box component="header">
-            <Title order={3}>Payment Method</Title>
-            <Divider my="md" />
-          </Box>
-          <Box>payment method here</Box>
+          <PaperLink
+            title={"Payment & Billing"}
+            description={"lorem ipsum"}
+            href={"/account"}
+          />
         </GridCol>
+        {isAdmin && (
+          <GridCol span={{ base: 12, md: 6 }}>
+            <Link href={"/admin"} className="account-paperLink">
+              <Paper p={"sm"} withBorder className="account-paperLinkPaper">
+                <Flex direction={"column"}>
+                  <Title mb={"xs"} order={4}>
+                    Admin Dashboard
+                  </Title>
+                  <Text c={"dimmed"}>
+                    View, create, update, and delete resources of Holidaze.
+                  </Text>
+                </Flex>
+              </Paper>
+            </Link>
+          </GridCol>
+        )}
       </Grid>
+      <Box mt={"xl"}>
+        <form
+          action={async () => {
+            "use server";
+            await signOut();
+          }}
+        >
+          <Button
+            leftSection={<IconLogOut color="var(--mantine-color-white)" />}
+            type="submit"
+          >
+            Sign Out
+          </Button>
+        </form>
+      </Box>
     </Box>
   );
 };

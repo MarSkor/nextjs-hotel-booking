@@ -11,7 +11,7 @@ import {
   Text,
 } from "@mantine/core";
 import { mockData } from "./mockdata";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+// import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
 const TestimonialCard = ({ image, name, review, rating }) => (
   <Paper shadow="md" p="lg" radius="md" className="testimonial-card">
@@ -52,7 +52,7 @@ const Testimonials = () => {
         <Title order={2}>Real Stories from Real Stays</Title>
       </Flex>
       <Container fluid>
-        <ResponsiveMasonry
+        {/* <ResponsiveMasonry
           columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}
           gutterBreakpoints={{ 350: "12px", 750: "16px", 900: "24px" }}
         >
@@ -61,7 +61,7 @@ const Testimonials = () => {
               <TestimonialCard key={mockData.id} {...data} />
             ))}
           </Masonry>
-        </ResponsiveMasonry>
+        </ResponsiveMasonry> */}
       </Container>
     </Container>
   );

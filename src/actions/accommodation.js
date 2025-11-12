@@ -33,6 +33,33 @@ const generateUniqueSlug = async (title) => {
   return uniqueSlug;
 };
 
+export const getAccommodationById = async (id) => {
+  try {
+    if (!id)
+      return {
+        success: false,
+        message: "Accommodation ID is not provided.",
+      };
+    const [accommodation] = await db
+      .select()
+      .from(accommodations)
+      .where(eq(accommodations.id, id))
+      .limit(1);
+
+    if (!accommodation) return null;
+
+    return {
+      ...accommodation,
+    };
+  } catch (error) {
+    // console.error("Error", error);
+    return {
+      success: false,
+      message: "Failed to load accommodation details.",
+    };
+  }
+};
+
 export const createAccommodation = async (params) => {
   try {
     const slug = await generateUniqueSlug(params.title);

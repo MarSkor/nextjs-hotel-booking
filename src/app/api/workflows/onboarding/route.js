@@ -1,5 +1,5 @@
 import { serve } from "@upstash/workflow/nextjs";
-import { sendEmail } from "@/lib/workflow";
+import { sendEmail } from "@/lib/email";
 import { db } from "@/database/drizzle";
 import { eq } from "drizzle-orm";
 import { users } from "@/database/schema/users";
@@ -37,7 +37,7 @@ export const { POST } = serve(async (context) => {
     await sendEmail({
       email,
       subject: "Welcome to Holidaze",
-      message: `Welcome ${fullName}`,
+      html: `<h3>Welcome ${fullName}</h3>`,
     });
   });
 
@@ -53,7 +53,7 @@ export const { POST } = serve(async (context) => {
         await sendEmail({
           email,
           subject: "Are you still there?",
-          message: `Hey ${fullName}, it's time to book a trip!`,
+          html: `<h3>Hey ${fullName}, it's time to book a trip!</h3>`,
         });
       });
     } else if (state === "active") {
@@ -61,7 +61,7 @@ export const { POST } = serve(async (context) => {
         await sendEmail({
           email,
           subject: "Welcome back!",
-          message: `Welcome back ${fullName}!`,
+          html: `<h3>Welcome back ${fullName}!</h3>`,
         });
       });
     }

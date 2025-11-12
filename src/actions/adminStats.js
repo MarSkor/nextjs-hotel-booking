@@ -10,6 +10,7 @@ const startOfWeek = () => {
   return new Date(now.setDate(firstDay));
 };
 
+//to fix, not showing "new" statuses.
 export const getAdminStats = async () => {
   try {
     const weekStart = startOfWeek();
@@ -31,6 +32,8 @@ export const getAdminStats = async () => {
       .select()
       .from(bookings)
       .where(gt(bookings.createdAt, weekStart));
+
+    // console.log("newaccs: ", newAccs.length);
 
     return {
       users: {

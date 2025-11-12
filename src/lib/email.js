@@ -11,17 +11,26 @@ const qstashClient = new QStashClient({
   token: config.env.upstash.qstashToken,
 });
 
-export const sendEmail = async ({ email, subject, message }) => {
+/**
+ *
+ * @param {email} - Recipient Address
+ * @param {subject} - Email Subject
+ * @param {html} - HTML Content
+ * @param {template} - Optional Template
+ */
+
+export const sendEmail = async ({ email, subject, html, template }) => {
   await qstashClient.publishJSON({
     api: {
       name: "email",
       provider: resend({ token: config.env.resendToken }),
     },
     body: {
-      from: "Holidaze <contact@martinelog.dev>",
+      from: "Holidaze <contact@holidaze-project.martinelog.dev>",
       to: [email],
       subject,
-      html: message,
+      html,
+      template,
     },
   });
 };

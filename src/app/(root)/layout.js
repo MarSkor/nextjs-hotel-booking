@@ -9,7 +9,8 @@ import { users } from "@/database/schema/users";
 export const metadata = {
   // metadataBase: new URL(),
   title: "Holidaze Booking",
-  description: "Discover Hotels, B&B and guesthouses in Bergen.",
+  description:
+    "A demo of a accommodation booking web app. Discover Hotels, B&B and guesthouses in Bergen.",
   // keywords: [],
   // authors: [
   //   {name: "",
@@ -38,7 +39,7 @@ const PublicLayout = async ({ children }) => {
     await db
       .update(users)
       .set({ lastActivityDate: new Date().toISOString().slice(0, 10) })
-      .where(eq(user.id, session?.user?.id));
+      .where(eq(users.id, session?.user?.id));
   });
 
   return (
