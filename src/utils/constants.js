@@ -18,9 +18,7 @@ export const sortByData = [
   { label: "Price (Highest First)", value: "price_desc" },
   { label: "Guest Capacity (Low–High)", value: "guests_asc" },
   { label: "Guest Capacity (High–Low)", value: "guests_desc" },
-  // other data to sort accs. by can be added here but for the time being this is enough
-  // { label: "Type (A–Z)", value: "type_asc" },
-  // { label: "Type (Z–A)", value: "type_desc" },
+  // other data to sort accs. can be added here but for the time being this is enough
 ];
 
 export const guestAmount = [

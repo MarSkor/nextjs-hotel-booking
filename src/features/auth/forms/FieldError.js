@@ -1,5 +1,4 @@
-import { IconCancel } from "@/components/icons";
-import { Box, Flex, Text } from "@mantine/core";
+import { Flex, Text } from "@mantine/core";
 
 export const FieldError = (error) => {
   //to look at later

@@ -1,9 +1,9 @@
+"use server";
 import { Accommodations } from "@/features/accommodations/components";
-import getAccommodations from "@/actions/accommodationQueries";
+import getAccommodations from "@/actions/sorting";
 
 const AccommodationPage = async ({ searchParams }) => {
   const params = await searchParams;
-
   const { type, guests, sort, page } = params;
 
   const accData = await getAccommodations({

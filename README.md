@@ -24,8 +24,8 @@ A accommodation booking website.
 
 ## Environment Variables
 
-`NEXT_PUBLIC_API_ENDPOINT`
-`NEXT_PUBLIC_PROD_API_ENDPOINT`
+`NEXT_PUBLIC_API_ENDPOINT` = "http://localhost:3000"
+`NEXT_PUBLIC_PROD_API_ENDPOINT` = "https://your-site.com"
 `AUTH_SECRET`
 `NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT`
 `NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY`

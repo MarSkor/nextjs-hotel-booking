@@ -43,7 +43,6 @@ const LoginPromptModal = ({ opened, onClose, initialMode = "login" }) => {
   });
 
   const onSubmit = async (data) => {
-    console.log("modal form data: ", data);
     setError("");
     try {
       if (mode === "login") {
@@ -82,7 +81,7 @@ const LoginPromptModal = ({ opened, onClose, initialMode = "login" }) => {
         onClose();
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       setError("Something went wrong. Please try again.");
     }
   };

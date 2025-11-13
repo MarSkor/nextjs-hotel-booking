@@ -100,7 +100,7 @@ const MyAccountPage = async () => {
           </GridCol>
         )}
       </Grid>
-      <Box mt={"xl"}>
+      <Box mt={"xl"} style={{ cursor: "pointer" }}>
         <form
           action={async () => {
             "use server";

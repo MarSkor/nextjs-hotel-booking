@@ -2,6 +2,9 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { DatePickerInput } from "@mantine/dates";
+import { Card } from "@/components/ui";
+import { propertyType, guestAmount, sortByData } from "@/utils/constants";
+import { buildSearchParams } from "@/utils/Helpers";
 import {
   Box,
   Container,
@@ -15,9 +18,6 @@ import {
   GridCol,
   Button,
 } from "@mantine/core";
-import { Card } from "@/components/ui";
-import { propertyType, guestAmount, sortByData } from "@/utils/constants";
-import { buildSearchParams } from "@/utils/Helpers";
 
 const Accommodations = ({ accList, totalPages, totalCount }) => {
   const router = useRouter();
@@ -26,8 +26,6 @@ const Accommodations = ({ accList, totalPages, totalCount }) => {
   const [guests, setGuests] = useState(searchParams.get("guests") || "all");
   const [sort, setSort] = useState(searchParams.get("sort") || "price_asc");
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
-
-  // console.log("acclist: ", accList);
 
   useEffect(() => {
     const query = buildSearchParams({

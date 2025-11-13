@@ -1,11 +1,12 @@
-import { Box, Flex, Title, Avatar, Text } from "@mantine/core";
+import { Box, Flex, Avatar, Text, Button } from "@mantine/core";
 import { getInitials } from "@/utils/Helpers";
 import { Logout05Icon } from "@/components/icons";
+import { signOut } from "next-auth/react";
 
 const AdminLogOut = ({ session }) => {
   return (
-    <Box p={"xs"} className="appshellnavbar__adminlogout">
-      <Flex align={"center"} justify={"space-between"}>
+    <Flex direction={"column"}>
+      <Box mb={"sm"}>
         <Flex direction={"row"} align={"center"}>
           <Avatar
             name={getInitials(session.user.name) || null}
@@ -13,15 +14,31 @@ const AdminLogOut = ({ session }) => {
             className="userAvatar__avatar"
             size="md"
             variant="outline"
-            //   src=""
           />
-          <Text fw={500} ml={"xs"} size="xs">
+          <Text fw={500} ml={"xs"} size="sm">
             {session?.user?.name}
           </Text>
         </Flex>
-        <Logout05Icon width={24} height={24} color="var(--clr-semantic-red)" />
-      </Flex>
-    </Box>
+      </Box>
+      <Box>
+        <Button
+          justify="flex-start"
+          fullWidth
+          variant="transparent"
+          color="red"
+          onClick={() => signOut()}
+          leftSection={
+            <Logout05Icon
+              width={24}
+              height={24}
+              color="var(--mantine-semantic-red)"
+            />
+          }
+        >
+          Log Out
+        </Button>
+      </Box>
+    </Flex>
   );
 };
 

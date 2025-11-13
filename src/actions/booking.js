@@ -20,7 +20,6 @@ export const getBookingDates = async (accommodationId) => {
 };
 
 export const createBooking = async (data) => {
-  console.log("data: ", data);
   try {
     const [booking] = await db
       .insert(bookings)
@@ -72,10 +71,21 @@ export const createBooking = async (data) => {
       url: stripeCheckOutSession.url,
     };
   } catch (error) {
-    console.error("error creating booking: ", error.message);
+    // console.error("error creating booking: ", error.message);
     return {
       success: false,
       message: error.message || "Error. Could not create booking.",
     };
+  }
+};
+
+export const cancelBooking = async (accommodationId) => {
+  try {
+    await db
+      .update(bookings)
+      .set({ status: "cancelled" })
+      .where(eq(bookings.accommodationId, accommodationId));
+  } catch (error) {
+    console.error("error canceling.", error);
   }
 };
