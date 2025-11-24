@@ -19,8 +19,6 @@ const AccommodationDetailsPage = async ({ params }) => {
     .limit(1);
   if (!accDetails) redirect("/404");
 
-  // console.log("accdetails", accDetails);
-
   return (
     <Box component="section">
       <AccommodationOverview {...accDetails} />

@@ -1,5 +1,6 @@
 "use client";
-import { IconArrowLeft } from "@/components/icons";
+import { useState } from "react";
+import { IconArrowLeft, IconHeart } from "@/components/icons";
 import Link from "next/link";
 import Booking from "@/features/booking/components/Booking";
 import AccommodationImages from "./AccommodationImages";
@@ -15,6 +16,7 @@ import {
   Paper,
   Anchor,
   rem,
+  Tooltip,
 } from "@mantine/core";
 
 const AccommodationOverview = (accDetails) => {
@@ -26,6 +28,7 @@ const AccommodationOverview = (accDetails) => {
     images,
     averageRating,
   } = accDetails;
+  const [isActive, setIsActive] = useState(false);
 
   return (
     <Container
@@ -46,18 +49,31 @@ const AccommodationOverview = (accDetails) => {
       </Anchor>
       <Box className="details__container">
         <Flex direction={"column"}>
-          <Flex align={"center"}>
-            <Rating value={averageRating} fractions={2} readOnly />
-            <Text
-              className="card__rating--text"
-              component={Anchor}
-              href="#details__reviews"
-              c="#363637"
-              size="sm"
-              ml={rem("4px")}
-            >
-              (1234 reviews)
-            </Text>
+          <Flex align={"center"} justify={"space-between"}>
+            <Flex align={"center"}>
+              <Rating value={averageRating} fractions={2} readOnly />
+              <Text
+                className="card__rating--text"
+                component={Anchor}
+                href="#details__reviews"
+                c="#363637"
+                size="sm"
+                ml={rem("4px")}
+              >
+                (1234 reviews)
+              </Text>
+            </Flex>
+            <Tooltip label="Log in to save to favorites">
+              <Box align="center" className="details__favorite">
+                <Box onClick={() => setIsActive(!isActive)}>
+                  {isActive ? (
+                    <IconHeart color="red" fill="red" title="save" />
+                  ) : (
+                    <IconHeart color="black" title="save" />
+                  )}
+                </Box>
+              </Box>
+            </Tooltip>
           </Flex>
           <Title order={1}>{title}</Title>
           <Text size="xs" mt={"xs"}>

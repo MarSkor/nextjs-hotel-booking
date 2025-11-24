@@ -1,7 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
-import { IconLocation, IconStar, IconHeart } from "../icons";
+import { IconLocation, IconStar, IconUser } from "../icons";
 import { mathRound } from "@/utils/Helpers";
 import { bedTypes } from "@/utils/constants";
 import { IKImage } from "imagekitio-next";
@@ -21,7 +20,6 @@ import {
 } from "@mantine/core";
 
 const AccommodationCard = (item) => {
-  const [isActive, setIsActive] = useState(false);
   const {
     title,
     street,
@@ -30,6 +28,7 @@ const AccommodationCard = (item) => {
     averageRating,
     slug,
     featuredImage,
+    guests,
   } = item;
 
   const placeholderImagePath = "/defaults/600x400_DxM717i9q.svg";
@@ -83,17 +82,7 @@ const AccommodationCard = (item) => {
           }}
         />
       </CardSection>
-      <Tooltip label="Save to favorites">
-        <Box align="center" className="card__favorite">
-          <Box onClick={() => setIsActive(!isActive)}>
-            {isActive ? (
-              <IconHeart color="red" fill="red" title="save" />
-            ) : (
-              <IconHeart color="#fbfbfb" title="save" />
-            )}
-          </Box>
-        </Box>
-      </Tooltip>
+
       <Title mt={"sm"} order={3} lineClamp={1}>
         {title}
       </Title>
@@ -123,6 +112,24 @@ const AccommodationCard = (item) => {
         </Group>
       </Flex>
       <Group mt="xs" mb="xs">
+        <Badge
+          variant="light"
+          radius="sm"
+          size="sm"
+          leftSection={
+            <IconUser
+              heigth={15}
+              width={15}
+              color={"var(--mantine-color-licorice-light-color)"}
+            />
+          }
+          classNames={{
+            root: "card-badge__root",
+            label: "card-badge__label",
+          }}
+        >
+          {guests}
+        </Badge>
         {beds}
       </Group>
       <Flex justify="space-between" align="center">

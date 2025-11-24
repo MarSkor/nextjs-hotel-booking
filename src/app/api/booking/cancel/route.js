@@ -8,6 +8,8 @@ export async function POST(req) {
   const { searchParams } = new URL(req.url);
   const bookingId = searchParams.get("bookingId");
 
+  console.log("req cancel: ", req);
+
   try {
     if (!bookingId) {
       return NextResponse.json({

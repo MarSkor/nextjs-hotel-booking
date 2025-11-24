@@ -130,7 +130,7 @@ const BookingEnquiry = () => {
             userId: session?.user?.id || null,
             isGuest: !session?.user,
             name: session?.user?.name || data.name,
-            email: session?.user?.email || data.email,
+            email: data.email,
             title: bookingData.title,
             accommodationId: bookingData.accommodationId,
             checkIn: bookingData.checkIn,
@@ -154,13 +154,8 @@ const BookingEnquiry = () => {
         console.error("Missing sessionId:", sessionData);
         return;
       }
-      console.log("Stripe sessionId:", sessionData.sessionId);
+
       localStorage.removeItem("pendingBooking");
-
-      // const { error } = await stripe.redirectToCheckout({
-      //   sessionId: sessionData.sessionId,
-      // });
-
       window.location.href = sessionData.url;
     } catch (error) {
       setError("root", {

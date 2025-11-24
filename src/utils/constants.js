@@ -1,9 +1,39 @@
 import { IconDoubleBed, IconSingleBed } from "@/components/icons";
 
 export const bedTypes = [
-  { key: "queenBeds", label: "Queen Bed", icon: <IconDoubleBed /> },
-  { key: "fullBeds", label: "Full Bed", icon: <IconDoubleBed /> },
-  { key: "twinBeds", label: "Twin Bed", icon: <IconSingleBed /> },
+  {
+    key: "queenBeds",
+    label: "Queen Bed",
+    icon: (
+      <IconDoubleBed
+        heigth={15}
+        width={15}
+        color={"var(--mantine-color-licorice-light-color)"}
+      />
+    ),
+  },
+  {
+    key: "fullBeds",
+    label: "Full Bed",
+    icon: (
+      <IconDoubleBed
+        heigth={15}
+        width={15}
+        color={"var(--mantine-color-licorice-light-color)"}
+      />
+    ),
+  },
+  {
+    key: "twinBeds",
+    label: "Twin Bed",
+    icon: (
+      <IconSingleBed
+        heigth={15}
+        width={15}
+        color={"var(--mantine-color-licorice-light-color)"}
+      />
+    ),
+  },
 ];
 
 export const propertyType = [
