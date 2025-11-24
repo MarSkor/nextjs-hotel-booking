@@ -8,34 +8,38 @@ A accommodation booking website.
 
 ## About the Project
 
+Updating...
+
 ## Technologies
 
-- [Next.js](link)
-- [SCSS](link)
-- [Mantine UI](link)
-- [Upstash](link)
-- [Drizzle](link)
-- [Neon](link)
-- [Auth.js (Next-auth)](link)
-- [Stripe](link)
-- [ImageKit](link)
-- [React-hook-form](link)
-- [Zod](link)
+- [Next.js](https://nextjs.org/)
+- [SCSS](https://sass-lang.com/)
+- [Mantine UI](https://mantine.dev/)
+- [Upstash](https://upstash.com/)
+- [Drizzle](https://orm.drizzle.team/)
+- [Neon](https://neon.com/)
+- [Auth.js](https://authjs.dev/)
+- [Stripe](https://docs.stripe.com/)
+- [ImageKit](https://imagekit.io/)
+- [React-hook-form](https://react-hook-form.com/)
+- [Zod](https://zod.dev/)
 
 ## Environment Variables
 
-`NEXT_PUBLIC_API_ENDPOINT` = "http://localhost:3000"
-`NEXT_PUBLIC_PROD_API_ENDPOINT` = "https://your-site.com"
+`NEXT_PUBLIC_API_ENDPOINT` = "http://localhost:3000" / "https://your-site.com"
 `AUTH_SECRET`
+`DATABASE_URL`
+
 `NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT`
 `NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY`
 `IMAGEKIT_PRIVATE_KEY`
-`DATABASE_URL`
+
 `UPSTASH_REDIS_REST_URL`
 `UPSTASH_REDIS_REST_TOKEN`
 `QSTASH_URL`
 `QSTASH_TOKEN`
 `RESEND_TOKEN`
+
 `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
 `STRIPE_SECRET_KEY`
 `STRIPE_WEBHOOK_SECRET`
@@ -51,3 +55,4 @@ A accommodation booking website.
 - [ ] A contact page (different to enquiry page) which goes to the admin for Holidaze
 - [x] (Admin) List of enquiries
 - [ ] (Admin) List of messages
+- [ ] ...

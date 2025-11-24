@@ -33,9 +33,13 @@ export const { POST } = serve(async (context) => {
   });
 
   await context.run("log-booking", async () => {
-    await redis.set(`booking:email:${email}:${Date.now()}`, {
+    await redis.set(`booking-confirm:email:${email}:${Date.now()}`, {
+      email,
       title,
-      date: new Date().toISOString(),
+      checkIn,
+      checkOut,
+      sentAt: new Date().toISOString(),
     });
   });
+  return { status: "Ok." };
 });

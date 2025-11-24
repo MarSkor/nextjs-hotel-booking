@@ -1,9 +1,11 @@
 "use server";
 import { db } from "@/database/drizzle";
 import { bookings } from "@/database/schema";
-import { eq } from "drizzle-orm";
+import { and, eq, inArray, lt, sql } from "drizzle-orm";
 import { stripe } from "@/lib/stripe";
 import dayjs from "dayjs";
+import config from "@/lib/config";
+import { headers } from "next/headers";
 
 export const getBookingDates = async (accommodationId) => {
   const data = await db
@@ -21,6 +23,39 @@ export const getBookingDates = async (accommodationId) => {
 
 export const createBooking = async (data) => {
   try {
+    const headersList = await headers();
+    const origin = headersList.get("origin");
+    const now = new Date();
+
+    await db
+      .update(bookings)
+      .set({ status: "cancelled" })
+      .where(
+        and(
+          eq(bookings.status, "pending"),
+          lt(bookings.createdAt, dayjs(now).subtract(1, "day").toDate())
+        )
+      );
+
+    const overlappingBooking = await db
+      .select()
+      .from(bookings)
+      .where(
+        and(
+          eq(bookings.accommodationId, data.accommodationId),
+          inArray(bookings.status, ["pending", "confirmed"]),
+          sql`${bookings.checkIn} < ${data.checkOut} AND ${bookings.checkOut} > ${data.checkIn}`
+        )
+      );
+
+    if (overlappingBooking.length > 0) {
+      return {
+        success: false,
+        message:
+          "Some or all selected dates of the accommodation are already booked",
+      };
+    }
+
     const [booking] = await db
       .insert(bookings)
       .values({
@@ -59,33 +94,27 @@ export const createBooking = async (data) => {
           quantity: 1,
         },
       ],
-      metadata: { bookingId: booking.id },
-      success_url: `${process.env.NEXT_PUBLIC_API_ENDPOINT}/booking/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_API_ENDPOINT}/booking/cancel`,
+      metadata: {
+        bookingId: booking.id,
+        accommodationId: data.accommodationId,
+        userId: data.userId ?? null,
+      },
+      success_url: `${origin}/booking/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/booking/cancel?bookingId=${booking.id}`,
     });
     await db
       .update(bookings)
       .set({ checkoutSessionId: stripeCheckOutSession.id })
       .where(eq(bookings.id, booking.id));
     return {
+      success: true,
       url: stripeCheckOutSession.url,
+      bookingId: booking.id,
     };
   } catch (error) {
-    // console.error("error creating booking: ", error.message);
     return {
       success: false,
       message: error.message || "Error. Could not create booking.",
     };
-  }
-};
-
-export const cancelBooking = async (accommodationId) => {
-  try {
-    await db
-      .update(bookings)
-      .set({ status: "cancelled" })
-      .where(eq(bookings.accommodationId, accommodationId));
-  } catch (error) {
-    console.error("error canceling.", error);
   }
 };

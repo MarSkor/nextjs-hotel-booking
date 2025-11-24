@@ -3,17 +3,27 @@ import React, { useEffect } from "react";
 import { cancelBooking } from "@/actions/booking";
 import { Container, Flex, Box, Title, Text, Anchor } from "@mantine/core";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 const Cancel = () => {
+  const params = useSearchParams();
+  const bookingId = params.get("bookingId");
+
   useEffect(() => {
+    if (!bookingId) return;
+
     const pendingBooking = JSON.parse(
       localStorage.getItem("pendingBooking" || "{}")
     );
 
-    if (pendingBooking?.accommodationId) {
-      cancelBooking(pendingBooking.accommodationId);
-      localStorage.removeItem("pendingBooking");
+    if (bookingId && pendingBooking?.accommodationId) {
+      fetch(`/api/booking/cancel?bookingId=${bookingId}`, {
+        method: "POST",
+        body: JSON.stringify({ bookingId }),
+      });
     }
+
+    localStorage.removeItem("pendingBooking");
   }, []);
 
   return (

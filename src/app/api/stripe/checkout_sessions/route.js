@@ -1,0 +1,120 @@
+import { headers } from "next/headers";
+import { NextResponse } from "next/server";
+import { stripe } from "@/lib/stripe";
+import { db } from "@/database/drizzle";
+import { bookings } from "@/database/schema";
+import { eq, inArray, sql, and, lt } from "drizzle-orm";
+import dayjs from "dayjs";
+
+// create stripe session and redirect urls
+export async function POST(req) {
+  const headersList = await headers();
+  const origin = headersList.get("origin");
+  const { bookingDetails } = await req.json();
+
+  const checkIn = new Date(bookingDetails.checkIn);
+  const checkOut = new Date(bookingDetails.checkOut);
+
+  try {
+    //move to its own route later on for cleanup job.
+    const now = new Date();
+    await db
+      .update(bookings)
+      .set({ status: "cancelled" })
+      .where(
+        and(
+          eq(bookings.status, "pending"),
+          lt(bookings.createdAt, dayjs(now).subtract(1, "day").toDate())
+        )
+      );
+
+    const overlappingBooking = await db
+      .select()
+      .from(bookings)
+      .where(
+        and(
+          eq(bookings.accommodationId, bookingDetails.accommodationId),
+          inArray(bookings.status, ["pending", "confirmed"]),
+          sql`${bookings.checkIn} < ${checkIn} AND ${bookings.checkOut} > ${checkOut}`
+        )
+      );
+
+    if (overlappingBooking.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Some or all selected dates of the accommodation are already booked",
+        },
+        { status: 409 }
+      );
+    }
+
+    const [booking] = await db
+      .insert(bookings)
+      .values({
+        userId: bookingDetails.userId ?? null,
+        isGuest: bookingDetails.isGuest ?? false,
+        accommodationId: bookingDetails.accommodationId,
+        name: bookingDetails.name,
+        email: bookingDetails.email,
+        checkIn,
+        checkOut,
+        nights: bookingDetails.totalNights,
+        totalPrice: bookingDetails.totalPrice,
+        guests: bookingDetails.guests,
+        message: bookingDetails.message,
+        phone: bookingDetails.phone,
+        status: "pending",
+        isPaid: false,
+      })
+      .returning();
+
+    const stripeSession = await stripe.checkout.sessions.create({
+      mode: "payment",
+      payment_method_types: ["card"],
+      customer_email: bookingDetails.email,
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            // unit_amount: Math.round(Number(data.totalPrice) * 100)
+            unit_amount: 0, // removes the card input details, user can check out immediately
+            product_data: {
+              name: bookingDetails.title,
+              description: `${bookingDetails.totalNights} nights, ${bookingDetails.guests} guests.`,
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: {
+        bookingId: booking.id,
+        accommdationId: bookingDetails.accommdationId,
+        userId: bookingDetails.userId ?? null,
+      },
+      success_url: `${origin}/booking/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/booking/cancel?bookingId=${booking.id}`,
+    });
+
+    await db
+      .update(bookings)
+      .set({ checkoutSessionId: stripeSession.id })
+      .where(eq(bookings.id, booking.id));
+
+    return NextResponse.json(
+      {
+        url: stripeSession.url,
+        sessionId: stripeSession.id,
+        bookingId: booking.id,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Payment falied", error);
+    return new NextResponse(
+      { error: error.message },
+      { status: error.statusCode || 500 }
+    );
+  }
+}

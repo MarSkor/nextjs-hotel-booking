@@ -1,12 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Container, Flex, Text, Title, Anchor } from "@mantine/core";
+import { Container, Flex, Text, Title, Anchor, Paper } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const Success = ({ customerEmail, sessionId }) => {
   const router = useRouter();
-  const [paymentStatus, setPaymentStatus] = useState("Verifying payment...");
+  const [loading, setLoading] = useState(true);
+  const [booking, setBooking] = useState(null);
 
   useEffect(() => {
     if (!sessionId) {
@@ -14,30 +15,38 @@ const Success = ({ customerEmail, sessionId }) => {
       return;
     }
     (async () => {
-      const res = await fetch(
-        `/api/stripe/verify-checkout?session_id=${sessionId}`
-      );
-      const data = await res.json();
-      if (data.success) {
-        setPaymentStatus("Payment Confirmed!", data);
-      } else {
-        setPaymentStatus("Payment failed.");
+      try {
+        const res = await fetch(`/api/booking/success?session_id=${sessionId}`);
+        const data = await res.json();
+
+        if (data.success && data.booking?.isPaid) {
+          setBooking(data.booking);
+          setLoading(false);
+        }
+        localStorage.removeItem("pendingBooking");
+      } catch (error) {
+        console.error("An error occured:", error);
       }
     })();
   }, [sessionId, router]);
+
+  if (loading) {
+    return (
+      <Flex justify={"center"} align={"center"} h={"80vh"}>
+        <Title order={2}>Payment still processing...</Title>
+      </Flex>
+    );
+  }
+
   return (
     <Container component={"section"} size={"sm"}>
       <Flex direction={"column"} justify={"center"} align={"center"} h={"80vh"}>
-        <Title>Success!</Title>
-        <Text fw={500} mt={"md"} mb={"md"} ta="center">
-          {paymentStatus}
-        </Text>
+        <Title mb={"md"}>Success</Title>
         <Text ta="center">
           A confirmation email will be sent to{" "}
           <Text span fw={500}>
             {customerEmail}
           </Text>
-          .
         </Text>
         <Flex
           align={"center"}
@@ -54,6 +63,9 @@ const Success = ({ customerEmail, sessionId }) => {
         <Anchor component={Link} href={"/"} underline="always">
           Go back home
         </Anchor>
+        <Paper withBorder maw={500} mt={"lg"}>
+          <Title ta={"center"}>{booking.title}</Title>
+        </Paper>
       </Flex>
     </Container>
   );
