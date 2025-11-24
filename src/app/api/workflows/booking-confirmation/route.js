@@ -2,9 +2,9 @@ import { serve } from "@upstash/workflow/nextjs";
 import { Redis } from "@upstash/redis";
 import { sendEmail } from "@/lib/email";
 
-const redis = Redis.fromEnv();
-
 export const { POST } = serve(async (context) => {
+  const redis = Redis.fromEnv();
+
   const { email, name, title, checkIn, checkOut, totalPrice } =
     context.requestPayload;
 

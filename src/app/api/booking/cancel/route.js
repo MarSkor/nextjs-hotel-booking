@@ -30,7 +30,7 @@ export async function POST(req) {
       });
     }
 
-    if (booking.checkoutSessionId) {
+    if (booking.checkoutSessionId && booking.status === "pending") {
       try {
         await stripe.checkout.sessions.expire(booking.checkoutSessionId);
       } catch (error) {
