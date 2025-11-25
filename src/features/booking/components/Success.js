@@ -14,7 +14,11 @@ const Success = ({ customerEmail, sessionId }) => {
       router.push("/");
       return;
     }
-    (async () => {
+    let attempts = 0;
+    const maxAttempts = 5;
+
+    const interval = setInterval(async () => {
+      attempts++;
       try {
         const res = await fetch(`/api/booking/success?session_id=${sessionId}`);
         const data = await res.json();
@@ -22,12 +26,18 @@ const Success = ({ customerEmail, sessionId }) => {
         if (data.success && data.booking?.isPaid) {
           setBooking(data.booking);
           setLoading(false);
+          localStorage.removeItem("pendingBooking");
+          clearInterval(interval);
         }
-        localStorage.removeItem("pendingBooking");
+        if (attempts >= maxAttempts) {
+          clearInterval(interval);
+          setLoading(false);
+        }
       } catch (error) {
         console.error("An error occured:", error);
       }
-    })();
+    }, 2500); // 2.5s
+    return () => clearInterval(interval);
   }, [sessionId, router]);
 
   if (loading) {
