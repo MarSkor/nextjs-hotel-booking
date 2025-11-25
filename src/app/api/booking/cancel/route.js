@@ -8,8 +8,6 @@ export async function POST(req) {
   const { searchParams } = new URL(req.url);
   const bookingId = searchParams.get("bookingId");
 
-  console.log("req cancel: ", req);
-
   try {
     if (!bookingId) {
       return NextResponse.json({
@@ -34,7 +32,7 @@ export async function POST(req) {
       try {
         await stripe.checkout.sessions.expire(booking.checkoutSessionId);
       } catch (error) {
-        console.error("error: ", error);
+        console.error("Something went wrong.");
       }
     }
 

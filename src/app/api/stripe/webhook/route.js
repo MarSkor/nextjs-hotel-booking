@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/database/drizzle";
-import { bookings } from "@/database/schema";
+import { accommodations, bookings } from "@/database/schema";
 import config from "@/lib/config";
 import { workflowClient } from "@/lib/email";
 import { stripe } from "@/lib/stripe";
@@ -36,12 +36,16 @@ export async function POST(req) {
 
   try {
     const [booking] = await db
-      .select()
+      .select({
+        ...bookings,
+        title: accommodations.title,
+      })
       .from(bookings)
+      .leftJoin(accommodations, eq(bookings.accommodationId, accommodations.id))
       .where(eq(bookings.id, bookingId));
 
     if (!booking) {
-      console.warn("Webhook - Booking not found", bookingId);
+      // console.warn("Webhook - Booking not found", bookingId);
       return new NextResponse("Booking not found.", { status: 200 });
     }
 
@@ -55,14 +59,15 @@ export async function POST(req) {
 
           try {
             await workflowClient.trigger({
-              url: `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/workflows/booking-confirmation`,
+              url: `${config.env.prodApiEndpoint}/api/workflows/booking-confirmation`,
               body: {
                 email: session.customer_email,
-                name: session.customer_details?.name || "",
-                title: session.metadata?.title || "",
-                checkIn: session.metadata?.checkIn,
-                checkOut: session.metadata?.checkOut,
-                totalPrice: session.amount_total / 100,
+                name: session.customer_details?.name || booking.name,
+                title: booking.title || "",
+                checkIn: booking.checkIn,
+                checkOut: booking.checkOut,
+                totalPrice: booking.totalPrice,
+                message: booking.message,
               },
             });
           } catch (error) {

@@ -1,11 +1,9 @@
 import { serve } from "@upstash/workflow/nextjs";
-import { Redis } from "@upstash/redis";
 import { sendEmail } from "@/lib/email";
+import redis from "@/database/redis";
 
 export const { POST } = serve(async (context) => {
-  const redis = Redis.fromEnv();
-
-  const { email, name, title, checkIn, checkOut, totalPrice } =
+  const { email, name, title, checkIn, checkOut, totalPrice, message } =
     context.requestPayload;
 
   await context.run("send-booking-confirmation", async () => {
@@ -17,8 +15,9 @@ export const { POST } = serve(async (context) => {
         <p>Your booking for <strong>${title} is confirmed!</strong></p>
         <p>Check-in: ${new Date(checkIn).toLocaleDateString()}</p>
         <p>Check-out: ${new Date(checkOut).toLocaleDateString()}</p>
-        <p>Total: $${totalPrice}</p>
-        <hr/>
+        <p>Price Total: $${totalPrice}</p>
+        <p>${message}</p>
+        <hr />
         <p>Demo email.</p>
         `,
     });
@@ -26,9 +25,17 @@ export const { POST } = serve(async (context) => {
 
   await context.run("send-host-notification", async () => {
     await sendEmail({
-      email: "host@holidaze-project.martinelog.dev",
+      email: `host${process.env.RESEND_FROM_BASE_EMAIL_ADDRESS}`,
       subject: `New Booking - ${title}`,
-      html: `<p>${name} booked <strong>${title}</strong> from ${checkIn} to ${checkOut}</p>`,
+      html: `
+      <p>${name} booked <strong>${title}</strong>.</p>
+      <p>Check-in: ${new Date(checkIn).toLocaleDateString()}</p>
+      <p>Check-out: ${new Date(checkOut).toLocaleDateString()}</p>
+      <p>Price Total: $${totalPrice}</p>
+      <p>${message}</p>
+      <hr />
+      <p>Demo host notification email.</p>
+      `,
     });
   });
 
@@ -36,8 +43,8 @@ export const { POST } = serve(async (context) => {
     await redis.set(`booking-confirm:email:${email}:${Date.now()}`, {
       email,
       title,
-      checkIn,
-      checkOut,
+      checkIn: new Date(checkIn).toLocaleDateString(),
+      checkOut: new Date(checkOut).toLocaleDateString(),
       sentAt: new Date().toISOString(),
     });
   });

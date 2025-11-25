@@ -1,4 +1,4 @@
-import { getAdminStats } from "@/actions/adminStats";
+import { getAdminStats } from "@/actions/admin";
 import { IconAppointment, IconHouse, IconUser } from "@/components/icons";
 import { Container, Box, Grid, GridCol, Text } from "@mantine/core";
 import StatsCard from "@/features/admin/components/StatsCard";
@@ -33,7 +33,7 @@ const AdminPage = async () => {
       count: stats?.bookings ?? 0,
       subtext: stats?.bookings.newThisWeek ?? 0,
       icon: <IconAppointment height={20} width={20} />,
-      href: "/admin/accommodations",
+      href: "/admin/bookings",
       color: "lightgreen",
     },
   ];

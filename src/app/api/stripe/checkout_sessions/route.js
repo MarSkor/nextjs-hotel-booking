@@ -90,7 +90,7 @@ export async function POST(req) {
       ],
       metadata: {
         bookingId: booking.id,
-        accommdationId: bookingDetails.accommdationId,
+        accommdationId: booking.accommodationId,
         userId: bookingDetails.userId ?? null,
       },
       success_url: `${origin}/booking/success?session_id={CHECKOUT_SESSION_ID}`,

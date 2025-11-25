@@ -1,6 +1,6 @@
 "use client";
 import { parseDate } from "@/utils/date";
-import { deleteUser } from "@/actions/user";
+import { deleteUser } from "@/actions/admin";
 import DataTable from "./DataTable";
 
 const UsersOverview = ({ users, totalPages, currentPage }) => {

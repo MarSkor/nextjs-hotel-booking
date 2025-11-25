@@ -3,13 +3,9 @@ import { useState } from "react";
 import { Flex, Paper, Text } from "@mantine/core";
 import LoginPromptModal from "@/features/auth/components/LoginPromptModal";
 
-const LoginRegisterBanner = ({ session }) => {
+const LoginRegisterBanner = () => {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [authMode, setAuthMode] = useState("login");
-
-  // console.log("session1:", session);
-
-  if (session?.user) return null;
 
   return (
     <Paper withBorder p={"md"} mb={"sm"}>

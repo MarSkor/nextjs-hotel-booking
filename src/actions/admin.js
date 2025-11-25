@@ -2,18 +2,18 @@
 
 import { db } from "@/database/drizzle";
 import { accommodations, bookings, users } from "@/database/schema";
-import { gt } from "drizzle-orm";
+import { gt, eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import dayjs from "dayjs";
+import weekday from "dayjs/plugin/weekday";
+import utc from "dayjs/plugin/utc";
 
-const startOfWeek = () => {
-  const now = new Date();
-  const firstDay = now.getDate() - now.getDay() + 1;
-  return new Date(now.setDate(firstDay));
-};
+dayjs.extend(weekday);
+dayjs.extend(utc);
 
-//to fix, not showing "new" statuses.
 export const getAdminStats = async () => {
   try {
-    const weekStart = startOfWeek();
+    const weekStart = dayjs().utc().weekday(1).startOf("day").toDate();
 
     const totalUsers = await db.select().from(users);
     const newUsers = await db
@@ -33,8 +33,6 @@ export const getAdminStats = async () => {
       .from(bookings)
       .where(gt(bookings.createdAt, weekStart));
 
-    // console.log("newaccs: ", newAccs.length);
-
     return {
       users: {
         total: totalUsers.length,
@@ -50,7 +48,7 @@ export const getAdminStats = async () => {
       },
     };
   } catch (error) {
-    console.error("Error fetching data: ", error);
+    // console.error("Error fetching data: ", error);
     return {
       users: {
         total: 0,
@@ -64,6 +62,40 @@ export const getAdminStats = async () => {
         total: 0,
         newThisWeek: 0,
       },
+    };
+  }
+};
+
+export const deleteUser = async (id) => {
+  if (!id) return { success: false, message: "User ID is required" };
+
+  try {
+    const user = await db.query.users.findFirst({
+      where: eq(users.id, id),
+    });
+    if (!user) {
+      return {
+        success: false,
+        message: "Could not find user.",
+      };
+    }
+    if (user.role === "ADMIN") {
+      return {
+        success: false,
+        message: "Admin accounts cannot be deleted.",
+      };
+    }
+
+    await db.delete(users).where(eq(users.id, id));
+    revalidatePath("/admin/users", "page");
+    return {
+      success: true,
+      message: "User Successfully Deleted.",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message || "Unexpected error trying to delete user.",
     };
   }
 };

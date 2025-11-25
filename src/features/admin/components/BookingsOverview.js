@@ -52,7 +52,7 @@ const BookingsOverview = ({ bookings, totalPages, currentPage }) => {
           },
         },
       ]}
-      // deleteAction={deleteBooking}
+      // deleteAction={deleteBooking} // to add
       resourceName={"bookings"}
     />
   );

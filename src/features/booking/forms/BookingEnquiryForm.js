@@ -58,6 +58,7 @@ const BookingEnquiry = () => {
     mode: "onChange",
     criteriaMode: "all",
   });
+  // console.log("form errors: ", errors);
 
   const watchForm = watch();
 
@@ -191,7 +192,7 @@ const BookingEnquiry = () => {
           totalNights={totalNights}
         />
         <GridCol span={{ base: 12, sm: 8 }}>
-          <LoginRegisterBanner />
+          {!session.user && <LoginRegisterBanner />}
           <Paper
             component="section"
             className="enquiry__header"
