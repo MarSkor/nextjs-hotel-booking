@@ -1,1 +1,0 @@
-ALTER TABLE "accommodations" ALTER COLUMN "featured_image" SET DEFAULT '{}'::jsonb;
