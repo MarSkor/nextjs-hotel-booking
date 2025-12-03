@@ -6,8 +6,8 @@ const FavouriteIcon = (props) => (
     viewBox="0 0 24 24"
     width={24}
     height={24}
-    color={"#000000"}
-    fill={"none"}
+    color={props.color ? props.color : "#0f0d12"}
+    fill={props.fill ? props.fill : "none"}
     {...props}
   >
     <path

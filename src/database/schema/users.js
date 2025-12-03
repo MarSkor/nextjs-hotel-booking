@@ -10,6 +10,7 @@ import {
 import { relations } from "drizzle-orm";
 import { bookings } from "./bookings.js";
 import { reviews } from "./reviews.js";
+import { favorites } from "./favorites.js";
 
 export const roleEnum = pgEnum("enumRole", ["ADMIN", "USER"]);
 
@@ -26,4 +27,5 @@ export const users = pgTable("users", {
 export const usersRelations = relations(users, ({ many }) => ({
   bookings: many(bookings),
   reviews: many(reviews),
+  favorites: many(favorites)
 }));

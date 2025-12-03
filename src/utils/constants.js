@@ -1,5 +1,8 @@
 import { IconDoubleBed, IconSingleBed } from "@/components/icons";
 
+export const FAVORITES_PER_PAGE = 6;
+export const BOOKINGS_PER_PAGE = 6;
+
 export const bedTypes = [
   {
     key: "queenBeds",

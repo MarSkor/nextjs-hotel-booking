@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/database/drizzle";
 import { eq } from "drizzle-orm";
 import { users } from "@/database/schema";
+import { IconLogOut } from "@/components/icons";
 import {
   Box,
   Title,
@@ -14,7 +15,6 @@ import {
   Paper,
   Button,
 } from "@mantine/core";
-import { IconLogOut } from "@/components/icons";
 
 const MyAccountPage = async () => {
   const session = await auth();
@@ -29,6 +29,29 @@ const MyAccountPage = async () => {
     .where(eq(users.id, session.user.id))
     .limit(1)
     .then((res) => res[0]?.isAdmin === "ADMIN");
+
+  const links = [
+    {
+      href: "/account/account-details",
+      label: "Account Details",
+      description: "List of your recent bookings.",
+    },
+    {
+      href: "/account/booking-history",
+      label: "Booking History",
+      description: "List of your recent bookings.",
+    },
+    {
+      href: "/account/settings",
+      label: "Settings",
+      description: "Lorem Ipsum",
+    },
+    {
+      href: "/account/favorites",
+      label: "Favorites",
+      description: "Keep track of your favorites.",
+    },
+  ];
 
   const PaperLink = ({ title, href, description }) => (
     <Link href={href} className="account-paperLink">
@@ -55,34 +78,15 @@ const MyAccountPage = async () => {
         </Text>
       </Box>
       <Grid>
-        <GridCol span={{ base: 12, md: 6 }}>
-          <PaperLink
-            title={"Account Details"}
-            description={"View and edit your account details."}
-            href={"/account/account-details"}
-          />
-        </GridCol>
-        <GridCol span={{ base: 12, md: 6 }}>
-          <PaperLink
-            title={"Booking History"}
-            description={"List of your recent bookings."}
-            href={"/account/booking-history"}
-          />
-        </GridCol>
-        <GridCol span={{ base: 12, md: 6 }}>
-          <PaperLink
-            title={"Settings"}
-            description={"lorem ipsum"}
-            href={"/account/settings"}
-          />
-        </GridCol>
-        <GridCol span={{ base: 12, md: 6 }}>
-          <PaperLink
-            title={"Payment & Billing"}
-            description={"lorem ipsum"}
-            href={"/account"}
-          />
-        </GridCol>
+        {links.map((item, i) => (
+          <GridCol key={item.href} span={{ base: 12, md: 6 }}>
+            <PaperLink
+              title={item.label}
+              description={item.description}
+              href={item.href}
+            />
+          </GridCol>
+        ))}
         {isAdmin && (
           <GridCol span={{ base: 12, md: 6 }}>
             <Link href={"/admin"} className="account-paperLink">

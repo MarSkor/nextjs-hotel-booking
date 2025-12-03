@@ -1,9 +1,9 @@
 "use client";
-import { useState } from "react";
-import { IconArrowLeft, IconHeart } from "@/components/icons";
+import { IconArrowLeft } from "@/components/icons";
 import Link from "next/link";
 import Booking from "@/features/booking/components/Booking";
 import AccommodationImages from "./AccommodationImages";
+import FavoriteButton from "@/components/ui/FavoriteButton";
 import {
   Container,
   Flex,
@@ -16,11 +16,11 @@ import {
   Paper,
   Anchor,
   rem,
-  Tooltip,
 } from "@mantine/core";
 
-const AccommodationOverview = (accDetails) => {
+const AccommodationOverview = ({ accDetails, isFavorite }) => {
   const {
+    id,
     title,
     excerpt,
     pricePerNight,
@@ -28,7 +28,6 @@ const AccommodationOverview = (accDetails) => {
     images,
     averageRating,
   } = accDetails;
-  const [isActive, setIsActive] = useState(false);
 
   return (
     <Container
@@ -63,17 +62,7 @@ const AccommodationOverview = (accDetails) => {
                 (1234 reviews)
               </Text>
             </Flex>
-            <Tooltip label="Log in to save to favorites">
-              <Box align="center" className="details__favorite">
-                <Box onClick={() => setIsActive(!isActive)}>
-                  {isActive ? (
-                    <IconHeart color="red" fill="red" title="save" />
-                  ) : (
-                    <IconHeart color="black" title="save" />
-                  )}
-                </Box>
-              </Box>
-            </Tooltip>
+            <FavoriteButton initialFav={isFavorite} accommodationId={id} />
           </Flex>
           <Title order={1}>{title}</Title>
           <Text size="xs" mt={"xs"}>
