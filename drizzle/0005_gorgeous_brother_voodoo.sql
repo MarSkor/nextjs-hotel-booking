@@ -1,0 +1,1 @@
+ALTER TABLE "user_events" DROP CONSTRAINT "user_events_user_id_unique";
