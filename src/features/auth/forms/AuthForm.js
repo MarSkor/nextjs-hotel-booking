@@ -14,8 +14,8 @@ import {
   rem,
 } from "@mantine/core";
 import { FIELD_NAMES } from "./data";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { IconInfoCircle } from "@/components/icons";
 import FieldError from "./FieldError";
 import { mantineNotify } from "@/lib/mantineNotify";
@@ -24,6 +24,8 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
   const isLogin = type === "LOGIN";
   const router = useRouter();
   const [formError, setFormError] = useState(null);
+  const searchParams = useSearchParams();
+  const nextUrl = searchParams.get("next") ?? "/account";
 
   const {
     handleSubmit,
@@ -44,11 +46,17 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
           ? "You have successfully logged in"
           : "You have successfully regisreted with Holidaze."
       );
-      router.push("/");
+      router.push(nextUrl);
     }
 
     setFormError(result.error);
   };
+
+  useEffect(() => {
+    if (nextUrl?.includes("verify-email")) {
+      mantineNotify.info("You must be logged in to confirm your email.");
+    }
+  }, []);
 
   // console.log("errors", z.flattenError(errors).fieldErrors);
   // console.log("errors", errors);

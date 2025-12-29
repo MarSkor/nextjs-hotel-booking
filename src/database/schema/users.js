@@ -18,6 +18,8 @@ export const users = pgTable("users", {
   id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
   fullName: varchar("full_name", { length: 255 }).notNull(),
   email: text("email").notNull().unique(),
+  pendingEmail: text("pending_email"),
+  emailVerifiedAt: timestamp("email_verified_at"),
   password: text("password").notNull(),
   role: roleEnum("role").notNull().default("USER"),
   lastActivityDate: date("last_activity_date").defaultNow(),
@@ -27,5 +29,5 @@ export const users = pgTable("users", {
 export const usersRelations = relations(users, ({ many }) => ({
   bookings: many(bookings),
   reviews: many(reviews),
-  favorites: many(favorites)
+  favorites: many(favorites),
 }));

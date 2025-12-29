@@ -47,13 +47,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.id = user.id;
         token.name = user.name;
+        token.email = user.email;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
+      if (!token?.id || !session.user) return session;
+
+      const user = await db.query.users.findFirst({
+        where: (u, { eq }) => eq(u.id, token.id),
+      });
+
+      if (user) {
         session.user.id = token.id;
         session.user.name = token.name;
+        session.user.email = user.email;
+        session.user.pendingEmail = user.pendingEmail;
       }
       return session;
     },

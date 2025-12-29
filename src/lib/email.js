@@ -26,7 +26,7 @@ export const sendEmail = async ({ email, subject, html, template }) => {
       provider: resend({ token: config.env.resendToken }),
     },
     body: {
-      from: `${process.env.RESEND_FROM_NAME} <contact${process.env.RESEND_FROM_BASE_EMAIL_ADDRESS}>`,
+      from: `${process.env.RESEND_FROM_NAME} <noreply${process.env.RESEND_FROM_BASE_EMAIL_ADDRESS}>`,
       to: [email],
       subject,
       html,

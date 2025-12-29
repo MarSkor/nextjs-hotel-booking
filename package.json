@@ -23,6 +23,7 @@
     "@mantine/modals": "^8.3.5",
     "@mantine/notifications": "^8.3.5",
     "@neondatabase/serverless": "^1.0.1",
+    "@react-email/components": "^1.0.2",
     "@stripe/stripe-js": "^8.1.0",
     "@upstash/qstash": "^2.8.2",
     "@upstash/ratelimit": "^2.0.6",
@@ -42,6 +43,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.60.0",
+    "resend": "^6.6.0",
     "stripe": "^19.1.0",
     "zod": "^4.0.5"
   },

@@ -14,6 +14,7 @@ import {
   GridCol,
   Paper,
   Button,
+  Divider,
 } from "@mantine/core";
 
 const MyAccountPage = async () => {
@@ -34,7 +35,7 @@ const MyAccountPage = async () => {
     {
       href: "/account/account-details",
       label: "Account Details",
-      description: "List of your recent bookings.",
+      description: "Your account details.",
     },
     {
       href: "/account/booking-history",
@@ -44,7 +45,7 @@ const MyAccountPage = async () => {
     {
       href: "/account/settings",
       label: "Settings",
-      description: "Lorem Ipsum",
+      description: "Delete Account.",
     },
     {
       href: "/account/favorites",
@@ -68,15 +69,22 @@ const MyAccountPage = async () => {
 
   return (
     <Box component={"section"} className="account__page-wrapper">
-      <Box component="header" mb={"lg"}>
+      <Box component="header">
         <Title mb={"xs"} order={1}>
           Welcome!
         </Title>
+        <Text mb={"xs"}>
+          Logged in as{" "}
+          <Text span fw={500}>
+            {session?.user?.name}
+          </Text>
+        </Text>
         <Text>
           Here you can find an overview over your information, your booking
           history or edit your personal details.
         </Text>
       </Box>
+      <Divider my={"lg"} />
       <Grid>
         {links.map((item, i) => (
           <GridCol key={item.href} span={{ base: 12, md: 6 }}>
