@@ -17,7 +17,6 @@ import {
   Group,
   ActionIcon,
   Fieldset,
-  Alert,
   Loader,
 } from "@mantine/core";
 
@@ -32,7 +31,6 @@ const DetailsForm = ({ session }) => {
   );
   const searchParams = useSearchParams();
   const emailVerified = searchParams.get("email_verified");
-  const token = searchParams.get("token");
   const hasRefreshedSession = useRef(false);
 
   const {

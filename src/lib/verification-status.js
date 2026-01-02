@@ -1,0 +1,8 @@
+export const verificationStatus = {
+  SUCCESS: "SUCCESS",
+  ALREADY_VERIFIED: "ALREADY_VERIFIED",
+  EXPIRED: "EXPIRED",
+  INVALID: "INVALID",
+  FORBIDDEN: "FORBIDDEN",
+  ERROR: "ERROR",
+};

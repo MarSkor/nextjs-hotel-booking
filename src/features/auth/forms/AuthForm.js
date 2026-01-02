@@ -25,7 +25,9 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
   const router = useRouter();
   const [formError, setFormError] = useState(null);
   const searchParams = useSearchParams();
-  const nextUrl = searchParams.get("next") ?? "/account";
+  const nextUrl = searchParams.get("next")?.startsWith("/")
+    ? searchParams.get("next")
+    : "/account";
 
   const {
     handleSubmit,
@@ -46,7 +48,7 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
           ? "You have successfully logged in"
           : "You have successfully regisreted with Holidaze."
       );
-      router.push(nextUrl);
+      router.replace(nextUrl);
     }
 
     setFormError(result.error);

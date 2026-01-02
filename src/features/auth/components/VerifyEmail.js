@@ -5,7 +5,6 @@ import { IconCheckmark } from "@/components/icons";
 import {
   Container,
   Text,
-  Loader,
   Flex,
   Group,
   Transition,
@@ -13,6 +12,8 @@ import {
   Button,
 } from "@mantine/core";
 import Link from "next/link";
+import { mantineNotify } from "@/lib/mantineNotify";
+import { resendEmailVerification } from "@/actions/email";
 
 const VerifyEmail = ({ status }) => {
   const router = useRouter();
@@ -30,7 +31,6 @@ const VerifyEmail = ({ status }) => {
   }, [status, router]);
 
   const statusContent = {
-    loading: <Loader />,
     success: (
       <Group spacing="xs">
         <Transition
@@ -48,15 +48,33 @@ const VerifyEmail = ({ status }) => {
         <Text>Email successfully verified! Redirecting…</Text>
       </Group>
     ),
-    error: (
+    alreadyVerified: <Text>This email has already been verified.</Text>,
+    expired: (
       <Flex direction={"column"} justify={"center"} align={"center"}>
         <Text mb={"sm"} c="red">
           This verification link is invalid or expired.
         </Text>
-        <Button variant="light" component={Link} href={"/account"}>
-          Return to account
-        </Button>
+        <Group gap={"lg"}>
+          <Button variant="light" component={Link} href={"/account"}>
+            Return to account
+          </Button>
+          <Button
+            variant="light"
+            onClick={async () => {
+              await resendEmailVerification();
+              mantineNotify.success("Verification email resent");
+            }}
+          >
+            Resend verification email
+          </Button>
+        </Group>
       </Flex>
+    ),
+    invalid: <Text c="red">This verification link is no longer valid.</Text>,
+    error: (
+      <Text mb={"sm"} c="red">
+        An unexpected error occurred. Please try again later.
+      </Text>
     ),
   };
 

@@ -11,7 +11,6 @@ const Loading = () => {
         gap="sm"
       >
         <Loader />
-        <Text>Verifying your email…</Text>
       </Flex>
     </Container>
   );

@@ -8,17 +8,19 @@ import config from "@/lib/config";
 import { headers } from "next/headers";
 import { workflowClient } from "@/lib/email";
 import ratelimit from "@/lib/rateLimit";
+import { verificationStatus } from "@/lib/verification-status";
 
 export const updateEmail = async ({ newEmail }) => {
   console.log("new email: ", newEmail);
   const session = await auth();
   if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
+    return { success: false, error: "UNAUTHORIZED" };
   }
 
   const ip = (await headers()).get("x-forwarded-for") || "127.0.0.1";
   const { success } = await ratelimit.limit(ip);
   if (!success) return redirect("/too-fast");
+  const userAgent = (await headers()).get("user-agent");
 
   try {
     const [user] = await db
@@ -33,7 +35,7 @@ export const updateEmail = async ({ newEmail }) => {
       userId: user.id,
       type: "EMAIL_CHANGE_REQUESTED",
       ip,
-      userAgent: (await headers()).get("user-agent"),
+      userAgent,
     });
 
     const token = crypto.randomUUID();
@@ -71,11 +73,23 @@ export const updateEmail = async ({ newEmail }) => {
   }
 };
 
-export const resendEmailVerification = async (userId, pendingEmail) => {
+export const resendEmailVerification = async (userId) => {
   const [user] = await db.select().from(users).where(eq(users.id, userId));
   if (!user?.pendingEmail) return;
 
+  const ip = (await headers()).get("x-forwarded-for") || "127.0.0.1";
+  const { success } = await ratelimit.limit(ip);
+  if (!success) return redirect("/too-fast");
+  const userAgent = (await headers()).get("user-agent");
+
   try {
+    await db.insert(userEvents).values({
+      userId: user.id,
+      type: "EMAIL_VERIFICATION_RESENT",
+      ip,
+      userAgent,
+    });
+
     await db
       .delete(emailVerifications)
       .where(eq(emailVerifications.userId, userId));
@@ -93,7 +107,7 @@ export const resendEmailVerification = async (userId, pendingEmail) => {
       url: `${config.env.apiEndpoint}/api/workflows/verify-email`,
       body: {
         userId,
-        newEmail: pendingEmail,
+        newEmail: user.pendingEmail,
         oldEmail: user.email,
         fullName: user.fullName,
         token,
@@ -109,27 +123,50 @@ export const resendEmailVerification = async (userId, pendingEmail) => {
   }
 };
 
-export const verifyEmailToken = async ({ token, userId }) => {
+export const verifyEmailToken = async (token, userId) => {
+  const ip = (await headers()).get("x-forwarded-for") || "127.0.0.1";
+  const { success } = await ratelimit.limit(ip);
+  if (!success) return redirect("/too-fast");
+  const userAgent = (await headers()).get("user-agent");
+
   const [record] = await db
     .select()
     .from(emailVerifications)
     .where(eq(emailVerifications.token, token));
 
-  if (!record) return { status: "invalid" };
+  if (!record) return { status: verificationStatus.INVALID };
 
   if (record.expiresAt < new Date()) {
-    return { status: "expired" };
+    await db
+      .delete(emailVerifications)
+      .where(eq(emailVerifications.token, token));
+    return { status: verificationStatus.EXPIRED };
   }
 
   if (record.userId !== userId) {
-    return { status: "forbidden" };
+    return { status: verificationStatus.INVALID };
   }
+
   const [user] = await db
     .select()
     .from(users)
     .where(eq(users.id, record.userId));
 
-  if (!user?.pendingEmail) return { status: "invalid" };
+  if (!user) {
+    return { status: "INVALID" };
+  }
+
+  if (!user.pendingEmail) {
+    await db
+      .delete(emailVerifications)
+      .where(eq(emailVerifications.token, token));
+
+    return {
+      status: verificationStatus.ALREADY_VERIFIED,
+      email: user.email,
+      alreadyVerified: true,
+    };
+  }
 
   const newEmail = user.pendingEmail;
   const oldEmail = user.email;
@@ -151,14 +188,17 @@ export const verifyEmailToken = async ({ token, userId }) => {
     await db.insert(userEvents).values({
       userId: user.id,
       type: "EMAIL_CHANGED",
+      ip,
+      userAgent,
     });
-  } catch (error) {
-    return { status: "error", error };
-  }
 
-  return {
-    status: "success",
-    newEmail,
-    oldEmail,
-  };
+    return {
+      status: verificationStatus.SUCCESS,
+      newEmail,
+      oldEmail,
+    };
+  } catch (error) {
+    console.log("verifyemailtoken error: ", error);
+    return { success: false, status: "ERROR", error };
+  }
 };

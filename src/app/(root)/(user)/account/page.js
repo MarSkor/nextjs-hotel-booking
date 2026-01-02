@@ -35,7 +35,7 @@ const MyAccountPage = async () => {
     {
       href: "/account/account-details",
       label: "Account Details",
-      description: "Your account details.",
+      description: "Change email or password.",
     },
     {
       href: "/account/booking-history",
