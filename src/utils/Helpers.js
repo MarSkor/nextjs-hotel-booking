@@ -55,3 +55,19 @@ export const calculateBookingPrice = (checkIn, checkOut, pricePerNight) => {
 
 export const truncateString = (string = "", maxLength = 25) =>
   string.length > maxLength ? `${string.substring(0, maxLength)}...` : string;
+
+export const pendingBookingData = () => {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const data = JSON.parse(localStorage.getItem("pendingBooking") || "{}");
+    if (!data?.accommodationId) return null;
+    return {
+      ...data,
+      checkIn: data.checkIn ? new Date(data.checkIn) : null,
+      checkOut: data.checkOut ? new Date(data.checkOut) : null,
+    };
+  } catch {
+    return null;
+  }
+};
