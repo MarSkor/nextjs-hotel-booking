@@ -6,6 +6,7 @@ export const eventTypeEnum = pgEnum("enumEventType", [
   "EMAIL_VERIFICATION_RESENT",
   "PASSWORD_RESET_REQUESTED",
   "PASSWORD_CHANGED",
+  "PASSWORD_RESET",
 ]);
 
 export const userEvents = pgTable("user_events", {

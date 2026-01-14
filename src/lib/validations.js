@@ -36,6 +36,53 @@ export const registerSchema = z.object({
     .trim(),
 });
 
+export const emailSchema = z.object({
+  email: z
+    .email({
+      error: "Please enter a valid email address.",
+    })
+    .trim()
+    .nonempty("Email is required"),
+});
+
+export const codeSchema = z.object({
+  code: z
+    .string()
+    .min(1, "PIN code is required")
+    .length(6, "PIN code must be exactly 6 digits")
+    .regex(/^\d+$/, "PIN code must only contain numbers"),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    oldPassword: z
+      .string({ required_error: required_error })
+      .min(1, { error: "Please enter your current password." })
+      .trim(),
+    newPassword: z
+      .string({ required_error: required_error })
+      .min(8, { error: "Password must be at least 8 characters long." })
+      .regex(/[a-zA-Z]/, {
+        error: "Password must contain at least one letter.",
+      })
+      .regex(/[0-9]/, {
+        error: "Password must contain at least one number.",
+      })
+      .regex(/[^a-zA-Z0-9]/, {
+        error: "Password must contain at least one special character.",
+      })
+      .trim(),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwords do not match",
+  })
+  .refine((data) => data.currentPassword !== data.newPassword, {
+    message: "New password must be different from old password",
+    path: ["newPassword"],
+  });
+
 export const accommodationSchema = z
   .object({
     title: z.string().trim().min(3).max(150),
@@ -102,14 +149,6 @@ export const accommodationSchema = z
 
 export const bookingSchema = z
   .object({
-    // checkIn: z.preprocess(
-    //   (val) => (typeof val === "string" ? new Date(val) : val),
-    //   z.date({ required_error: "Check-in date is required" })
-    // ),
-    // checkOut: z.preprocess(
-    //   (val) => (typeof val === "string" ? new Date(val) : val),
-    //   z.date({ required_error: "Check-out date is required" })
-    // ),
     checkIn: z.preprocess(
       (val) => (val instanceof Date ? val : val ? new Date(val) : null),
       z
