@@ -1,1 +1,0 @@
-ALTER TYPE "public"."enumEventType" ADD VALUE 'PASSWORD_RESET';

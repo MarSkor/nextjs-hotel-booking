@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1768314542629,
-      "tag": "0000_dizzy_crusher_hogan",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1768390175479,
-      "tag": "0001_late_stingray",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1768405558348,
-      "tag": "0002_thick_banshee",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1768407552936,
-      "tag": "0003_demonic_shooting_star",
+      "when": 1768410212829,
+      "tag": "0000_daffy_natasha_romanoff",
       "breakpoints": true
     }
   ]
