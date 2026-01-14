@@ -2,9 +2,10 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
-import { users } from "@/database/schema/users";
-import { eq } from "drizzle-orm";
 import { db } from "@/database/drizzle";
+import { findUserByEmail } from "@/database/queries";
+import { safeParse } from "zod";
+import { loginSchema } from "@/lib/validations";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
@@ -14,27 +15,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google,
     CredentialsProvider({
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
-        const user = await db
-          .select()
-          .from(users)
-          .where(eq(users.email, credentials.email.toString()))
-          .limit(1);
+        const parsedValues = safeParse(loginSchema, credentials);
+        const { email, password } = parsedValues.data;
 
-        if (user.length === 0) return null;
+        if (!parsedValues.success) return null;
 
-        const isPasswordValid = await compare(
-          credentials.password.toString(),
-          user[0].password
-        );
+        const user = await findUserByEmail(email);
+        if (!user) return null;
+        if (!user.password) return null;
+
+        const isPasswordValid = await compare(password, user.password);
 
         if (!isPasswordValid) return null;
+
         return {
-          id: user[0].id.toString(),
-          email: user[0].email,
-          name: user[0].fullName,
+          id: user.id,
+          email: user.email,
+          name: user.fullName,
         };
       },
     }),
@@ -43,14 +40,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/login",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
         token.name = user.name;
         token.email = user.email;
+        token.passwordChangedAt = user.passwordChangedAt;
+        token.pendingEmail = user.pendingEmail;
+        token.emailVerified = user.emailVerified;
+      }
+
+      if (trigger === "update") {
+        const dbUser = await db.query.users.findFirst({
+          where: (u, { eq }) => eq(u.id, token.id),
+        });
+
+        if (dbUser) {
+          token.pendingEmail = dbUser.pendingEmail;
+          token.emailVerified = dbUser.emailVerified;
+          token.email = dbUser.email;
+        }
       }
       return token;
     },
+
     async session({ session, token }) {
       if (!token?.id || !session.user) return session;
 
@@ -63,6 +76,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.name = token.name;
         session.user.email = user.email;
         session.user.pendingEmail = user.pendingEmail;
+        session.user.emailVerified = user.emailVerified;
       }
       return session;
     },
