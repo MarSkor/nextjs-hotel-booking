@@ -10,17 +10,13 @@ config({ path: ".env.local" });
 const sql = neon(process.env.DATABASE_URL);
 export const db = drizzle({ client: sql });
 
-// const __dirname = path.resolve();
-// const dummyAccommodations = JSON.parse(
-//   fs.readFileSync(path.join(__dirname, "dummyAccommodations.json"), "utf-8")
-// );
-
 const imagekit = new ImageKit({
   publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY,
   privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
   urlEndpoint: process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT,
 });
 
+//
 const uploadToImageKit = async (url, fileName, folder = "/accommodations") => {
   try {
     const res = await imagekit.upload({
@@ -28,7 +24,7 @@ const uploadToImageKit = async (url, fileName, folder = "/accommodations") => {
       fileName,
       folder,
     });
-    console.log(`✅ Uploaded ${fileName} to ImageKit`);
+    console.log(`🟢 Uploaded ${fileName} to ImageKit`);
     return {
       fileId: res.fileId,
       filePath: res.filePath,
@@ -41,7 +37,7 @@ const uploadToImageKit = async (url, fileName, folder = "/accommodations") => {
 };
 
 const seed = async () => {
-  console.log("🌱 Seeding accommodation seed with ImageKit uploads...");
+  console.log("🟠 Seeding accommodation seed with ImageKit uploads...");
 
   const filePath = path.join(
     process.cwd(),
@@ -57,13 +53,8 @@ const seed = async () => {
   try {
     for (const acc of dummyAccommodations) {
       let featuredImageData = acc.featuredImage;
-      // const featuredImage = await uploadToImageKit(
-      //   acc.featuredImage,
-      //   `${acc.slug}.jpg`,
-      //   "/accommodations"
-      // );
       if (!featuredImageData?.fileId && acc.featuredImage) {
-        console.log(`⏳ Uploading image for ${acc.title}`);
+        console.log(`🟡 Uploading image for ${acc.title}`);
         const uploaded = await uploadToImageKit(
           acc.featuredImage,
           path.basename(acc.featuredImage)
@@ -84,16 +75,16 @@ const seed = async () => {
       });
       inserted++;
     }
-    console.log("✅ Data seeded successfully!");
+    console.log("🟢 Data seeded successfully!");
   } catch (error) {
-    console.error("❌ Error seeding data:", error);
+    console.error("🔴 Error seeding data:", error);
   }
 
-  console.log("🌿 Seeding complete!");
+  console.log("🟢 Seeding complete!");
   process.exit(0);
 };
 
 seed().catch((error) => {
-  console.error("❌ Seeding failed:", error);
+  console.error("🔴 Seeding failed:", error);
   process.exit(1);
 });
