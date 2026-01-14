@@ -2,15 +2,18 @@ CREATE TYPE "public"."enumRole" AS ENUM('ADMIN', 'USER');--> statement-breakpoin
 CREATE TYPE "public"."enumPropertyType" AS ENUM('guesthouse', 'bed_and_breakfast', 'hotel');--> statement-breakpoint
 CREATE TYPE "public"."enumStatus" AS ENUM('pending', 'confirmed', 'cancelled');--> statement-breakpoint
 CREATE TYPE "public"."review_status" AS ENUM('PENDING', 'APPROVED', 'REJECTED');--> statement-breakpoint
+CREATE TYPE "public"."enumEventType" AS ENUM('EMAIL_CHANGED', 'EMAIL_CHANGE_REQUESTED', 'EMAIL_VERIFICATION_RESENT', 'PASSWORD_RESET_REQUESTED', 'PASSWORD_CHANGED');--> statement-breakpoint
 CREATE TABLE "users" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" uuid PRIMARY KEY NOT NULL,
 	"full_name" varchar(255) NOT NULL,
 	"email" text NOT NULL,
+	"pending_email" text,
+	"email_verified" timestamp,
 	"password" text NOT NULL,
+	"password_changed_at" timestamp,
 	"role" "enumRole" DEFAULT 'USER' NOT NULL,
 	"last_activity_date" date DEFAULT now(),
 	"created_at" timestamp with time zone DEFAULT now(),
-	CONSTRAINT "users_id_unique" UNIQUE("id"),
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
@@ -71,7 +74,8 @@ CREATE TABLE "reviews" (
 	"rating" numeric(2, 1) NOT NULL,
 	"comment" text,
 	"status" "review_status" DEFAULT 'APPROVED',
-	"created_at" timestamp with time zone DEFAULT now()
+	"created_at" timestamp with time zone DEFAULT now(),
+	CONSTRAINT "reviews_booking_id_unique" UNIQUE("booking_id")
 );
 --> statement-breakpoint
 CREATE TABLE "review_replies" (
@@ -92,6 +96,36 @@ CREATE TABLE "favorites" (
 	CONSTRAINT "favorites_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
+CREATE TABLE "email_verifications" (
+	"token" text PRIMARY KEY NOT NULL,
+	"user_id" uuid NOT NULL,
+	"new_email" text NOT NULL,
+	"expires_at" timestamp NOT NULL,
+	"created_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE "user_events" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid DEFAULT gen_random_uuid() NOT NULL,
+	"type" "enumEventType" NOT NULL,
+	"ip" text,
+	"user_agent" text,
+	"created_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE "password_verifications" (
+	"id" uuid DEFAULT gen_random_uuid(),
+	"user_id" uuid NOT NULL,
+	"token" text PRIMARY KEY NOT NULL,
+	"code" varchar(8) NOT NULL,
+	"expires_at" timestamp NOT NULL,
+	"used_at" timestamp,
+	"last_sent_at" timestamp DEFAULT now(),
+	"created_at" timestamp DEFAULT now(),
+	"verified_at" timestamp,
+	CONSTRAINT "password_verifications_user_id_unique" UNIQUE("user_id")
+);
+--> statement-breakpoint
 ALTER TABLE "bookings" ADD CONSTRAINT "bookings_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "bookings" ADD CONSTRAINT "bookings_accommodation_id_accommodations_id_fk" FOREIGN KEY ("accommodation_id") REFERENCES "public"."accommodations"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -100,4 +134,6 @@ ALTER TABLE "reviews" ADD CONSTRAINT "reviews_booking_id_bookings_id_fk" FOREIGN
 ALTER TABLE "review_replies" ADD CONSTRAINT "review_replies_review_id_reviews_id_fk" FOREIGN KEY ("review_id") REFERENCES "public"."reviews"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "review_replies" ADD CONSTRAINT "review_replies_owner_id_users_id_fk" FOREIGN KEY ("owner_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "favorites" ADD CONSTRAINT "favorites_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "favorites" ADD CONSTRAINT "favorites_accommodation_id_accommodations_id_fk" FOREIGN KEY ("accommodation_id") REFERENCES "public"."accommodations"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "favorites" ADD CONSTRAINT "favorites_accommodation_id_accommodations_id_fk" FOREIGN KEY ("accommodation_id") REFERENCES "public"."accommodations"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE UNIQUE INDEX "emailUniqueIndex" ON "users" USING btree (lower("email"));--> statement-breakpoint
+CREATE UNIQUE INDEX "userIdUniqueIndex" ON "password_verifications" USING btree ("user_id");

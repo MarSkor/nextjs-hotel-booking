@@ -5,57 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1764158169743,
-      "tag": "0000_big_cassandra_nova",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1764158203352,
-      "tag": "0001_soft_boom_boom",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1766745119129,
-      "tag": "0002_short_gladiator",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1766745407223,
-      "tag": "0003_special_sharon_ventura",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1766924464756,
-      "tag": "0004_cynical_ultimatum",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1766937466316,
-      "tag": "0005_gorgeous_brother_voodoo",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1766943841247,
-      "tag": "0006_charming_praxagora",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1767104093323,
-      "tag": "0007_left_betty_brant",
+      "when": 1768314542629,
+      "tag": "0000_dizzy_crusher_hogan",
       "breakpoints": true
     }
   ]
