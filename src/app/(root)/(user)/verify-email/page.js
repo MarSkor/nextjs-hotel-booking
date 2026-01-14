@@ -1,20 +1,29 @@
 import VerifyEmail from "@/features/auth/components/VerifyEmail";
 import { auth } from "../../../../../auth";
-import { redirect } from "next/navigation";
 import { verifyEmailToken } from "@/actions/email";
+import { redirect } from "next/navigation";
+import { findUserById } from "@/database/queries";
 
 const VerifyEmailPage = async ({ searchParams }) => {
-  const token = (await searchParams).token;
-  console.log("verifyemailpage TOKEN: ", token);
-
+  console.log("searchParams", searchParams);
+  const { token } = await searchParams;
   const session = await auth();
-  if (!token) {
-    return <VerifyEmail status="error" />;
-  }
+
+  if (!token) redirect("/account/account-details");
+
   if (!session?.user?.id) {
-    redirect(`/login?next=/verify-email?token=${token}`);
+    const callbackUrl = encodeURIComponent(
+      `/account/verify-email?token=${token}`
+    );
+    redirect(`/login?callbackUrl=${callbackUrl}`);
   }
-  const res = await verifyEmailToken(token, session.user.id);
+
+  const user = await findUserById(session.user.id);
+  if (!user?.pendingEmail) {
+    redirect("/account/account-details?already_verified=true");
+  }
+
+  const res = await verifyEmailToken(token);
 
   switch (res.status) {
     case "SUCCESS":
@@ -22,6 +31,9 @@ const VerifyEmailPage = async ({ searchParams }) => {
 
     case "ALREADY_VERIFIED":
       return <VerifyEmail status="alreadyVerified" />;
+
+    case "UNAUTHORIZED":
+      return <VerifyEmail status="unauthorized" />;
 
     case "EXPIRED":
       return <VerifyEmail status="expired" />;

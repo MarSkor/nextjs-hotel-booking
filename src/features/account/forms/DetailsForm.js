@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { IconEdit } from "@/components/icons";
 import { mantineNotify } from "@/lib/mantineNotify";
-import { resendEmailVerification, updateEmail } from "@/actions/email";
+import { updateEmail } from "@/actions/email";
 import { useRouter, useSearchParams } from "next/navigation";
 import VerifiedIndicator from "../components/VerifiedIndicator";
 import { useSession } from "next-auth/react";
@@ -17,19 +17,20 @@ import {
   Group,
   ActionIcon,
   Fieldset,
-  Loader,
 } from "@mantine/core";
 
-const DetailsForm = ({ session }) => {
-  console.log("DETAILS session: ", session);
-
-  const { update } = useSession();
+const DetailsForm = ({ session: initialSession }) => {
+  const { data: session, update } = useSession();
+  const currentSession = session || initialSession;
+  const searchParams = useSearchParams();
   const router = useRouter();
   const [editing, setEditing] = useState(false);
-  const [localPendingEmail, setLocalPendingEmail] = useState(
-    session.user.pendingEmail
-  );
-  const searchParams = useSearchParams();
+
+  const isVerified =
+    !!currentSession?.user.emailVerified ||
+    searchParams.get("email_verified") === "true";
+
+  const isPending = !!currentSession?.user?.pendingEmail;
   const emailVerified = searchParams.get("email_verified");
   const hasRefreshedSession = useRef(false);
 
@@ -37,45 +38,41 @@ const DetailsForm = ({ session }) => {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm({
+    mode: "onChange",
     defaultValues: {
       newEmail: session?.user?.email,
       password: "",
     },
   });
 
+  const watchedEmail = watch("newEmail");
+  const unchanged = watchedEmail === currentSession?.user?.email;
+
   useEffect(() => {
     if (emailVerified === "true" && !hasRefreshedSession.current) {
       hasRefreshedSession.current = true;
 
       update().then(() => {
+        mantineNotify.success("Your email has been successfully verified!");
         router.replace("/account/account-details", { scroll: false });
       });
     }
   }, [emailVerified, update, router]);
 
-  const watchedEmail = watch("newEmail");
-  const unchanged = watchedEmail === session.user.email;
-
   const onSubmit = async (data) => {
     const res = await updateEmail({ newEmail: data.newEmail });
-    setLocalPendingEmail(data.newEmail);
 
     if (res.success) {
       setEditing(false);
-      mantineNotify.success(
-        "We have sent a verification link to your new email."
-      );
+      await update();
+      mantineNotify.success("Verification link sent!");
     } else {
       mantineNotify.error(res.error || "Could not update. Try again later.");
-      console.log(res.error);
     }
   };
-
-  useEffect(() => {
-    setLocalPendingEmail(session.user.pendingEmail);
-  }, [session.user.pendingEmail]);
 
   return (
     <Box className="accountdetails__wrapper">
@@ -83,7 +80,7 @@ const DetailsForm = ({ session }) => {
         <TextInput
           label="Name"
           disabled
-          placeholder={session?.user.name}
+          placeholder={currentSession?.user?.name}
           mb={"sm"}
         />
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -93,59 +90,72 @@ const DetailsForm = ({ session }) => {
                 <TextInput
                   mb={"sm"}
                   flex={1}
-                  label="Email"
+                  label="Email Address"
                   disabled={!editing || isSubmitting}
-                  placeholder={session?.user.email}
+                  placeholder={currentSession?.user?.email}
                   {...register("newEmail", { required: true })}
                   error={errors.newEmail && "Email is required"}
                   rightSection={
-                    editing ? (
-                      isSubmitting ? (
-                        <Loader size="xs" />
-                      ) : null
-                    ) : (
+                    editing ? null : (
                       <ActionIcon
-                        variant="light"
+                        variant="subtle"
                         onClick={() => setEditing(true)}
-                        disabled={isSubmitting}
                       >
                         <IconEdit height={18} width={18} />
                       </ActionIcon>
                     )
                   }
                 />
-                <VerifiedIndicator
-                  pendingEmail={localPendingEmail}
-                  onResend={() =>
-                    resendEmailVerification(session.user.id, localPendingEmail)
-                  }
-                />
-              </Flex>
-            </Flex>
 
-            <Box>
+                <Box mt={errors.newEmail ? 0 : 20}>
+                  <VerifiedIndicator
+                    isVerified={isVerified}
+                    isPending={isPending}
+                  />
+                </Box>
+              </Flex>
+              {currentSession?.user?.pendingEmail && !editing && (
+                <Text size="xs" c="orange" mt={5}>
+                  Verification pending for: {currentSession.user.pendingEmail}
+                </Text>
+              )}
               {editing && (
                 <Group justify="flex-end">
                   <Button
                     variant="light"
-                    onClick={() => setEditing(false)}
-                    type="button"
+                    size="xs"
+                    onClick={() => {
+                      setEditing(false);
+                      reset();
+                    }}
+                    disabled={isSubmitting}
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={unchanged || isSubmitting}>
-                    Save
+                  <Button
+                    type="submit"
+                    size="xs"
+                    loading={isSubmitting}
+                    disabled={
+                      unchanged ||
+                      isSubmitting ||
+                      !!errors.newEmail ||
+                      !watchedEmail
+                    }
+                  >
+                    Save Changes
                   </Button>
                 </Group>
               )}
-            </Box>
+            </Flex>
           </Fieldset>
+
           <Fieldset legend="Change Password">
             <Text mb={"sm"}>Change your password here.</Text>
             <Button
               variant="light"
               component="a"
-              href="/account/reset-password"
+              href="/account/account-details/change-password"
             >
               Change Password
             </Button>

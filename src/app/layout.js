@@ -11,12 +11,12 @@ import { SessionProvider } from "next-auth/react";
 import { auth } from "../../auth";
 
 export default async function RootLayout({ children }) {
-  const session = auth();
+  const session = await auth();
 
   return (
     <html lang="en">
-      <SessionProvider session={session}>
-        <body>
+      <body>
+        <SessionProvider session={session}>
           <MantineProvider theme={theme}>
             <Notifications
               position="top-center"
@@ -26,8 +26,8 @@ export default async function RootLayout({ children }) {
             />
             <ModalsProvider>{children}</ModalsProvider>
           </MantineProvider>
-        </body>
-      </SessionProvider>
+        </SessionProvider>
+      </body>
     </html>
   );
 }

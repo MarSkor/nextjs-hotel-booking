@@ -3,14 +3,7 @@ import { sendEmail } from "@/lib/email";
 import config from "@/lib/config";
 
 export const { POST } = serve(async (context) => {
-  const { userId, oldEmail, newEmail, fullName, token } =
-    context.requestPayload;
-  console.log(
-    "verified-email route: ",
-    { oldEmail },
-    { fullName },
-    { newEmail }
-  );
+  const { newEmail, fullName, token, userId } = context.requestPayload;
 
   const verifyUrl = `${config.env.apiEndpoint}/verify-email?token=${token}`;
 
@@ -24,6 +17,7 @@ export const { POST } = serve(async (context) => {
       <h3>Verify your email.</h3>
       <p>Hi! ${fullName}, you've requested to change your email.</p>
       <a href=${verifyUrl}>Confirm your email</a>
+      <p>It will expire in 10 minutes.</p>
       `,
       });
     },

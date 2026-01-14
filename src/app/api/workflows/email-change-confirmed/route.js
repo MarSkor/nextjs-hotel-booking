@@ -7,10 +7,11 @@ export const { POST } = serve(async (context) => {
   await context.run("send-email-updated-notification", async () => {
     await sendEmail({
       email: newEmail,
-      subject: "Your email was updated",
+      subject: "Success: Your email is now verified",
       html: `
       <h3>Your email has been updated.</h3>
-      <p>Hi, ${fullName}! Your email has now been updated.</p>
+      <p>Hi, ${fullName}! Your email has now been successfully updated.</p>
+      <p>You can now use ${newEmail} to log in</p>
       `,
     });
   });
@@ -18,13 +19,12 @@ export const { POST } = serve(async (context) => {
   await context.run("send-security-alert", async () => {
     await sendEmail({
       email: oldEmail,
-      subject: "Security notice: email changed",
+      subject: "Security Alert: Your email has been changed",
       html: `
       <h3><Your email has been updated.</h3>
       <p>Hi, ${fullName}! Your email has now been updated.</p>
+      <p> If you did not make this change, please contact support immediately."</p>
       `,
     });
   });
-
-  console.log("updated email notification: sent");
 });
