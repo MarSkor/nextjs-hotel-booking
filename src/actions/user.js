@@ -3,9 +3,13 @@
 import { db } from "@/database/drizzle";
 import { auth } from "../../auth";
 import { and, desc, eq, sql } from "drizzle-orm";
-import { bookings, favorites } from "@/database/schema";
+import { bookings, favorites, userEvents, users } from "@/database/schema";
 import { FAVORITES_PER_PAGE, BOOKINGS_PER_PAGE } from "@/utils/constants";
 import { revalidatePath } from "next/cache";
+import config from "@/lib/config";
+import { workflowClient } from "@/lib/email";
+import { verificationStatus } from "@/lib/verification-status";
+import { headers } from "next/headers";
 
 export const fetchAllBookings = async (userId, offset) => {
   try {
@@ -51,6 +55,18 @@ export const fetchAllFavorites = async (userId, offset) => {
   }
 };
 
+export const getFavoritesPages = async (userId) => {
+  const [{ count: favoritesCount }] = await db
+    .select({ count: sql`count(*)` })
+    .from(favorites)
+    .where(eq(favorites.userId, userId));
+
+  const totalCount = Number(favoritesCount ?? 0);
+  const totalPages = Math.ceil(totalCount / FAVORITES_PER_PAGE);
+
+  return totalPages;
+};
+
 export const isAccommodationFavorite = async (accommodationId) => {
   const session = await auth();
   if (!session?.user.id) return false;
@@ -63,18 +79,6 @@ export const isAccommodationFavorite = async (accommodationId) => {
   });
 
   return !!res;
-};
-
-export const getFavoritesPages = async (userId) => {
-  const [{ count: favoritesCount }] = await db
-    .select({ count: sql`count(*)` })
-    .from(favorites)
-    .where(eq(favorites.userId, userId));
-
-  const totalCount = Number(favoritesCount ?? 0);
-  const totalPages = Math.ceil(totalCount / FAVORITES_PER_PAGE);
-
-  return totalPages;
 };
 
 export const toggleFavoriteAction = async (userId, accommodationId) => {
@@ -93,4 +97,38 @@ export const toggleFavoriteAction = async (userId, accommodationId) => {
   revalidatePath("/");
   revalidatePath("/account/favorites");
   return { favorite: !existingFavorite };
+};
+
+export const deleteAccount = async () => {
+  const session = await auth();
+  if (!session?.user?.id)
+    return { success: false, error: verificationStatus.UNAUTHORIZED };
+
+  const userId = session.user.id;
+  const email = session.user.email;
+  const fullName = session.user.name;
+
+  const headerList = await headers();
+  const ip = headerList.get("x-forwarded-for") || "127.0.0.1";
+  const userAgent = headerList.get("user-agent") || "unknown";
+
+  try {
+    await db.insert(userEvents).values({
+      userId,
+      type: "ACCOUNT_DELETED",
+      ip,
+      userAgent,
+    });
+    await workflowClient.trigger({
+      url: `${config.env.apiEndpoint}/api/workflows/delete-account`,
+      body: { email, fullName },
+    });
+
+    await db.delete(users).where(eq(users.id, userId));
+
+    return { success: true };
+  } catch (error) {
+    console.log("delete user error: ", error);
+    return { success: false, error: "Failed to delete account." };
+  }
 };
