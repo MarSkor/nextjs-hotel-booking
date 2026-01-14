@@ -32,8 +32,8 @@ export const AuthSection = ({ variant, session: initialSession }) => {
               className="userAvatar__avatar"
               radius="sm"
               size="md"
-              name={getInitials(session.user.name) || null}
-              alt={session.user.name}
+              name={getInitials(currentSession.user.name) || null}
+              alt={currentSession.user.name}
               allowedInitialsColors={["var(--clr-brown-5)"]}
               color="initials"
             />
