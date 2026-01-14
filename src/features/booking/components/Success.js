@@ -1,13 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Container, Flex, Text, Title, Anchor, Paper } from "@mantine/core";
+import { Container, Flex, Text, Title, Anchor } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const Success = ({ customerEmail, sessionId }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [booking, setBooking] = useState(null);
 
   useEffect(() => {
     if (!sessionId) {
@@ -24,7 +23,6 @@ const Success = ({ customerEmail, sessionId }) => {
         const data = await res.json();
 
         if (data.success && data.booking?.isPaid) {
-          setBooking(data.booking);
           setLoading(false);
           localStorage.removeItem("pendingBooking");
           clearInterval(interval);
@@ -34,7 +32,7 @@ const Success = ({ customerEmail, sessionId }) => {
           setLoading(false);
         }
       } catch (error) {
-        console.error("An error occured:", error);
+        console.error("An error occurred:", error);
       }
     }, 2500); // 2.5s
     return () => clearInterval(interval);
@@ -42,8 +40,9 @@ const Success = ({ customerEmail, sessionId }) => {
 
   if (loading) {
     return (
-      <Flex justify={"center"} align={"center"} h={"80vh"}>
-        <Title order={2}>Payment still processing...</Title>
+      <Flex justify={"center"} align={"center"} h={"80vh"} direction={"column"}>
+        <Title order={2}>Payment is being verified...</Title>
+        <Text size="sm">Please check your email in a few minutes.</Text>
       </Flex>
     );
   }
@@ -73,9 +72,6 @@ const Success = ({ customerEmail, sessionId }) => {
         <Anchor component={Link} href={"/"} underline="always">
           Go back home
         </Anchor>
-        <Paper withBorder maw={500} mt={"lg"}>
-          <Title ta={"center"}>{booking.title}</Title>
-        </Paper>
       </Flex>
     </Container>
   );

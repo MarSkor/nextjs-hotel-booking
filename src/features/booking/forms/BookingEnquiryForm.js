@@ -11,6 +11,7 @@ import LoginRegisterBanner from "../components/LoginRegisterBanner";
 import BookingSummary from "../components/BookingSummary";
 import { loadStripe } from "@stripe/stripe-js";
 import config from "@/lib/config";
+import { pendingBookingData } from "@/utils/Helpers";
 import {
   Flex,
   Button,
@@ -32,8 +33,7 @@ const stripePromise = loadStripe(config.env.stripe.publishableKey);
 const BookingEnquiry = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [bookingData, setBookingData] = useState(null);
-  const [initialized, setInitialized] = useState(false);
+  const [bookingData, setBookingData] = useState(pendingBookingData());
 
   const imagePath = bookingData?.featuredImage || PLACEHOLDER_IMAGE_PATH;
   const parseCheckIn = dayjs(bookingData?.checkIn);
@@ -58,38 +58,12 @@ const BookingEnquiry = () => {
     mode: "onChange",
     criteriaMode: "all",
   });
-  // console.log("form errors: ", errors);
 
-  const watchForm = watch();
-
-  // get booking data from local storage
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const savedBookingData = JSON.parse(
-      localStorage.getItem("pendingBooking") || "{}"
-    );
-
-    if (!savedBookingData?.accommodationId) {
-      setInitialized(true);
-      return;
+    if (!bookingData) {
+      router.replace("/");
     }
-
-    if (savedBookingData.checkIn)
-      savedBookingData.checkIn = new Date(savedBookingData.checkIn);
-    if (savedBookingData.checkOut)
-      savedBookingData.checkOut = new Date(savedBookingData.checkOut);
-
-    setBookingData(savedBookingData);
-    setInitialized(true);
-  }, [router]);
-
-  // if initialized and no accommodationId push to home
-  useEffect(() => {
-    if (initialized && !bookingData?.accommodationId) {
-      router.push("/");
-    }
-  }, [initialized, bookingData, router]);
+  }, [bookingData, router]);
 
   // set form values if they exists
   useEffect(() => {
@@ -98,18 +72,20 @@ const BookingEnquiry = () => {
       setValue("email", session.user.email || "");
       if (session.user.phone) setValue("phone", session.user.phone);
     }
-  }, [session, setValue]);
+  }, [session]);
 
   // persist data when signing in/signing up
   useEffect(() => {
+    if (!bookingData) return;
+
     const subscription = watch((values) => {
-      if (bookingData) {
-        const updatedData = { ...bookingData, ...values };
-        localStorage.setItem("pendingBooking", JSON.stringify(updatedData));
-      }
+      localStorage.setItem(
+        "pendingBooking",
+        JSON.stringify({ ...bookingData, ...values })
+      );
     });
     return () => subscription.unsubscribe();
-  }, [watchForm, bookingData]);
+  }, [bookingData, watch]);
 
   const onSubmit = async (data) => {
     if (!bookingData) return;
@@ -165,7 +141,7 @@ const BookingEnquiry = () => {
     }
   };
 
-  if (!initialized || status === "loading") {
+  if (status === "loading" || !bookingData) {
     return (
       <Flex justify="center" align="center" h="80vh">
         <Loader size="lg" />
@@ -173,7 +149,7 @@ const BookingEnquiry = () => {
     );
   }
 
-  if (!bookingData) return null;
+  console.log("session:", session);
 
   return (
     <Box component="article" className="enquiry__wrapper" my={"lg"} pb={"80px"}>
@@ -192,7 +168,7 @@ const BookingEnquiry = () => {
           totalNights={totalNights}
         />
         <GridCol span={{ base: 12, sm: 8 }}>
-          {!session.user && <LoginRegisterBanner />}
+          {!session?.user && <LoginRegisterBanner />}
           <Paper
             component="section"
             className="enquiry__header"
