@@ -5,20 +5,10 @@ import { db } from "@/database/drizzle";
 import { eq } from "drizzle-orm";
 import { users } from "@/database/schema/users";
 
-// https://nextjs.org/docs/app/getting-started/metadata-and-og-images#generated-metadata
 export const metadata = {
-  // metadataBase: new URL(),
   title: "Holidaze Booking",
   description:
     "A demo of a accommodation booking web app. Discover Hotels, B&B and guesthouses in Bergen.",
-  // keywords: [],
-  // authors: [
-  //   {name: "",
-  //     url: ""
-  //   }
-  // ],
-  // creator: "",
-  // manifest: "",
 };
 
 const PublicLayout = async ({ children }) => {
