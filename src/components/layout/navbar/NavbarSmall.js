@@ -14,9 +14,12 @@ import { IconCancel } from "@/components/icons";
 import { NavLinks } from "./Navbar";
 import NavLink from "./NavLink";
 import { LogOutButton } from "@/components/ui";
+import { useSession } from "next-auth/react";
+import { AuthSection } from "./AuthSection";
 
-const NavbarSmall = ({ opened, onClose, session }) => {
+const NavbarSmall = ({ opened, onClose }) => {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   useEffect(() => {
     onClose();
@@ -72,11 +75,7 @@ const NavbarSmall = ({ opened, onClose, session }) => {
           gap="lg"
           align="end"
         >
-          {session?.user ? (
-            <NavLink href="/account" label="My Account" vp="sm" />
-          ) : (
-            <NavLink href="/login" label="Log in" vp="sm" />
-          )}
+          <AuthSection variant="mobile" />
         </Flex>
 
         <Box className="navbar-sm__list-items">

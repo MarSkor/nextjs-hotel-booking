@@ -5,7 +5,7 @@ import NavbarLogo from "./NavbarLogo";
 import NavbarSmall from "./NavbarSmall";
 import NavLink from "./NavLink";
 import Link from "next/link";
-import UserAvatar from "./UserAvatar";
+import { AuthSection } from "./AuthSection";
 
 export const NavLinks = [
   { href: "/", label: "Home" },
@@ -35,11 +35,7 @@ const Navbar = ({ session }) => {
           </Flex>
           <Group visibleFrom="md" className="navbar__right">
             {/* <SearchBar/> */}
-            {session?.user ? (
-              <UserAvatar session={session} />
-            ) : (
-              <NavLink href="/login" label="Log in" vp="lg" />
-            )}
+            <AuthSection variant="desktop" session={session} />
             <Button
               className="btn btn-navbar btn-500"
               component={Link}
@@ -55,7 +51,7 @@ const Navbar = ({ session }) => {
             color="#c5bcb3"
           />
         </Flex>
-        <NavbarSmall session={session} opened={opened} onClose={closeDrawer} />
+        <NavbarSmall opened={opened} onClose={closeDrawer} />
       </Container>
     </nav>
   );
