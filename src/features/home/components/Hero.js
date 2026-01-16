@@ -1,3 +1,6 @@
+"use client";
+import { guestAmount, propertyType } from "@/utils/constants";
+import { buildSearchParams } from "@/utils/Helpers";
 import {
   Container,
   Text,
@@ -7,13 +10,39 @@ import {
   Button,
   Box,
   Select,
-  NumberInput,
   Grid,
   GridCol,
 } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import dayjs from "dayjs";
 
 const Hero = () => {
+  const router = useRouter();
+  const [type, setType] = useState(null);
+  const [guests, setGuests] = useState(null);
+  const [checkIn, setCheckIn] = useState(null);
+  const [checkOut, setCheckOut] = useState(null);
+  const [hasAttemptedSearch, setHasAttemptedSearch] = useState(false);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    if (!type) {
+      setHasAttemptedSearch(true);
+      return;
+    }
+
+    const query = buildSearchParams({
+      type: type !== "all" ? type : null,
+      guests: guests !== "all" ? guests : null,
+      checkIn: checkIn,
+      checkOut: checkOut,
+    });
+    router.push(`/accommodation?${query}`);
+  };
+
   return (
     <section className="home-hero__wrapper">
       <Overlay color="#000" opacity={0.95} zIndex={1} />
@@ -30,13 +59,12 @@ const Hero = () => {
           </Title>
         </Container>
 
-        {/* implement functionality later */}
         <Container
           component={"section"}
           className={`bsf-section bsf-section-home`}
           size="md"
         >
-          <form>
+          <form onSubmit={handleSearch}>
             <Grid align="center">
               <GridCol span={{ base: 12, md: 3 }}>
                 <Flex
@@ -47,13 +75,23 @@ const Hero = () => {
                   <Select
                     clearable
                     w={"100%"}
+                    label="Property Type"
+                    placeholder="Select Property"
+                    data={propertyType}
+                    value={type}
+                    onChange={(val) => {
+                      setType(val);
+                      setHasAttemptedSearch(false);
+                    }}
+                    error={
+                      hasAttemptedSearch && !type
+                        ? "Please select a property type"
+                        : null
+                    }
                     classNames={{
                       input: "booking-section__form--input",
                       label: "booking-section__form--label",
                     }}
-                    label="Property Type"
-                    placeholder="Select Property"
-                    data={["Hotel", "Guesthouse", "Bed & Breakfast"]}
                   />
                 </Flex>
               </GridCol>
@@ -68,6 +106,9 @@ const Hero = () => {
                       <DatePickerInput
                         label="Check in"
                         clearable
+                        value={checkIn}
+                        onChange={setCheckIn}
+                        minDate={dayjs().startOf("day").toDate()}
                         valueFormat="ddd, MM/DD/YY"
                         placeholder="--/--/--"
                         classNames={{
@@ -80,6 +121,13 @@ const Hero = () => {
                       <DatePickerInput
                         label="Check out"
                         clearable
+                        value={checkOut}
+                        onChange={setCheckOut}
+                        minDate={
+                          checkIn
+                            ? dayjs(checkIn).add(1, "day").toDate()
+                            : dayjs().toDate()
+                        }
                         valueFormat="ddd, MM/DD/YY"
                         placeholder="--/--/--"
                         classNames={{
@@ -99,12 +147,13 @@ const Hero = () => {
                   justify={"center"}
                   w={"100%"}
                 >
-                  <NumberInput
+                  <Select
                     w={"100%"}
                     label="Guests"
                     placeholder="Guests"
-                    min={1}
-                    max={6}
+                    data={guestAmount}
+                    value={guests}
+                    onChange={setGuests}
                     classNames={{
                       input: "booking-section__form--input",
                       label: "booking-section__form--label",
@@ -113,7 +162,7 @@ const Hero = () => {
                 </Flex>
               </GridCol>
               <GridCol span={{ base: 12, md: "content" }}>
-                <Button>Search</Button>
+                <Button type="submit">Search</Button>
               </GridCol>
             </Grid>
           </form>

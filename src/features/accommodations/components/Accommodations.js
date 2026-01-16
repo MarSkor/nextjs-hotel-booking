@@ -26,6 +26,12 @@ const Accommodations = ({ accList, totalPages, totalCount }) => {
   const [guests, setGuests] = useState(searchParams.get("guests") || "all");
   const [sort, setSort] = useState(searchParams.get("sort") || "price_asc");
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
+  const [checkIn, setCheckIn] = useState(
+    searchParams.get("checkIn") ? new Date(searchParams.get("checkIn")) : null
+  );
+  const [checkOut, setCheckOut] = useState(
+    searchParams.get("checkOut") ? new Date(searchParams.get("checkOut")) : null
+  );
 
   useEffect(() => {
     const query = buildSearchParams({
@@ -33,14 +39,14 @@ const Accommodations = ({ accList, totalPages, totalCount }) => {
       guests: guests !== "all" ? guests : null,
       sort: sort !== "price_asc" ? sort : null,
       page: page > 1 ? page : null,
+      checkIn: checkIn ? checkIn.toISOString() : null,
+      checkOut: checkOut ? checkOut.toISOString() : null,
     });
     const newUrl = `?${query}`;
     if (window.location.search !== newUrl) {
       router.replace(newUrl);
     }
   }, [type, guests, sort, page, router]);
-
-  // console.log("accList", accList);
 
   return (
     <Container
@@ -104,6 +110,12 @@ const Accommodations = ({ accList, totalPages, totalCount }) => {
                         <DatePickerInput
                           label="Check in"
                           clearable
+                          value={checkIn}
+                          onChange={(val) => {
+                            setCheckIn(val);
+                            setPage(1);
+                          }}
+                          minDate={new Date()}
                           valueFormat="ddd, MM/DD/YY"
                           placeholder="--/--/--"
                           classNames={{
@@ -116,6 +128,12 @@ const Accommodations = ({ accList, totalPages, totalCount }) => {
                         <DatePickerInput
                           label="Check out"
                           clearable
+                          value={checkOut}
+                          onChange={(val) => {
+                            setCheckOut(val);
+                            setPage(1);
+                          }}
+                          minDate={checkIn || new Date()}
                           valueFormat="ddd, MM/DD/YY"
                           placeholder="--/--/--"
                           classNames={{
@@ -192,7 +210,6 @@ const Accommodations = ({ accList, totalPages, totalCount }) => {
 
         <Flex className="accommodations-header__acs-number">
           <Text size="xs" c="dimmed">
-            {/* {accList?.length} accommodations of  */}
             {totalCount} Accommodations
           </Text>
         </Flex>

@@ -1,6 +1,6 @@
 import { db } from "@/database/drizzle";
-import { accommodations } from "@/database/schema";
-import { asc, desc, eq, sql } from "drizzle-orm";
+import { accommodations, bookings } from "@/database/schema";
+import { and, asc, desc, eq, gt, lt, notExists, sql } from "drizzle-orm";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -9,11 +9,38 @@ const getAccommodations = async ({
   guests = "all",
   sort = "price_asc",
   page = 1,
+  checkIn,
+  checkOut,
 }) => {
   const offset = (page - 1) * ITEMS_PER_PAGE;
-
-  let orderBy;
+  const filterArray = [];
   const [sortBy, sortOrder] = sort.split("_");
+  let orderBy;
+
+  if (checkIn && checkOut) {
+    const startDate = new Date(checkIn);
+    const endDate = new Date(checkOut);
+
+    filterArray.push(
+      notExists(
+        db
+          .select()
+          .from(bookings)
+          .where(
+            and(
+              eq(bookings.status, "confirmed"),
+              eq(bookings.accommodationId, accommodations.id),
+              lt(bookings.checkIn, endDate),
+              gt(bookings.checkOut, startDate)
+            )
+          )
+      )
+    );
+  }
+
+  if (type !== "all") {
+    filterArray.push(eq(accommodations.propertyType, type));
+  }
 
   switch (sortBy) {
     case "price":
@@ -38,11 +65,6 @@ const getAccommodations = async ({
       orderBy = asc(accommodations.pricePerNight);
   }
 
-  const filterArray = [];
-  if (type !== "all") {
-    filterArray.push(eq(accommodations.propertyType, type));
-  }
-
   // leaving this as a if statement since 5 is the current max amount of guests pr. booking.
   if (guests !== "all") {
     if (guests === "1-2") {
@@ -54,20 +76,23 @@ const getAccommodations = async ({
     }
   }
 
-  const countResult = await db
-    .select({ count: sql`count(*)` })
-    .from(accommodations)
-    .where(filterArray.length ? sql.join(filterArray, sql` AND `) : undefined);
+  const whereClause = filterArray.length ? and(...filterArray) : undefined;
+
+  const [countResult, accList] = await Promise.all([
+    db
+      .select({ count: sql`count(*)` })
+      .from(accommodations)
+      .where(whereClause),
+    db
+      .select()
+      .from(accommodations)
+      .where(whereClause)
+      .orderBy(orderBy)
+      .limit(ITEMS_PER_PAGE)
+      .offset(offset),
+  ]);
 
   const totalCount = Number(countResult[0].count);
-
-  const accList = await db
-    .select()
-    .from(accommodations)
-    .where(filterArray.length ? sql.join(filterArray, sql` AND `) : undefined)
-    .orderBy(orderBy)
-    .limit(ITEMS_PER_PAGE)
-    .offset(offset);
 
   return {
     accList,
