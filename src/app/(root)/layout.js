@@ -34,7 +34,7 @@ const PublicLayout = async ({ children }) => {
 
   return (
     <>
-      <Navbar session={session} />
+      <Navbar />
       <main>{children}</main>
       <Footer />
     </>

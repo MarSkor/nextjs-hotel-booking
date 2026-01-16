@@ -14,7 +14,7 @@ export const NavLinks = [
   { href: "/contact", label: "Contact us" },
 ];
 
-const Navbar = ({ session }) => {
+const Navbar = () => {
   const [opened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
 
@@ -35,7 +35,7 @@ const Navbar = ({ session }) => {
           </Flex>
           <Group visibleFrom="md" className="navbar__right">
             {/* <SearchBar/> */}
-            <AuthSection variant="desktop" session={session} />
+            <AuthSection variant="desktop" />
             <Button
               className="btn btn-navbar btn-500"
               component={Link}

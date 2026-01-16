@@ -7,16 +7,14 @@ import "@mantine/carousel/styles.css";
 import "@mantine/notifications/styles.css";
 import "../styles/main.scss";
 import { theme } from "@/lib/mantineTheme";
-import { SessionProvider } from "next-auth/react";
 import { auth } from "../../auth";
+import NextAuthProvider from "./NextAuthProvider";
 
 export default async function RootLayout({ children }) {
-  const session = await auth();
-
   return (
     <html lang="en">
       <body>
-        <SessionProvider session={session}>
+        <NextAuthProvider>
           <MantineProvider theme={theme}>
             <Notifications
               position="top-center"
@@ -26,7 +24,7 @@ export default async function RootLayout({ children }) {
             />
             <ModalsProvider>{children}</ModalsProvider>
           </MantineProvider>
-        </SessionProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );
