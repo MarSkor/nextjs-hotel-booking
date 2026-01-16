@@ -9,7 +9,7 @@ const LoginPage = () => (
     type="LOGIN"
     schema={loginSchema}
     defaultValues={{ email: "", password: "" }}
-    handleFormonSubmit={loginWithCredentials}
+    handleFormOnSubmit={loginWithCredentials}
   />
 );
 

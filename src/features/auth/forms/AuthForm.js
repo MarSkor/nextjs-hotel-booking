@@ -14,16 +14,15 @@ import {
   rem,
 } from "@mantine/core";
 import { FIELD_NAMES } from "./data";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { IconInfoCircle } from "@/components/icons";
 import FieldError from "./FieldError";
 import { mantineNotify } from "@/lib/mantineNotify";
+import Link from "next/link";
 
-const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
+const AuthForm = ({ type, schema, defaultValues, handleFormOnSubmit }) => {
   const isLogin = type === "LOGIN";
-  const router = useRouter();
-  const [formError, setFormError] = useState(null);
   const searchParams = useSearchParams();
   const nextUrl = searchParams.get("next")?.startsWith("/")
     ? searchParams.get("next")
@@ -32,6 +31,7 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
   const {
     handleSubmit,
     control,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(schema),
@@ -40,18 +40,35 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
   });
 
   const onSubmit = async (data) => {
-    const result = await handleFormonSubmit(data);
+    const res = await handleFormOnSubmit(data);
 
-    if (result.success) {
+    if (res.success) {
       mantineNotify.success(
         isLogin
-          ? "You have successfully logged in"
-          : "You have successfully regisreted with Holidaze."
+          ? "You're signed in"
+          : "You have successfully registered with Holidaze."
       );
-      router.replace(nextUrl);
-    }
 
-    setFormError(result.error);
+      window.location.href = nextUrl;
+    } else {
+      switch (res.statusCode) {
+        case 400:
+          const nestedErrors = res.error.nested;
+          for (const key in nestedErrors) {
+            setError(key, { message: nestedErrors[key]?.[0] });
+          }
+          break;
+
+        case 401:
+        case 409:
+        case 500:
+        default:
+          const error =
+            res.error ||
+            "An error occurred. Please try again or contact support.";
+          setError("root", { message: error });
+      }
+    }
   };
 
   useEffect(() => {
@@ -59,9 +76,6 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
       mantineNotify.info("You must be logged in to confirm your email.");
     }
   }, []);
-
-  // console.log("errors", z.flattenError(errors).fieldErrors);
-  // console.log("errors", errors);
 
   return (
     <Flex className="auth-pages__form" direction={"column"}>
@@ -97,10 +111,19 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
                           size="sm"
                           required
                           label={FIELD_NAMES[field.name]}
-                          className=""
                           error={!!errors.password}
                         />
                         {FieldError(errors[field.name])}
+                        <Flex justify={"end"}>
+                          <Anchor
+                            mt={"sm"}
+                            component={Link}
+                            href={"/forgot-password"}
+                            size="sm"
+                          >
+                            Forgot password?
+                          </Anchor>
+                        </Flex>
                       </>
                     ) : (
                       <>
@@ -109,7 +132,6 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
                           size="sm"
                           required
                           label={FIELD_NAMES[field.name]}
-                          className=""
                           error={!!errors[field.name]}
                         />
                         {FieldError(errors[field.name])}
@@ -127,6 +149,7 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
             size="md"
             radius="md"
             type="submit"
+            loading={isSubmitting}
             disabled={isSubmitting}
           >
             {isLogin ? "Log in" : "Create Account"}
@@ -134,12 +157,12 @@ const AuthForm = ({ type, schema, defaultValues, handleFormonSubmit }) => {
         </form>
       </Box>
 
-      {formError && (
+      {errors.root && (
         <Box className="auth-pages__form-error" mt={"lg"}>
           <Flex align={"center"}>
             <IconInfoCircle color="var(--clr-semantic-error)" />
             <Text size={"xs"} ml={"xs"}>
-              {formError}
+              {errors.root.message}
             </Text>
           </Flex>
         </Box>
