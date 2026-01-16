@@ -1,10 +1,9 @@
-import { auth, signOut } from "../../../../../auth";
+import { auth } from "../../../../../auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { db } from "@/database/drizzle";
 import { eq } from "drizzle-orm";
 import { users } from "@/database/schema";
-import { IconLogOut } from "@/components/icons";
 import {
   Box,
   Title,
@@ -13,9 +12,9 @@ import {
   Grid,
   GridCol,
   Paper,
-  Button,
   Divider,
 } from "@mantine/core";
+import { LogOutButton } from "@/components/ui";
 
 const MyAccountPage = async () => {
   const session = await auth();
@@ -112,20 +111,8 @@ const MyAccountPage = async () => {
           </GridCol>
         )}
       </Grid>
-      <Box mt={"xl"} style={{ cursor: "pointer" }}>
-        <form
-          action={async () => {
-            "use server";
-            await signOut();
-          }}
-        >
-          <Button
-            leftSection={<IconLogOut color="var(--mantine-color-white)" />}
-            type="submit"
-          >
-            Sign Out
-          </Button>
-        </form>
+      <Box mt={"xl"}>
+        <LogOutButton />
       </Box>
     </Box>
   );

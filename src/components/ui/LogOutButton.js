@@ -1,39 +1,17 @@
 "use client";
+
+import { Button } from "@mantine/core";
 import { signOut } from "next-auth/react";
-import { useTransition } from "react";
-import { Button, rem } from "@mantine/core";
 import { IconLogOut } from "../icons";
 
-const LogOutButton = (props) => {
-  const [isPending, startTransition] = useTransition();
-
-  const handleLogOut = () => {
-    startTransition(async () => {
-      await signOut();
-    });
-  };
-
+const LogOutButton = () => {
   return (
     <Button
-      onClick={handleLogOut}
-      disabled={isPending}
-      className={`btn-logout ${
-        isPending ? "btn cursor-not-allowed" : "bg-red"
-      }`}
-      leftSection={
-        <IconLogOut
-          style={{ width: rem(20), height: rem(20) }}
-          stroke={1.5}
-          color={props.color}
-        />
-      }
-      size="md"
-      variant="outline"
-      color={props.color}
-      fullWidth
-      radius={"sm"}
+      onClick={() => signOut({ callbackUrl: "/" })}
+      leftSection={<IconLogOut color="var(--mantine-color-white)" />}
+      type="submit"
     >
-      {isPending ? "Logging out..." : "Log Out"}
+      Sign Out
     </Button>
   );
 };
