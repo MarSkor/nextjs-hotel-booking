@@ -1,11 +1,12 @@
 "use client";
-import { Flex, Burger, Container, Group, Button } from "@mantine/core";
+import { Flex, Burger, Container, Group, Button, Box } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import NavbarLogo from "./NavbarLogo";
 import NavbarSmall from "./NavbarSmall";
 import NavLink from "./NavLink";
 import Link from "next/link";
 import { AuthSection } from "./AuthSection";
+import Search from "@/components/ui/Search";
 
 export const NavLinks = [
   { href: "/", label: "Home" },
@@ -33,8 +34,9 @@ const Navbar = () => {
               />
             ))}
           </Flex>
+
           <Group visibleFrom="md" className="navbar__right">
-            {/* <SearchBar/> */}
+            <Search />
             <AuthSection variant="desktop" />
             <Button
               className="btn btn-navbar btn-500"
@@ -44,12 +46,20 @@ const Navbar = () => {
               Explore Rooms
             </Button>
           </Group>
-          <Burger
-            opened={opened}
-            onClick={toggleDrawer}
-            hiddenFrom="md"
-            color="#c5bcb3"
-          />
+
+          <Group hiddenFrom="md">
+            <Box hiddenFrom="md">
+              <Search mobile />
+            </Box>
+            <Burger
+              size={"sm"}
+              lineSize={1}
+              opened={opened}
+              onClick={toggleDrawer}
+              hiddenFrom="md"
+              color="#c5bcb3"
+            />
+          </Group>
         </Flex>
         <NavbarSmall opened={opened} onClose={closeDrawer} />
       </Container>
