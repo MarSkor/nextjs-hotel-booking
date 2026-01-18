@@ -13,10 +13,10 @@ const RecentBooking = (data) => {
       tabIndex={"0"}
     >
       <Grid component="ul">
-        <GridCol span={{ base: 12, sm: 5 }}>
+        <GridCol span={{ base: 12, sm: 4 }}>
           <Text truncate="end">{data.id}</Text>
         </GridCol>
-        <GridCol span={{ base: 12, sm: 4 }}>
+        <GridCol span={{ base: 12, sm: 5 }}>
           <Text>{data.accommodation.title}</Text>
         </GridCol>
         <GridCol span={{ base: 12, sm: 3 }}>

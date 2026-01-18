@@ -1,7 +1,6 @@
 "use client";
 import Link from "next/link";
-import { IconLocation, IconStar, IconUser } from "../icons";
-import { mathRound } from "@/utils/Helpers";
+import { IconLocation, IconUser } from "../icons";
 import { bedTypes } from "@/utils/constants";
 import { IKImage } from "imagekitio-next";
 import config from "@/lib/config";
@@ -17,6 +16,7 @@ import {
   rem,
   Tooltip,
   Box,
+  Rating,
 } from "@mantine/core";
 
 const AccommodationCard = (item) => {
@@ -29,6 +29,7 @@ const AccommodationCard = (item) => {
     slug,
     featuredImage,
     guests,
+    reviewCount,
   } = item;
 
   const placeholderImagePath = "/defaults/600x400_DxM717i9q.svg";
@@ -102,10 +103,15 @@ const AccommodationCard = (item) => {
         </Group>
         <Group justify="space-between">
           <Flex className="card__rating" align="center">
-            <Flex>
-              <IconStar />
-              <Text fw={500} size="sm" ml="4px">
-                {mathRound(averageRating)}
+            <Flex align="center" gap={4}>
+              <Rating
+                value={averageRating || 0}
+                fractions={2}
+                readOnly
+                size="xs"
+              />
+              <Text size="xs" c="dimmed" fw={500}>
+                ({reviewCount || 0})
               </Text>
             </Flex>
           </Flex>

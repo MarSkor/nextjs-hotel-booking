@@ -18,16 +18,14 @@ import {
   rem,
 } from "@mantine/core";
 
-const AccommodationOverview = ({ accDetails, isFavorite }) => {
-  const {
-    id,
-    title,
-    excerpt,
-    pricePerNight,
-    featuredImage,
-    images,
-    averageRating,
-  } = accDetails;
+const AccommodationOverview = ({
+  accDetails,
+  isFavorite,
+  reviewCount,
+  averageRating,
+}) => {
+  const { id, title, excerpt, pricePerNight, featuredImage, images, slug } =
+    accDetails;
 
   return (
     <Container
@@ -51,16 +49,17 @@ const AccommodationOverview = ({ accDetails, isFavorite }) => {
           <Flex align={"center"} justify={"space-between"}>
             <Flex align={"center"}>
               <Rating value={averageRating} fractions={2} readOnly />
-              <Text
+              <Anchor
                 className="card__rating--text"
-                component={Anchor}
-                href="#details__reviews"
-                c="#363637"
+                href={`#details__reviews`}
+                c="dimmed"
                 size="sm"
-                ml={rem("4px")}
+                ml={rem("8px")}
+                fw={500}
               >
-                (1234 reviews)
-              </Text>
+                {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
+                {reviewCount > 0 && ` • ${averageRating.toFixed(1)}`}
+              </Anchor>
             </Flex>
             <FavoriteButton initialFav={isFavorite} accommodationId={id} />
           </Flex>

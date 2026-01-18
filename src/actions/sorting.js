@@ -1,6 +1,16 @@
 import { db } from "@/database/drizzle";
-import { accommodations, bookings } from "@/database/schema";
-import { and, asc, desc, eq, gt, lt, notExists, sql } from "drizzle-orm";
+import { accommodations, bookings, reviews } from "@/database/schema";
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  getTableColumns,
+  gt,
+  lt,
+  notExists,
+  sql,
+} from "drizzle-orm";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -28,13 +38,13 @@ const getAccommodations = async ({
           .from(bookings)
           .where(
             and(
-              eq(bookings.status, "confirmed"),
+              eq(bookings.status, "CONFIRMED"),
               eq(bookings.accommodationId, accommodations.id),
               lt(bookings.checkIn, endDate),
-              gt(bookings.checkOut, startDate)
-            )
-          )
-      )
+              gt(bookings.checkOut, startDate),
+            ),
+          ),
+      ),
     );
   }
 
@@ -83,10 +93,23 @@ const getAccommodations = async ({
       .select({ count: sql`count(*)` })
       .from(accommodations)
       .where(whereClause),
+
     db
-      .select()
+      .select({
+        ...getTableColumns(accommodations),
+        reviewCount: sql`count(${reviews.id})`.mapWith(Number),
+        averageRating: sql`avg(${reviews.rating})`.mapWith(Number),
+      })
       .from(accommodations)
+      .leftJoin(
+        reviews,
+        and(
+          eq(reviews.accommodationId, accommodations.id),
+          eq(reviews.status, "APPROVED"),
+        ),
+      )
       .where(whereClause)
+      .groupBy(accommodations.id)
       .orderBy(orderBy)
       .limit(ITEMS_PER_PAGE)
       .offset(offset),

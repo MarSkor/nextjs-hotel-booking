@@ -13,7 +13,40 @@ import {
   Grid,
   GridCol,
   Divider,
+  Anchor,
+  Spoiler,
 } from "@mantine/core";
+import ReviewForm from "@/features/account/forms/ReviewForm";
+import Link from "next/link";
+
+const ExpandableMessage = ({ message }) => {
+  if (!message) {
+    return (
+      <Text c="dimmed" size="sm" italic>
+        No message provided
+      </Text>
+    );
+  }
+  return (
+    <Spoiler
+      maxHeight={100}
+      showLabel="Show more"
+      hideLabel="Hide"
+      transitionDuration={200}
+      styles={{
+        control: {
+          fontSize: "12px",
+          fontWeight: 600,
+          marginTop: "6px",
+        },
+      }}
+    >
+      <Text size="sm" style={{ whiteSpace: "pre-wrap" }}>
+        {message}
+      </Text>
+    </Spoiler>
+  );
+};
 
 const UserBookingDetailPage = async ({ params }) => {
   const session = await auth();
@@ -25,65 +58,140 @@ const UserBookingDetailPage = async ({ params }) => {
 
   const bookingDetails = await db.query.bookings.findFirst({
     where: and(eq(bookings.id, id), eq(bookings.userId, session.user.id)),
-    with: { accommodation: true },
+    with: { accommodation: true, review: true },
   });
 
   const {
     checkIn,
     checkOut,
     guests,
-    isPaid,
     message,
     name,
     email,
     nights,
     totalPrice,
+    review,
   } = bookingDetails;
 
   if (!bookingDetails) redirect("/404");
 
   return (
     <Container px={0} size={"xs"}>
-      <Paper withBorder p={"sm"} mt={"lg"}>
-        <Title ta={"center"} order={1}>
-          {bookingDetails.accommodation.title}
-        </Title>
-        <Grid mt={"md"}>
-          <GridCol span={{ base: 12, sm: 6 }}>
-            <Text>Name: {name}</Text>
-          </GridCol>
-          <GridCol span={{ base: 12, sm: 6 }}>
-            <Text>Email: {email}</Text>
-          </GridCol>
-        </Grid>
-        <Grid mt={"md"}>
-          <GridCol span={{ base: 6, sm: 6 }}>
-            <Text>Check-in: {dayjs(checkIn).format("DD/MM/YY")}</Text>
-          </GridCol>
-          <GridCol span={{ base: 6, sm: 6 }}>
-            <Text>Check-out: {dayjs(checkOut).format("DD/MM/YY")}</Text>
-          </GridCol>
-        </Grid>
-        <Grid mt={"md"}>
-          <GridCol span={{ base: 6 }}>
-            <Text>Price: ${totalPrice}</Text>
-          </GridCol>
-          <GridCol span={{ base: 6 }}>
-            <Text>Paid: {isPaid ? "Yes" : "No"}</Text>
-          </GridCol>
-        </Grid>
-        <Grid mt={"md"}>
-          <GridCol span={{ base: 6 }}>
-            <Text>Guests: {guests}</Text>
-          </GridCol>
-          <GridCol span={{ base: 6 }}>
-            <Text>Nights: {nights}</Text>
-          </GridCol>
-        </Grid>
-        <Divider my={"md"} />
+      <Paper p={"md"} mt={"xl"} shadow="xs">
         <Flex direction={"column"}>
-          <Text mb={"sm"}>Message:</Text>
-          <Text>{message}</Text>
+          <Title order={1} size={"h3"}>
+            Booking Receipt #{id.slice(0, 8).toUpperCase()}
+          </Title>
+          <Text mt={"xs"} c={"dimmed"}>
+            Holidaze Private Residences - Bergen
+          </Text>
+        </Flex>
+        <Divider my={"lg"} />
+        <Grid align="center">
+          <GridCol span={{ base: 6 }}>
+            <Text>Review:</Text>
+          </GridCol>
+          <GridCol span={{ base: 6 }}>
+            {review ? (
+              <ReviewForm
+                bookingId={id}
+                accommodationId={bookingDetails.accommodation.id}
+                accommodationTitle={bookingDetails.accommodation.title}
+                initialData={review}
+              />
+            ) : (
+              <ReviewForm
+                initialData={review}
+                bookingId={id}
+                accommodationId={bookingDetails.accommodation.id}
+                accommodationTitle={bookingDetails.accommodation.title}
+              />
+            )}
+          </GridCol>
+        </Grid>
+        <Divider my={"lg"} />
+        {/* ---- */}
+        <Flex direction={"column"}>
+          <Text fw={"bold"} size="xs" tt="uppercase">
+            Personal Details
+          </Text>
+          <Grid mt={"xs"}>
+            <GridCol span={{ base: 12, sm: 6 }}>
+              <Flex direction={"column"}>
+                <Text mb={"4px"}>Name:</Text>
+                <Text>{name}</Text>
+              </Flex>
+            </GridCol>
+            <GridCol span={{ base: 12, sm: 6 }}>
+              <Flex direction={"column"}>
+                <Text mb={"4px"}>Email Address:</Text>
+                <Text>{email}</Text>
+              </Flex>
+            </GridCol>
+          </Grid>
+        </Flex>
+        {/* ---- */}
+        <Flex direction={"column"} mt={"lg"}>
+          <Text fw={"bold"} size="xs" tt="uppercase">
+            Accommodation Details
+          </Text>
+          <Grid mt={"xs"}>
+            {/* ---- */}
+            <GridCol span={{ base: 12, sm: 6 }}>
+              <Text>Name</Text>
+            </GridCol>
+            <GridCol span={{ base: 12, sm: 6 }}>
+              <Anchor
+                component={Link}
+                href={`/accommodation/${bookingDetails.accommodation.slug}`}
+              >
+                {bookingDetails.accommodation.title}
+              </Anchor>
+            </GridCol>
+            {/* ---- */}
+            <GridCol span={{ base: 6, sm: 6 }}>
+              <Text>Check-in:</Text>
+            </GridCol>
+            <GridCol span={{ base: 6, sm: 6 }}>
+              <Text> {dayjs(checkIn).format("DD/MM/YY")}</Text>
+            </GridCol>
+            {/* ---- */}
+            <GridCol span={{ base: 6, sm: 6 }}>
+              <Text>Check-out:</Text>
+            </GridCol>
+            <GridCol span={{ base: 6, sm: 6 }}>
+              <Text>{dayjs(checkOut).format("DD/MM/YY")}</Text>
+            </GridCol>
+            {/* ---- */}
+            <GridCol span={{ base: 6, sm: 6 }}>
+              <Text>Nights</Text>
+            </GridCol>
+            <GridCol span={{ base: 6, sm: 6 }}>
+              <Text>{nights}</Text>
+            </GridCol>
+            {/* ---- */}
+            <GridCol span={{ base: 6, sm: 6 }}>
+              <Text>Guests</Text>
+            </GridCol>
+            <GridCol span={{ base: 6, sm: 6 }}>
+              <Text>{guests}</Text>
+            </GridCol>
+
+            {/* ---- */}
+            <GridCol span={{ base: 6, sm: 6 }}>
+              <Text>Price Total:</Text>
+            </GridCol>
+            <GridCol span={{ base: 6, sm: 6 }}>
+              <Text>${totalPrice}</Text>
+            </GridCol>
+          </Grid>
+          <Flex direction={"column"} mt={"lg"}>
+            <Text mb={"sm"} fw={"bold"} tt={"uppercase"} size="xs">
+              Message:
+            </Text>
+            {/* <Text>{message}</Text> */}
+            <ExpandableMessage message={message} />
+          </Flex>
         </Flex>
       </Paper>
     </Container>
