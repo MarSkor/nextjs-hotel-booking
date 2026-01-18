@@ -28,7 +28,8 @@ const DeleteAccountButton = () => {
       children: (
         <Text size="sm">
           Are you sure you want to delete your account? This action is
-          <b> permanent</b> and all your data (profile, settings, and history)
+          <b> permanent</b> and all your data (profile, settings, bookings and
+          reviews will be anonymized since all personal data will be deleted.)
           will be removed immediately.
         </Text>
       ),
