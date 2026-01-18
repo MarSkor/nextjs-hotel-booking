@@ -74,6 +74,7 @@ const Sidebar = ({ opened, onClick, session }) => {
             ))}
           </Box>
         </Flex>
+        <SidebarLink href={"/account"} label={"Back to Holidaze"} />
         <AdminLogOut session={session} />
       </AppShellSection>
     </AppShellNavbar>

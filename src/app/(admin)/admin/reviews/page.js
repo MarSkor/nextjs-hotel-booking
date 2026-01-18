@@ -31,7 +31,6 @@ const ReviewsPage = async ({ searchParams }) => {
       <Flex
         direction={"column"}
         wrap="wrap"
-        align={""}
         justify={"space-between"}
         mt={"sm"}
       >
