@@ -12,9 +12,9 @@ import DeleteModal from "../components/DeleteModal";
 import { mantineNotify } from "@/lib/mantineNotify";
 import {
   createAccommodation,
-  deleteAccommodation,
   updateAccommodation,
 } from "@/actions/accommodation";
+import { deleteResourceAction } from "@/actions/admin";
 import { deleteImageFile, deleteTempImageFile } from "@/actions/images";
 import { ErrorMessage } from "@/components/ui";
 import {
@@ -29,7 +29,6 @@ import {
   Select,
   Checkbox,
   SimpleGrid,
-  Alert,
   Title,
 } from "@mantine/core";
 
@@ -86,7 +85,7 @@ const AccommodationForm = ({ accommodation = null, pageTitle = "" }) => {
         } else {
           setFormError(res.message || "Failed to update the accommodation.");
           mantineNotify.error(
-            res.message || "Failed to update the accommodation."
+            res.message || "Failed to update the accommodation.",
           );
         }
       } else {
@@ -101,13 +100,13 @@ const AccommodationForm = ({ accommodation = null, pageTitle = "" }) => {
           router.push(`/admin/accommodations/edit/${res.data.id}`);
         } else {
           mantineNotify.error(
-            res.message || "Error. Failed to create accommodation."
+            res.message || "Error. Failed to create accommodation.",
           );
           setFormError(res.message || "Failed to create accommodation.");
         }
       }
     } catch (error) {
-      console.error("Could not submit form", error);
+      // console.error("Could not submit form", error);
       setFormError(error.message);
     }
   };
@@ -122,7 +121,6 @@ const AccommodationForm = ({ accommodation = null, pageTitle = "" }) => {
       } else {
         res = await deleteTempImageFile(fileId);
       }
-      console.log("Delete result:", res);
       if (res.success) {
         mantineNotify.success("Image successfully deleted");
         setValue("featuredImage", null);
@@ -132,7 +130,7 @@ const AccommodationForm = ({ accommodation = null, pageTitle = "" }) => {
 
       return res;
     } catch (error) {
-      console.error("Error deleting image: ", error);
+      // console.error("Error deleting image: ", error);
       mantineNotify.error("Unexpected error deleting image.");
       return { success: false };
     }
@@ -148,17 +146,17 @@ const AccommodationForm = ({ accommodation = null, pageTitle = "" }) => {
             component={Link}
             href={"/admin/accommodations"}
             variant="light"
-            leftSection={<IconArrowLeft heigth={18} width={18} />}
+            leftSection={<IconArrowLeft height={18} width={18} />}
           >
             Back to Accommodations
           </Button>
           {isEditing && (
             <DeleteModal
               id={accommodation.id}
-              resourceName="accommodation"
+              resourceName="accommodations"
               title="Delete Accommodation"
               message={`Are you sure you want to delete "${accommodation.title}"? This action cannot be undone.`}
-              deleteAction={deleteAccommodation}
+              deleteAction={deleteResourceAction}
               redirectAfter="/admin/accommodations"
               triggerType={"button"}
             />
@@ -485,16 +483,16 @@ const AccommodationForm = ({ accommodation = null, pageTitle = "" }) => {
                 ? "Updating..."
                 : "Creating..."
               : isEditing
-              ? "Update Accommodation"
-              : "Create Accommodation"}
+                ? "Update Accommodation"
+                : "Create Accommodation"}
           </Button>
           {isEditing && (
             <DeleteModal
               id={accommodation.id}
-              resourceName="accommodation"
+              resourceName="accommodations"
               title="Delete Accommodation"
               message={`Are you sure you want to delete "${accommodation.title}"? This action cannot be undone.`}
-              deleteAction={deleteAccommodation}
+              deleteAction={deleteResourceAction}
               redirectAfter="/admin/accommodations"
               triggerType="button"
               fullWidth

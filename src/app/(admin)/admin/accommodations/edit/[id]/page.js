@@ -40,7 +40,7 @@ const EditPage = async ({ params }) => {
     }
 
     return (
-      <Container size={"sm"} component="section" className="">
+      <Container size={"sm"} component="section">
         <Box mt={"sm"} mb={"sm"}>
           <Flex justify={"space-between"} align={"center"}></Flex>
           <Box component="section">
@@ -64,8 +64,6 @@ const EditPage = async ({ params }) => {
       </Container>
     );
   }
-
-  // console.log("edit- ", acc);
 };
 
 export default EditPage;

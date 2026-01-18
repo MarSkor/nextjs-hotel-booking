@@ -8,7 +8,6 @@ import { eq } from "drizzle-orm";
 
 const Layout = async ({ children }) => {
   const session = await auth();
-  if (!session?.user?.id) redirect("/login");
 
   const isAdmin = await db
     .select({ isAdmin: users.role })

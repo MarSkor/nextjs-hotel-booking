@@ -12,16 +12,17 @@ import {
 import { relations } from "drizzle-orm";
 import { users } from "./users.js";
 import { accommodations } from "./accommodations.js";
+import { reviews } from "./reviews.js";
 
 export const enumStatus = pgEnum("enumStatus", [
-  "pending",
-  "confirmed",
-  "cancelled",
+  "PENDING",
+  "CONFIRMED",
+  "CANCELLED",
 ]);
 
 export const bookings = pgTable("bookings", {
   id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
-  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
   accommodationId: uuid("accommodation_id")
     .notNull()
     .references(() => accommodations.id, { onDelete: "cascade" }),
@@ -32,7 +33,7 @@ export const bookings = pgTable("bookings", {
   guests: integer("guests").notNull().default(1),
   totalPrice: decimal("total_price", { precision: 10, scale: 2 }).notNull(),
   isPaid: boolean("is_paid").default(false).notNull(),
-  status: enumStatus("status").default("pending").notNull(),
+  status: enumStatus("status").default("PENDING").notNull(),
   name: text("name").notNull(),
   email: text("email").notNull(),
   phone: varchar("phone", { length: 30 }),
@@ -50,5 +51,9 @@ export const bookingsRelations = relations(bookings, ({ one }) => ({
   accommodation: one(accommodations, {
     fields: [bookings.accommodationId],
     references: [accommodations.id],
+  }),
+  review: one(reviews, {
+    fields: [bookings.id],
+    references: [reviews.bookingId],
   }),
 }));
