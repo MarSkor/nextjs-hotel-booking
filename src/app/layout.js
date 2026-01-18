@@ -5,9 +5,9 @@ import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/carousel/styles.css";
 import "@mantine/notifications/styles.css";
+import "@mantine/spotlight/styles.css";
 import "../styles/main.scss";
 import { theme } from "@/lib/mantineTheme";
-import { auth } from "../../auth";
 import NextAuthProvider from "./NextAuthProvider";
 
 export default async function RootLayout({ children }) {

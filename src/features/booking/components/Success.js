@@ -42,7 +42,9 @@ const Success = ({ customerEmail, sessionId }) => {
     return (
       <Flex justify={"center"} align={"center"} h={"80vh"} direction={"column"}>
         <Title order={2}>Payment is being verified...</Title>
-        <Text size="sm">Please check your email in a few minutes.</Text>
+        <Text mt={"md"} size="sm">
+          Please check your email in a few minutes.
+        </Text>
       </Flex>
     );
   }

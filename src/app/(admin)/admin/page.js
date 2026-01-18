@@ -5,7 +5,6 @@ import StatsCard from "@/features/admin/components/StatsCard";
 
 const AdminPage = async () => {
   const stats = await getAdminStats();
-  // console.log("admin stats: ", stats);
 
   if (!stats) {
     return <Text>Error loading stats.</Text>;

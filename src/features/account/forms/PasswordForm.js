@@ -86,7 +86,6 @@ const PasswordForm = ({ mode, handleFormOnSubmit }) => {
           break;
 
         default:
-          // mantineNotify.error("Something went wrong. Please try again later.");
           setError("root.serverError", {
             message: "Something went wrong. Please try again later.",
           });

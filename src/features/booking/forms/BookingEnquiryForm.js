@@ -26,6 +26,7 @@ import {
   Title,
   Loader,
   Textarea,
+  Center,
 } from "@mantine/core";
 
 const stripePromise = loadStripe(config.env.stripe.publishableKey);
@@ -33,12 +34,22 @@ const stripePromise = loadStripe(config.env.stripe.publishableKey);
 const BookingEnquiry = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
+
   const [bookingData, setBookingData] = useState(pendingBookingData());
 
   const imagePath = bookingData?.featuredImage || PLACEHOLDER_IMAGE_PATH;
-  const parseCheckIn = dayjs(bookingData?.checkIn);
-  const parseCheckOut = dayjs(bookingData?.checkOut);
-  const totalNights = parseCheckOut.diff(parseCheckIn, "day");
+  const totalNights = bookingData
+    ? dayjs(bookingData.checkOut).diff(dayjs(bookingData.checkIn), "day")
+    : 0;
+
+  useEffect(() => {
+    const saved = localStorage.getItem("pendingBooking");
+    if (saved) {
+      setBookingData(JSON.parse(saved));
+    } else {
+      router.replace("/");
+    }
+  }, [router]);
 
   const {
     control,
@@ -46,35 +57,31 @@ const BookingEnquiry = () => {
     setValue,
     watch,
     setError,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
       resolver: zodResolver(bookingEnquirySchema),
-      name: session?.user?.name || "",
-      email: session?.user?.email || "",
+      name: "",
+      email: "",
       message: "",
-      phone: session?.user?.phone || "",
+      phone: "",
     },
     mode: "onChange",
     criteriaMode: "all",
   });
 
   useEffect(() => {
-    if (!bookingData) {
-      router.replace("/");
+    if (status === "authenticated" && session?.user) {
+      reset({
+        name: session.user.name || "",
+        email: session.user.email || "",
+        message: "",
+        phone: session.user.phone || "",
+      });
     }
-  }, [bookingData, router]);
+  }, [session, status, reset]);
 
-  // set form values if they exists
-  useEffect(() => {
-    if (session?.user) {
-      setValue("name", session.user.name || "");
-      setValue("email", session.user.email || "");
-      if (session.user.phone) setValue("phone", session.user.phone);
-    }
-  }, [session]);
-
-  // persist data when signing in/signing up
   useEffect(() => {
     if (!bookingData) return;
 
@@ -89,67 +96,45 @@ const BookingEnquiry = () => {
 
   const onSubmit = async (data) => {
     if (!bookingData) return;
-
     const stripe = await stripePromise;
     if (!stripe) {
-      console.error("Stripe failed to load");
+      setError("root", {
+        message: "Stripe failed to load. Refresh and try again.",
+      });
       return;
     }
-
     try {
       const res = await fetch("/api/stripe/checkout_sessions", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           bookingDetails: {
             userId: session?.user?.id || null,
             isGuest: !session?.user,
-            name: session?.user?.name || data.name,
-            email: data.email,
-            title: bookingData.title,
-            accommodationId: bookingData.accommodationId,
-            checkIn: bookingData.checkIn,
-            checkOut: bookingData.checkOut,
-            guests: bookingData.guests,
-            message: data.message,
-            phone: data.phone,
-            totalPrice: bookingData.totalPrice,
+            ...bookingData,
+            ...data,
             totalNights,
           },
         }),
       });
 
       const sessionData = await res.json();
-      if (!res.ok) {
-        console.error("API Error:", sessionData);
-        return;
-      }
-
-      if (!sessionData.sessionId) {
-        console.error("Missing sessionId:", sessionData);
-        return;
-      }
+      if (!res.ok) throw new Error(sessionData.message || "Checkout failed");
 
       localStorage.removeItem("pendingBooking");
       window.location.href = sessionData.url;
     } catch (error) {
-      setError("root", {
-        message: "Something went wrong. Please try again later.",
-      });
+      setError("root", { message: error.message || "Something went wrong." });
     }
   };
 
   if (status === "loading" || !bookingData) {
     return (
-      <Flex justify="center" align="center" h="80vh">
-        <Loader size="lg" />
-      </Flex>
+      <Center style={{ height: "100vh" }}>
+        <Loader size="xl" />
+      </Center>
     );
   }
-
-  console.log("session:", session);
 
   return (
     <Box component="article" className="enquiry__wrapper" my={"lg"} pb={"80px"}>
@@ -168,12 +153,13 @@ const BookingEnquiry = () => {
           totalNights={totalNights}
         />
         <GridCol span={{ base: 12, sm: 8 }}>
-          {!session?.user && <LoginRegisterBanner />}
+          {status === "unauthenticated" && <LoginRegisterBanner />}
           <Paper
             component="section"
             className="enquiry__header"
             p={"md"}
             withBorder
+            mt={status === "unauthenticated" ? "md" : 0}
           >
             <Title mb={"lg"}>Enter Your Details</Title>
             {/* ENQUIRY FORM  */}
