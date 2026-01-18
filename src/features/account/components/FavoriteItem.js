@@ -3,6 +3,7 @@ import { Box, Title, GridCol, Flex, Paper } from "@mantine/core";
 import FavoriteButton from "@/components/ui/FavoriteButton";
 import { IKImage } from "imagekitio-next";
 import config from "@/lib/config";
+import Link from "next/link";
 
 const FavoriteItem = (data) => {
   const imagePath = data?.accommodation?.featuredImage?.filePath;
@@ -11,7 +12,16 @@ const FavoriteItem = (data) => {
     <GridCol span={{ base: 12, sm: 6 }}>
       <Paper p={"sm"} withBorder>
         <Flex pos={"relative"} direction={"column"}>
-          <Title order={3} mb={"sm"}>
+          <Title
+            order={3}
+            mb={"sm"}
+            component={Link}
+            href={`/accommodation/${data.accommodation.slug}`}
+            style={{
+              textDecoration: "none",
+              color: "var(--mantine-color-anchor)",
+            }}
+          >
             {data.accommodation.title}
           </Title>
           <Box pos={"absolute"} style={{ top: 0, right: "10px", zIndex: 20 }}>
