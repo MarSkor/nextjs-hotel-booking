@@ -4,8 +4,8 @@ import { bookings } from "@/database/schema";
 import { and, eq, inArray, lt, sql } from "drizzle-orm";
 import { stripe } from "@/lib/stripe";
 import dayjs from "dayjs";
-import config from "@/lib/config";
 import { headers } from "next/headers";
+import { logEvent } from "@/lib/logEvent";
 
 export const getBookingDates = async (accommodationId) => {
   const data = await db
@@ -13,7 +13,7 @@ export const getBookingDates = async (accommodationId) => {
     .from(bookings)
     .where(
       eq(bookings.accommodationId, accommodationId),
-      eq(bookings.status, "confirmed")
+      eq(bookings.status, "CONFIRMED"),
     );
   return data.map((d) => ({
     from: dayjs(d.checkIn).startOf("day").toDate(),
@@ -29,12 +29,12 @@ export const createBooking = async (data) => {
 
     await db
       .update(bookings)
-      .set({ status: "cancelled" })
+      .set({ status: "CANCELLED" })
       .where(
         and(
-          eq(bookings.status, "pending"),
-          lt(bookings.createdAt, dayjs(now).subtract(1, "day").toDate())
-        )
+          eq(bookings.status, "PENDING"),
+          lt(bookings.createdAt, dayjs(now).subtract(1, "day").toDate()),
+        ),
       );
 
     const overlappingBooking = await db
@@ -43,9 +43,9 @@ export const createBooking = async (data) => {
       .where(
         and(
           eq(bookings.accommodationId, data.accommodationId),
-          inArray(bookings.status, ["pending", "confirmed"]),
-          sql`${bookings.checkIn} < ${data.checkOut} AND ${bookings.checkOut} > ${data.checkIn}`
-        )
+          inArray(bookings.status, ["PENDING", "CONFIRMED"]),
+          sql`${bookings.checkIn} < ${data.checkOut} AND ${bookings.checkOut} > ${data.checkIn}`,
+        ),
       );
 
     if (overlappingBooking.length > 0) {
@@ -71,7 +71,7 @@ export const createBooking = async (data) => {
         guests: data.guests,
         message: data.message,
         phone: data.phone,
-        status: "pending",
+        status: "PENDING",
         isPaid: false,
       })
       .returning();
@@ -106,6 +106,23 @@ export const createBooking = async (data) => {
       .update(bookings)
       .set({ checkoutSessionId: stripeCheckOutSession.id })
       .where(eq(bookings.id, booking.id));
+
+    await logEvent({
+      actorId: data.userId ?? null,
+      type: "BOOKING_CREATED",
+      targetId: data.userId ?? null,
+      metadata: {
+        isGuest: data.isGuest ?? false,
+        name: data.name,
+        email: data.email,
+        accommodationId: data.accommodationId,
+        totalPrice: data.price,
+        checkIn: data.startDate,
+        checkOut: data.endDate,
+        guestCount: data.guests,
+      },
+    });
+
     return {
       success: true,
       url: stripeCheckOutSession.url,

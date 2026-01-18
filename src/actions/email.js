@@ -9,17 +9,17 @@ import { headers } from "next/headers";
 import { workflowClient } from "@/lib/email";
 import ratelimit from "@/lib/rateLimit";
 import { verificationStatus } from "@/lib/verification-status";
+import { logEvent } from "@/lib/logEvent";
 
 export const updateEmail = async ({ newEmail }) => {
   const session = await auth();
   if (!session?.user?.id) {
-    return { success: false, error: "UNAUTHORIZED" };
+    return { success: false, error: verificationStatus.UNAUTHORIZED };
   }
 
   const ip = (await headers()).get("x-forwarded-for") || "127.0.0.1";
   const { success } = await ratelimit.limit(ip);
   if (!success) return redirect("/too-fast");
-  const userAgent = (await headers()).get("user-agent");
 
   const existingUser = await db.query.users.findFirst({
     where: (u, { eq }) => eq(u.email, newEmail),
@@ -43,11 +43,15 @@ export const updateEmail = async ({ newEmail }) => {
       return { success: true };
     }
 
-    await db.insert(userEvents).values({
-      userId: user.id,
+    await logEvent({
+      actorId: user.id,
       type: "EMAIL_CHANGE_REQUESTED",
-      ip,
-      userAgent,
+      targetId: user.id,
+      metadata: {
+        oldEmail: existingUser.email,
+        newEmail: newEmail,
+        reason: "User updated profile settings",
+      },
     });
 
     await db.insert(emailVerifications).values({
@@ -114,11 +118,22 @@ export const resendEmailVerification = async () => {
       expiresAt,
     });
 
-    await db.insert(userEvents).values({
-      userId,
+    // await db.insert(userEvents).values({
+    //   userId,
+    //   type: "EMAIL_VERIFICATION_RESENT",
+    //   ip,
+    //   userAgent,
+    // });
+
+    await logEvent({
+      actorId: userId,
       type: "EMAIL_VERIFICATION_RESENT",
-      ip,
-      userAgent,
+      targetId: userId,
+      metadata: {
+        oldEmail: user.email,
+        newEmail: record.newEmail,
+        // verificationMethod: "profile_update"
+      },
     });
 
     await workflowClient.trigger({
@@ -139,13 +154,11 @@ export const resendEmailVerification = async () => {
 
 export const verifyEmailToken = async (token) => {
   const session = await auth();
-  if (!session?.user?.id) {
+  const userId = session?.user?.id;
+
+  if (!userId) {
     return { status: verificationStatus.UNAUTHENTICATED };
   }
-
-  const userId = session.user.id;
-  const ip = (await headers()).get("x-forwarded-for") || "127.0.0.1";
-  const userAgent = (await headers()).get("user-agent");
 
   try {
     const [record] = await db
@@ -204,11 +217,15 @@ export const verifyEmailToken = async (token) => {
       .delete(emailVerifications)
       .where(eq(emailVerifications.token, token));
 
-    await db.insert(userEvents).values({
-      userId: user.id,
+    await logEvent({
+      actorId: userId,
       type: "EMAIL_CHANGED",
-      ip,
-      userAgent,
+      targetId: userId,
+      metadata: {
+        oldEmail: user.email,
+        newEmail: record.newEmail,
+        // verificationMethod: "profile_update"
+      },
     });
 
     await workflowClient.trigger({

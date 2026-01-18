@@ -7,6 +7,9 @@ import { revalidatePath } from "next/cache";
 import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
 import utc from "dayjs/plugin/utc";
+import { logEvent } from "@/lib/logEvent";
+import { auth } from "../../auth";
+import { verificationStatus } from "@/lib/verification-status";
 
 dayjs.extend(weekday);
 dayjs.extend(utc);
@@ -67,6 +70,10 @@ export const getAdminStats = async () => {
 };
 
 export const deleteUser = async (id) => {
+  const session = await auth();
+  if (session.user.role !== "admin")
+    return { success: false, error: verificationStatus.UNAUTHORIZED };
+
   if (!id) return { success: false, message: "User ID is required" };
 
   try {
@@ -85,6 +92,16 @@ export const deleteUser = async (id) => {
         message: "Admin accounts cannot be deleted.",
       };
     }
+
+    await logEvent({
+      actorId: session.user.id,
+      type: "ADMIN_USER_DELETED",
+      targetId: user.id,
+      metadata: {
+        email: user.email,
+        name: user.name,
+      },
+    });
 
     await db.delete(users).where(eq(users.id, id));
     revalidatePath("/admin/users", "page");

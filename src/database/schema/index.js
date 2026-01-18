@@ -5,5 +5,5 @@ export * from "./reviews";
 export * from "./review_replies";
 export * from "./favorites";
 export * from "./emailVerifications";
-export * from "./userEvents";
 export * from "./passwordReset";
+export * from "./auditLogs";

@@ -1,13 +1,13 @@
 "use server";
 import { verificationStatus } from "@/lib/verification-status";
 import { auth } from "../../auth";
-import { headers } from "next/headers";
 import { compare, hash } from "bcryptjs";
 import { db } from "@/database/drizzle";
-import { passwordResets, userEvents, users } from "@/database/schema";
+import { passwordResets, users } from "@/database/schema";
 import { and, eq, sql } from "drizzle-orm";
 import { workflowClient } from "@/lib/email";
 import config from "@/lib/config";
+import { logEvent } from "@/lib/logEvent";
 
 export const sendPasswordResetPin = async (email) => {
   const [user] = await db.select().from(users).where(eq(users.email, email));
@@ -36,8 +36,8 @@ export const verifyPin = async ({ email, pin }) => {
       and(
         eq(passwordResets.email, email),
         eq(passwordResets.pin, pin),
-        sql`${passwordResets.expiresAt} > NOW()`
-      )
+        sql`${passwordResets.expiresAt} > NOW()`,
+      ),
     );
 
   if (!record) return { success: false, error: "Invalid or expired PIN" };
@@ -51,16 +51,12 @@ export const resetPassword = async ({
   newPassword,
   bypassToken = false,
 }) => {
-  const headerList = await headers();
-  const ip = headerList.get("x-forwarded-for") || "127.0.0.1";
-  const userAgent = headerList.get("user-agent") || "unknown";
-
   if (!bypassToken) {
     const [record] = await db
       .select()
       .from(passwordResets)
       .where(
-        and(eq(passwordResets.email, email), eq(passwordResets.token, token))
+        and(eq(passwordResets.email, email), eq(passwordResets.token, token)),
       );
 
     if (!record) {
@@ -94,11 +90,13 @@ export const resetPassword = async ({
 
     await db.delete(passwordResets).where(eq(passwordResets.email, email));
 
-    await db.insert(userEvents).values({
-      userId: user.id,
+    await logEvent({
+      actorId: user.id,
       type: bypassToken ? "PASSWORD_CHANGED" : "PASSWORD_RESET",
-      ip,
-      userAgent,
+      targetId: user.id,
+      metadata: {
+        reason: "User updated profile settings",
+      },
     });
 
     if (!bypassToken) {
@@ -110,7 +108,7 @@ export const resetPassword = async ({
       body: { email, fullName: user.fullName },
     });
 
-    return { success: true, status: "SUCCESS" };
+    return { success: true, status: verificationStatus.SUCCESS };
   } catch (error) {
     return {
       success: false,

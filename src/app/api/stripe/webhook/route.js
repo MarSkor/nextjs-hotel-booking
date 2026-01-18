@@ -5,10 +5,10 @@ import config from "@/lib/config";
 import { workflowClient } from "@/lib/email";
 import { stripe } from "@/lib/stripe";
 import { eq } from "drizzle-orm";
+import { logEvent } from "@/lib/logEvent";
 
 const endpointSecret = config.env.stripe.webhookSecret;
 
-//update the checkout - stripe events
 export async function POST(req) {
   const body = await req.text();
   const sig = req.headers.get("stripe-signature");
@@ -29,33 +29,42 @@ export async function POST(req) {
   if (!bookingId) {
     console.warn(
       "Webhook received without bookingID: Event Type: ",
-      event.type
+      event.type,
     );
     return new NextResponse("No bookingId in metadata", { status: 200 });
   }
 
+  const [booking] = await db
+    .select({
+      ...bookings,
+      title: accommodations.title,
+    })
+    .from(bookings)
+    .leftJoin(accommodations, eq(bookings.accommodationId, accommodations.id))
+    .where(eq(bookings.id, bookingId));
+
+  if (!booking) {
+    return new NextResponse("Booking not found.", { status: 200 });
+  }
+
   try {
-    const [booking] = await db
-      .select({
-        ...bookings,
-        title: accommodations.title,
-      })
-      .from(bookings)
-      .leftJoin(accommodations, eq(bookings.accommodationId, accommodations.id))
-      .where(eq(bookings.id, bookingId));
-
-    if (!booking) {
-      // console.warn("Webhook - Booking not found", bookingId);
-      return new NextResponse("Booking not found.", { status: 200 });
-    }
-
     switch (event.type) {
       case "checkout.session.completed":
         if (bookingId) {
           await db
             .update(bookings)
-            .set({ status: "confirmed", isPaid: true })
+            .set({ status: "CONFIRMED", isPaid: true })
             .where(eq(bookings.id, bookingId));
+
+          await logEvent({
+            actorId: booking.userId,
+            type: "BOOKING_CONFIRMED",
+            targetId: bookingId,
+            metadata: {
+              stripeSessionId: session.id,
+              amount: booking.totalPrice,
+            },
+          });
 
           try {
             await workflowClient.trigger({
@@ -73,7 +82,7 @@ export async function POST(req) {
           } catch (error) {
             console.error(
               "Failed booking confirmation workflow:",
-              error.message
+              error.message,
             );
           }
         }
@@ -81,24 +90,34 @@ export async function POST(req) {
 
       case "checkout.session.expired":
       case "checkout.session.async_payment_failed":
-        if (booking.status !== "cancelled" && !booking.isPaid) {
+        if (booking.status !== "CANCELLED" && !booking.isPaid) {
           await db
             .update(bookings)
-            .set({ status: "cancelled" })
+            .set({ status: "CANCELLED" })
             .where(eq(bookings.id, bookingId));
+
+          await logEvent({
+            actorId: booking.userId,
+            type: "BOOKING_CANCELLED",
+            targetId: bookingId,
+            metadata: {
+              reason:
+                event.type === "checkout.session.expired"
+                  ? "Stripe session expired"
+                  : "Payment failed",
+              stripeSessionId: session.id,
+            },
+          });
 
           await stripe.checkout.sessions.expire(session.id);
         }
         break;
-
-      default:
-        console.log("Webhook event: ", EventTarget.type);
     }
     return NextResponse.json("Event Received", {
       status: 200,
     });
   } catch (error) {
-    console.error("Webhook processing error.", error);
+    // console.error("Webhook processing error.", error);
     return new NextResponse("Internal webhook error", { status: 500 });
   }
 }

@@ -3,18 +3,18 @@
 import { db } from "@/database/drizzle";
 import { auth } from "../../auth";
 import { and, desc, eq, sql } from "drizzle-orm";
-import { bookings, favorites, userEvents, users } from "@/database/schema";
+import { bookings, favorites, users } from "@/database/schema";
 import { FAVORITES_PER_PAGE, BOOKINGS_PER_PAGE } from "@/utils/constants";
 import { revalidatePath } from "next/cache";
 import config from "@/lib/config";
 import { workflowClient } from "@/lib/email";
 import { verificationStatus } from "@/lib/verification-status";
-import { headers } from "next/headers";
+import { logEvent } from "@/lib/logEvent";
 
 export const fetchAllBookings = async (userId, offset) => {
   try {
     const data = await db.query.bookings.findMany({
-      where: and(eq(bookings.userId, userId), eq(bookings.status, "confirmed")),
+      where: and(eq(bookings.userId, userId), eq(bookings.status, "CONFIRMED")),
       with: { accommodation: true },
       orderBy: [desc(bookings.createdAt)],
       limit: BOOKINGS_PER_PAGE,
@@ -22,7 +22,6 @@ export const fetchAllBookings = async (userId, offset) => {
     });
     return data;
   } catch (error) {
-    // console.log("Database Error: ", error);
     throw new Error("Failed to fetch booking history.");
   }
 };
@@ -50,7 +49,6 @@ export const fetchAllFavorites = async (userId, offset) => {
     });
     return data;
   } catch (error) {
-    // console.log("Database Error: ", error);
     throw new Error("Failed to fetch user favorites.");
   }
 };
@@ -74,7 +72,7 @@ export const isAccommodationFavorite = async (accommodationId) => {
   const res = await db.query.favorites.findFirst({
     where: and(
       eq(favorites.userId, session.user.id),
-      eq(favorites.accommodationId, accommodationId)
+      eq(favorites.accommodationId, accommodationId),
     ),
   });
 
@@ -85,7 +83,7 @@ export const toggleFavoriteAction = async (userId, accommodationId) => {
   const existingFavorite = await db.query.favorites.findFirst({
     where: and(
       eq(favorites.userId, userId),
-      eq(favorites.accommodationId, accommodationId)
+      eq(favorites.accommodationId, accommodationId),
     ),
   });
 
@@ -108,17 +106,49 @@ export const deleteAccount = async () => {
   const email = session.user.email;
   const fullName = session.user.name;
 
-  const headerList = await headers();
-  const ip = headerList.get("x-forwarded-for") || "127.0.0.1";
-  const userAgent = headerList.get("user-agent") || "unknown";
-
   try {
-    await db.insert(userEvents).values({
-      userId,
-      type: "ACCOUNT_DELETED",
-      ip,
-      userAgent,
+    await db
+      .update(bookings)
+      .set({
+        name: "Deleted User",
+        email: "deleted@example.com",
+        phone: null,
+        message: null,
+        paymentIntentId: null,
+        checkoutSessionId: null,
+      })
+      .where(eq(bookings.userId, userId));
+
+    // add the same for reviews
+    //     await db.update(reviews)
+    // .set({
+    //   userName: "Anonymous",
+    // })
+    // .where(eq(reviews.userId, userId));
+
+    const user = await db.query.users.findFirst({
+      where: (users, { eq }) => eq(users.id, userId),
+      with: {
+        bookings: true,
+      },
     });
+
+    if (!user) throw new Error("User not found");
+
+    await logEvent({
+      actorId: userId,
+      type: "ACCOUNT_DELETED",
+      targetId: userId,
+      metadata: {
+        email: user.email,
+        name: user.name,
+        // reason: formData.reason, if a reason input is added when user deletes their account.
+        activeBookings: user.bookings?.filter((b) => b.status === "CONFIRMED")
+          .length,
+        joinedAt: user.createdAt,
+      },
+    });
+
     await workflowClient.trigger({
       url: `${config.env.apiEndpoint}/api/workflows/delete-account`,
       body: { email, fullName },

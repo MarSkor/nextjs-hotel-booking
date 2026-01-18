@@ -21,11 +21,11 @@ export const { POST } = serve(async (context) => {
       `,
       });
     },
-    { idempotencyKey: `verify-email:${token}` }
+    { idempotencyKey: `verify-email:${token}` },
   );
 
-  console.log("workflow:verify-email:sent", {
-    userId,
-    email: newEmail,
-  });
+  // console.log("workflow:verify-email:sent", {
+  //   userId,
+  //   email: newEmail,
+  // });
 });

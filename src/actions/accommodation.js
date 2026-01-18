@@ -52,7 +52,6 @@ export const getAccommodationById = async (id) => {
       ...accommodation,
     };
   } catch (error) {
-    // console.error("Error", error);
     return {
       success: false,
       message: "Failed to load accommodation details.",
@@ -77,10 +76,9 @@ export const createAccommodation = async (params) => {
       data: JSON.parse(JSON.stringify(newAccommodation[0])),
     };
   } catch (error) {
-    console.log(error);
     return {
       success: false,
-      message: "An error occured while creating the accommodation.",
+      message: "An error occurred while creating the accommodation.",
     };
   }
 };
@@ -117,7 +115,7 @@ export const updateAccommodation = async (params) => {
       } catch (error) {
         console.warn(
           "Previous featured image is already deleted: ",
-          error.message
+          error.message,
         );
       }
     }
@@ -143,7 +141,6 @@ export const updateAccommodation = async (params) => {
       data: JSON.parse(JSON.stringify(updatedAccommodation[0])),
     };
   } catch (error) {
-    console.error("Error", error.message);
     return {
       success: false,
       message: "An error occurred while updating the accommodation.",
@@ -171,7 +168,6 @@ export const deleteAccommodation = async (id) => {
       try {
         await imagekit.deleteFile(acc.featuredImage.fileId);
       } catch (err) {
-        // console.warn("Image already deleted in ImageKit.");
         return {
           success: false,
         };

@@ -5,8 +5,8 @@ import { db } from "@/database/drizzle";
 import { bookings } from "@/database/schema";
 import { eq, inArray, sql, and, lt } from "drizzle-orm";
 import dayjs from "dayjs";
+import { logEvent } from "@/lib/logEvent";
 
-// create stripe session and redirect urls
 export async function POST(req) {
   const headersList = await headers();
   const origin = headersList.get("origin");
@@ -16,17 +16,26 @@ export async function POST(req) {
   const checkOut = new Date(bookingDetails.checkOut);
 
   try {
-    //move to its own route later on for cleanup job.
     const now = new Date();
-    await db
+    const expired = await db
       .update(bookings)
-      .set({ status: "cancelled" })
+      .set({ status: "CANCELLED" })
       .where(
         and(
-          eq(bookings.status, "pending"),
-          lt(bookings.createdAt, dayjs(now).subtract(1, "day").toDate())
-        )
-      );
+          eq(bookings.status, "PENDING"),
+          lt(bookings.createdAt, dayjs(now).subtract(1, "day").toDate()),
+        ),
+      )
+      .returning({ id: bookings.id });
+
+    for (const b of expired) {
+      await logEvent({
+        actorId: null,
+        type: "BOOKING_CANCELLED",
+        targetId: b.id,
+        metadata: { reason: "System Auto-Cleanup: Expired Pending" },
+      });
+    }
 
     const overlappingBooking = await db
       .select()
@@ -34,9 +43,9 @@ export async function POST(req) {
       .where(
         and(
           eq(bookings.accommodationId, bookingDetails.accommodationId),
-          inArray(bookings.status, ["pending", "confirmed"]),
-          sql`${bookings.checkIn} < ${checkIn} AND ${bookings.checkOut} > ${checkOut}`
-        )
+          eq(bookings.status, "CONFIRMED"),
+          sql`${bookings.checkIn} < ${checkIn} AND ${bookings.checkOut} > ${checkOut}`,
+        ),
       );
 
     if (overlappingBooking.length > 0) {
@@ -46,7 +55,7 @@ export async function POST(req) {
           message:
             "Some or all selected dates of the accommodation are already booked",
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -65,7 +74,7 @@ export async function POST(req) {
         guests: bookingDetails.guests,
         message: bookingDetails.message,
         phone: bookingDetails.phone,
-        status: "pending",
+        status: "PENDING",
         isPaid: false,
       })
       .returning();
@@ -90,7 +99,7 @@ export async function POST(req) {
       ],
       metadata: {
         bookingId: booking.id,
-        accommdationId: booking.accommodationId,
+        accommodationId: booking.accommodationId,
         userId: bookingDetails.userId ?? null,
       },
       success_url: `${origin}/booking/success?session_id={CHECKOUT_SESSION_ID}`,
@@ -102,19 +111,30 @@ export async function POST(req) {
       .set({ checkoutSessionId: stripeSession.id })
       .where(eq(bookings.id, booking.id));
 
+    await logEvent({
+      actorId: booking.userId ?? null,
+      type: "BOOKING_CREATED",
+      targetId: booking.id,
+      metadata: {
+        accommodationId: booking.accommodationId,
+        totalPrice: booking.totalPrice,
+        isGuest: booking.isGuest,
+      },
+    });
+
     return NextResponse.json(
       {
         url: stripeSession.url,
         sessionId: stripeSession.id,
         bookingId: booking.id,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
-    console.error("Payment falied", error);
+    console.error("Payment failed", error);
     return new NextResponse(
       { error: error.message },
-      { status: error.statusCode || 500 }
+      { status: error.statusCode || 500 },
     );
   }
 }

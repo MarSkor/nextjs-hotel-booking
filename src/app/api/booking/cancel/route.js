@@ -28,7 +28,7 @@ export async function POST(req) {
       });
     }
 
-    if (booking.checkoutSessionId && booking.status === "pending") {
+    if (booking.checkoutSessionId && booking.status === "PENDING") {
       try {
         await stripe.checkout.sessions.expire(booking.checkoutSessionId);
       } catch (error) {
@@ -38,12 +38,11 @@ export async function POST(req) {
 
     await db
       .update(bookings)
-      .set({ status: "cancelled" })
+      .set({ status: "CANCELLED" })
       .where(eq(bookings.id, bookingId));
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error(error);
     return NextResponse.json({ success: false });
   }
 }
