@@ -2,6 +2,7 @@ import { IconDoubleBed, IconSingleBed } from "@/components/icons";
 
 export const FAVORITES_PER_PAGE = 6;
 export const BOOKINGS_PER_PAGE = 6;
+export const PER_PAGE_LIST = 15;
 
 export const bedTypes = [
   {

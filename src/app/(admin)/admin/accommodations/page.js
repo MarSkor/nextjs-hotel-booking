@@ -4,26 +4,25 @@ import { accommodations } from "@/database/schema";
 import { Box, Button, Container, Flex, Title } from "@mantine/core";
 import Link from "next/link";
 import AccommodationsOverview from "@/features/admin/components/AccommodationsOverview";
-
-const ACCS_PER_PAGE = 15;
+import { PER_PAGE_LIST } from "@/utils/constants";
 
 const Page = async ({ searchParams }) => {
   const params = await searchParams;
   const page = Number(params.page) || 1;
-  const offset = (page - 1) * ACCS_PER_PAGE;
+  const offset = (page - 1) * PER_PAGE_LIST;
 
   const [{ count }] = await db
     .select({ count: sql`count(*)` })
     .from(accommodations);
 
   const allAccommodations = await db.query.accommodations.findMany({
-    limit: ACCS_PER_PAGE,
+    limit: PER_PAGE_LIST,
     offset,
     orderBy: [desc(accommodations.createdAt)],
   });
 
   const totalCount = Number(count ?? 0);
-  const totalPages = Math.ceil(totalCount / ACCS_PER_PAGE);
+  const totalPages = Math.ceil(totalCount / PER_PAGE_LIST);
 
   return (
     <Container size={"xl"} component="section" pb={"88px"}>

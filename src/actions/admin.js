@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/database/drizzle";
-import { accommodations, bookings, users } from "@/database/schema";
+import { accommodations, bookings, reviews, users } from "@/database/schema";
 import { gt, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import dayjs from "dayjs";
@@ -10,6 +10,8 @@ import utc from "dayjs/plugin/utc";
 import { logEvent } from "@/lib/logEvent";
 import { auth } from "../../auth";
 import { verificationStatus } from "@/lib/verification-status";
+import { RESOURCE_MAP } from "@/utils/resourceMap";
+import { imagekit } from "@/lib/imageKit";
 
 dayjs.extend(weekday);
 dayjs.extend(utc);
@@ -69,50 +71,88 @@ export const getAdminStats = async () => {
   }
 };
 
-export const deleteUser = async (id) => {
+export const reviewModeration = async (id, status) => {
   const session = await auth();
-  if (session.user.role !== "admin")
+
+  if (session?.user?.role !== "ADMIN")
     return { success: false, error: verificationStatus.UNAUTHORIZED };
 
-  if (!id) return { success: false, message: "User ID is required" };
-
   try {
-    const user = await db.query.users.findFirst({
-      where: eq(users.id, id),
-    });
-    if (!user) {
-      return {
-        success: false,
-        message: "Could not find user.",
-      };
-    }
-    if (user.role === "ADMIN") {
-      return {
-        success: false,
-        message: "Admin accounts cannot be deleted.",
-      };
-    }
+    await db.update(reviews).set({ status }).where(eq(reviews.id, id));
 
     await logEvent({
       actorId: session.user.id,
-      type: "ADMIN_USER_DELETED",
-      targetId: user.id,
-      metadata: {
-        email: user.email,
-        name: user.name,
-      },
+      type:
+        status === "APPROVED"
+          ? "ADMIN_REVIEW_APPROVED"
+          : "ADMIN_REVIEW_REJECTED",
+      targetId: id,
+      metadata: { newStatus: status },
     });
 
-    await db.delete(users).where(eq(users.id, id));
-    revalidatePath("/admin/users", "page");
-    return {
-      success: true,
-      message: "User Successfully Deleted.",
-    };
+    revalidatePath("/admin/reviews");
+    return { success: true };
   } catch (error) {
+    // console.error(error);
+    return { error: "Failed to update review" };
+  }
+};
+
+export const deleteResourceAction = async (resource, id) => {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") {
     return {
       success: false,
-      message: error.message || "Unexpected error trying to delete user.",
+      error: verificationStatus.UNAUTHORIZED,
+      message: "Unauthorized.",
+    };
+  }
+
+  const config = RESOURCE_MAP[resource];
+  if (!config) return { success: false, message: "Invalid resource type." };
+
+  try {
+    const item = await db.query[resource].findFirst({
+      where: (table, { eq }) => eq(table.id, id),
+    });
+    if (!item) return { success: false, message: `${config.label} not found.` };
+
+    if (config.hasFiles && item.featuredImage?.fileId) {
+      try {
+        await imagekit.deleteFile(item.featuredImage.fileId);
+      } catch (err) {
+        // console.error("ImageKit deletion failed, proceeding with DB delete...");
+        return {
+          success: false,
+          error: verificationStatus.ERROR,
+          message: "ImageKit file deletion failed.",
+        };
+      }
+    }
+
+    await db.delete(config.table).where(eq(config.table.id, id));
+
+    await logEvent({
+      actorId: session.user.id,
+      type: "ADMIN_RESOURCE_DELETE",
+      targetId: id,
+      metadata: {
+        resource,
+        deletedData: item,
+      },
+    });
+    revalidatePath(config.path, "page");
+    if (resource === "accommodations") {
+      revalidatePath(`/admin/accommodations/edit/${id}`, "page");
+    }
+
+    return { success: true };
+  } catch (error) {
+    // console.error(`Delete failed for ${resource}:`, error);
+    return {
+      success: false,
+      error: verificationStatus.ERROR,
+      message: "An error occurred deleting the resource.",
     };
   }
 };

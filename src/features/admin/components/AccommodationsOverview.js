@@ -1,7 +1,7 @@
 "use client";
-import { deleteAccommodation } from "@/actions/accommodation";
 import { parseDate } from "@/utils/date";
 import DataTable from "./DataTable";
+import { deleteResourceAction } from "@/actions/admin";
 
 const AccommodationsOverview = ({ data, totalPages, currentPage }) => {
   const formattedAccData = data.map((b) => ({
@@ -37,7 +37,7 @@ const AccommodationsOverview = ({ data, totalPages, currentPage }) => {
           format: (v) => parseDate(v).format("DD/MM/YY"),
         },
       ]}
-      deleteAction={deleteAccommodation}
+      deleteAction={deleteResourceAction}
       resourceName={"accommodations"}
     />
   );

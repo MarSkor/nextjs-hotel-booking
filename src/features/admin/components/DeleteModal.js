@@ -32,7 +32,7 @@ const DeleteModal = ({
   const handleDelete = () => {
     startTransition(async () => {
       try {
-        const res = await deleteAction(id);
+        const res = await deleteAction(resourceName, id);
 
         if (res?.success) {
           mantineNotify.success(`${resourceName} successfully deleted.`);
@@ -43,13 +43,13 @@ const DeleteModal = ({
           }
         } else {
           mantineNotify.error(
-            res?.message || `Failed to delete ${resourceName}`
+            res?.message || `Failed to delete ${resourceName}`,
           );
         }
       } catch (error) {
         // console.error(`Error deleting ${resourceName}: `, error);
         mantineNotify.error(
-          `An unexpected error occured deleting ${resourceName}`
+          `An unexpected error occurred deleting ${resourceName}`,
         );
       } finally {
         modals.closeAll();

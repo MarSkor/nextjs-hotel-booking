@@ -14,6 +14,7 @@ import {
   ScrollArea,
   Pagination,
   ActionIcon,
+  rem,
 } from "@mantine/core";
 
 const DataTable = ({
@@ -51,6 +52,7 @@ const DataTable = ({
                   key={col.key}
                   visibleFrom={col.visibleFrom}
                   hiddenFrom={col.hiddenFrom}
+                  style={{ width: col.width ? rem(col.width) : "auto" }}
                 >
                   {col.label}
                 </TableTh>
@@ -71,7 +73,7 @@ const DataTable = ({
                     >
                       {col.format
                         ? col.format(item[col.key], item)
-                        : item[col.key] ?? "-"}
+                        : (item[col.key] ?? "-")}
                     </TableTd>
                   ))}
                   {/* actions  */}
@@ -95,7 +97,7 @@ const DataTable = ({
                         resourceName={resourceName}
                         message={`Are you sure you want to delete "${
                           item.title || item.fullName || "this item"
-                        }"?`}
+                        }"?`} // figure out a better message.
                         confirmText="Delete"
                         deleteAction={deleteAction}
                         redirectAfter={redirectAfter}

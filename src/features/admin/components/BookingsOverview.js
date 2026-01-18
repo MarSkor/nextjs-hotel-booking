@@ -1,8 +1,8 @@
 "use client";
-// import { deleteBooking } from "@/actions/booking";
 import DataTable from "./DataTable";
 import { Badge } from "@mantine/core";
 import { parseDate } from "@/utils/date";
+import { deleteResourceAction } from "@/actions/admin";
 
 const BookingsOverview = ({ bookings, totalPages, currentPage }) => {
   const formattedBookingsData = bookings.map((b) => ({
@@ -43,16 +43,16 @@ const BookingsOverview = ({ bookings, totalPages, currentPage }) => {
           visibleFrom: "sm",
           format: (value) => {
             const color =
-              value === "confirmed"
+              value === "CONFIRMED"
                 ? "green"
-                : value === "cancelled"
-                ? "red"
-                : "yellow";
+                : value === "CANCELLED"
+                  ? "red"
+                  : "yellow";
             return <Badge color={color}>{value}</Badge>;
           },
         },
       ]}
-      // deleteAction={deleteBooking} // to add
+      deleteAction={deleteResourceAction}
       resourceName={"bookings"}
     />
   );

@@ -1,6 +1,6 @@
 "use client";
 import { parseDate } from "@/utils/date";
-import { deleteUser } from "@/actions/admin";
+import { deleteResourceAction } from "@/actions/admin";
 import DataTable from "./DataTable";
 
 const UsersOverview = ({ users, totalPages, currentPage }) => {
@@ -31,7 +31,7 @@ const UsersOverview = ({ users, totalPages, currentPage }) => {
           format: (v) => parseDate(v).format("DD/MM/YY"),
         },
       ]}
-      deleteAction={deleteUser}
+      deleteAction={deleteResourceAction}
       resourceName={"users"}
     />
   );
