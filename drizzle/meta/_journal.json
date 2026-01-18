@@ -15,6 +15,20 @@
       "when": 1768740072715,
       "tag": "0001_unique_tana_nile",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1768760308548,
+      "tag": "0002_legal_violations",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1768761663150,
+      "tag": "0003_wide_doctor_octopus",
+      "breakpoints": true
     }
   ]
 }
