@@ -1,5 +1,5 @@
 {
-  "id": "bfd99e7b-7f9e-432f-b427-d1a97222ba51",
+  "id": "1e9e42e7-a19b-460d-987f-30d052f2330e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -354,7 +354,7 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": "'pending'"
+          "default": "'PENDING'"
         },
         "name": {
           "name": "name",
@@ -412,7 +412,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
+          "onDelete": "set null",
           "onUpdate": "no action"
         },
         "bookings_accommodation_id_accommodations_id_fk": {
@@ -478,6 +478,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "comment": {
           "name": "comment",
           "type": "text",
@@ -490,10 +496,17 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false,
-          "default": "'APPROVED'"
+          "default": "'PENDING'"
         },
         "created_at": {
           "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false,
@@ -512,7 +525,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
+          "onDelete": "set null",
           "onUpdate": "no action"
         },
         "reviews_accommodation_id_accommodations_id_fk": {
@@ -761,73 +774,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.user_events": {
-      "name": "user_events",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "type": {
-          "name": "type",
-          "type": "enumEventType",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "ip": {
-          "name": "ip",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "user_agent": {
-          "name": "user_agent",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "user_events_user_id_users_id_fk": {
-          "name": "user_events_user_id_users_id_fk",
-          "tableFrom": "user_events",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.password_resets": {
       "name": "password_resets",
       "schema": "",
@@ -870,6 +816,84 @@
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
+    },
+    "public.audit_logs": {
+      "name": "audit_logs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "actor_id": {
+          "name": "actor_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "target_id": {
+          "name": "target_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "enumEventType",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ip": {
+          "name": "ip",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_agent": {
+          "name": "user_agent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "audit_logs_actor_id_users_id_fk": {
+          "name": "audit_logs_actor_id_users_id_fk",
+          "tableFrom": "audit_logs",
+          "tableTo": "users",
+          "columnsFrom": [
+            "actor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
   "enums": {
@@ -894,9 +918,9 @@
       "name": "enumStatus",
       "schema": "public",
       "values": [
-        "pending",
-        "confirmed",
-        "cancelled"
+        "PENDING",
+        "CONFIRMED",
+        "CANCELLED"
       ]
     },
     "public.review_status": {
@@ -918,7 +942,17 @@
         "PASSWORD_RESET_REQUESTED",
         "PASSWORD_CHANGED",
         "PASSWORD_RESET",
-        "ACCOUNT_DELETED"
+        "ACCOUNT_DELETED",
+        "REVIEW_SUBMITTED",
+        "BOOKING_CANCELLED_BY_USER",
+        "ADMIN_BOOKING_CANCELLED",
+        "ADMIN_PRICE_OVERRIDE",
+        "ADMIN_USER_BANNED",
+        "ADMIN_USER_DELETED",
+        "ADMIN_LISTING_APPROVED",
+        "ADMIN_REVIEW_APPROVED",
+        "ADMIN_REVIEW_REPLIED",
+        "SYSTEM_SETTING_CHANGED"
       ]
     }
   },
