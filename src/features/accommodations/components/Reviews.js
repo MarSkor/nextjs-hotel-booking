@@ -21,7 +21,9 @@ import {
 } from "@mantine/core";
 
 const ReviewCard = ({ onOpenFull, ...data }) => {
-  const isLong = data.comment.length > 100;
+  const hasReply = !!data.reply;
+  const isCommentLong = data.comment && data.comment.length > 100;
+  const isLong = isCommentLong || hasReply;
 
   const isEdited =
     new Date(data.updatedAt).getTime() - new Date(data.createdAt).getTime() >
@@ -69,7 +71,6 @@ const ReviewCard = ({ onOpenFull, ...data }) => {
           </Stack>
         </Flex>
       </Flex>
-
       <Flex direction={"column"}>
         <Title order={5} mb={"xs"}>
           {data.title}
@@ -77,19 +78,26 @@ const ReviewCard = ({ onOpenFull, ...data }) => {
         <Text size="sm" lineClamp={3} c="gray.7">
           {data.comment}
         </Text>
-        {isLong && (
-          <UnstyledButton onClick={onOpenFull} mt={5}>
-            <Text
-              size="xs"
-              c="blue"
-              fw={600}
-              style={{ textDecoration: "underline" }}
-            >
-              Show more {">"}
-            </Text>
-          </UnstyledButton>
-        )}
       </Flex>
+
+      {/* section for admin reply  */}
+      {hasReply && !isCommentLong && (
+        <Text size="xs" c="blue" fs="italic" mt={5} lineClamp={1}>
+          Management Reply: {data.reply.reply}
+        </Text>
+      )}
+      {isLong && (
+        <UnstyledButton onClick={onOpenFull} mt={5}>
+          <Text
+            size="xs"
+            c="blue"
+            fw={600}
+            style={{ textDecoration: "underline" }}
+          >
+            {hasReply ? "View full review & host response >" : "Show more >"}
+          </Text>
+        </UnstyledButton>
+      )}
     </Paper>
   );
 };
@@ -150,7 +158,7 @@ const Reviews = ({ reviews }) => {
           onClose={() => setSelectedReview(null)}
           title="Full Review"
           centered
-          size="lg"
+          size="xl"
           radius="md"
           scrollAreaComponent={ScrollArea.Autosize}
         >
@@ -194,6 +202,39 @@ const Reviews = ({ reviews }) => {
               <Text size="md" style={{ whiteSpace: "pre-wrap" }}>
                 {selectedReview.comment}
               </Text>
+              {/* section for admin reply  */}
+              {selectedReview.reply && (
+                <Box
+                  mt="md"
+                  p="md"
+                  style={(theme) => ({
+                    backgroundColor: theme.colors.blue[0],
+                    borderRadius: theme.radius.sm,
+                    borderLeft: `${rem(4)} solid ${theme.colors.blue[6]}`,
+                  })}
+                >
+                  <Stack gap={4}>
+                    <Group justify="space-between">
+                      <Text size="xs" fw={700} c="blue.9" tt="uppercase">
+                        Response from Management
+                      </Text>
+                      <Text size="xs" c="dimmed">
+                        {dayjs(selectedReview.reply.createdAt).format(
+                          "MMM D, YYYY",
+                        )}
+                      </Text>
+                    </Group>
+
+                    <Text
+                      size="sm"
+                      fs="italic"
+                      style={{ whiteSpace: "pre-wrap" }}
+                    >
+                      {selectedReview.reply.reply}
+                    </Text>
+                  </Stack>
+                </Box>
+              )}
             </Stack>
           )}
         </Modal>

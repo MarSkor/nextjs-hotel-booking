@@ -19,6 +19,7 @@ const AccommodationDetailsPage = async ({ params }) => {
         orderBy: (reviews, { desc }) => [desc(reviews.createdAt)],
         with: {
           user: true,
+          reply: true,
         },
       },
     },

@@ -2,7 +2,7 @@
 
 import { verificationStatus } from "@/lib/verification-status";
 import { auth } from "../../auth";
-import { reviews } from "@/database/schema";
+import { reviewReplies, reviews } from "@/database/schema";
 import { db } from "@/database/drizzle";
 import { revalidatePath } from "next/cache";
 import { logEvent } from "@/lib/logEvent";
@@ -26,7 +26,7 @@ export const submitReview = async (data) => {
         rating: data.rating.toString(),
         comment: data.comment,
         title: data.title,
-        status: "PENDING",
+        status: "APPROVED",
       })
       .onConflictDoUpdate({
         target: reviews.bookingId,
@@ -35,7 +35,7 @@ export const submitReview = async (data) => {
           comment: data.comment,
           title: data.title,
           updatedAt: new Date(),
-          status: "PENDING",
+          status: "APPROVED",
         },
       })
       .returning({ id: reviews.id });
@@ -71,5 +71,41 @@ export const submitReview = async (data) => {
   } catch (error) {
     console.log("error: ", error);
     return { error: "Failed to submit review" };
+  }
+};
+
+export const upsertReviewReply = async (reviewId, replyText) => {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN")
+    return { error: verificationStatus.UNAUTHORIZED };
+
+  try {
+    await db
+      .insert(reviewReplies)
+      .values({
+        reviewId,
+        ownerId: session.user.id,
+        reply: replyText,
+      })
+      .onConflictDoUpdate({
+        target: reviewReplies.reviewId,
+        set: {
+          reply: replyText,
+          updatedAt: new Date(),
+        },
+      });
+
+    await logEvent({
+      actorId: session.user.id,
+      type: "ADMIN_REVIEW_REPLIED",
+      targetId: reviewId,
+      metadata: { replyLength: replyText.length, comment: replyText },
+    });
+
+    revalidatePath("/admin/reviews");
+    return { success: true };
+  } catch (error) {
+    console.log("review reply error: ", error);
+    return { error: "Failed to save reply" };
   }
 };

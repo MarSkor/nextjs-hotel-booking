@@ -10,6 +10,7 @@ import { relations } from "drizzle-orm";
 import { users } from "./users.js";
 import { accommodations } from "./accommodations.js";
 import { bookings } from "./bookings.js";
+import { reviewReplies } from "./review_replies.js";
 
 export const reviewStatusEnum = pgEnum("review_status", [
   "PENDING",
@@ -47,5 +48,9 @@ export const reviewsRelations = relations(reviews, ({ one }) => ({
   accommodation: one(accommodations, {
     fields: [reviews.accommodationId],
     references: [accommodations.id],
+  }),
+  reply: one(reviewReplies, {
+    fields: [reviews.id],
+    references: [reviewReplies.reviewId],
   }),
 }));
