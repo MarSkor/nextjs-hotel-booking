@@ -53,93 +53,11 @@ const StatsCard = (data) => {
             color="blue"
           />
         )}
-
-        {/* Subtext: Pushed to the bottom to keep cards equal height */}
         <Text fz="xs" c="dimmed" mt="auto" pt={7}>
           {data.count.subtext}
         </Text>
       </Flex>
     </Paper>
-    // <Paper shadow="xs" withBorder p="md" radius="md" h="100%">
-    //   <Group justify="space-between" mb="xs">
-    //     <Text size="xs" c="dimmed" fw={700} tt="uppercase">
-    //       {data.title}
-    //     </Text>
-    //     <Box
-    //       p="6px"
-    //       style={{
-    //         backgroundColor: data.color,
-    //         borderRadius: "8px",
-    //         display: "flex",
-    //         alignItems: "center",
-    //       }}
-    //     >
-    //       {data.icon}
-    //     </Box>
-    //   </Group>
-
-    //   <Flex align="flex-end" gap="xs">
-    //     <Title fw={700} order={2}>
-    //       {data.value}
-    //     </Title>
-
-    //     {/* Show Growth Badge if growth property exists */}
-    //     {data.growth !== undefined && (
-    //       <Badge
-    //         variant="light"
-    //         color={isPositive ? "teal" : "red"}
-    //         size="sm"
-    //         leftSection={
-    //           isPositive ? (
-    //             <IconArrowUpRight size={12} />
-    //           ) : (
-    //             <IconArrowDownRight size={12} />
-    //           )
-    //         }
-    //       >
-    //         {Math.abs(data.growth)}%
-    //       </Badge>
-    //     )}
-    //   </Flex>
-
-    //   {/* Show Progress Bar if progress property exists (e.g., Occupancy) */}
-    //   {data.progress !== undefined && (
-    //     <Box mt="sm">
-    //       <Progress value={data.progress} size="sm" radius="xl" color="blue" />
-    //     </Box>
-    //   )}
-
-    //   <Text size="xs" c="dimmed" mt={data.progress !== undefined ? "xs" : "sm"}>
-    //     {data.description}
-    //   </Text>
-    // </Paper>
-    // <Paper
-    //   shadow="xs"
-    //   withBorder
-    //   p="md"
-    //   component="a"
-    //   href={data.href}
-    //   style={{ textDecoration: "none", color: "inherit" }}
-    // >
-    //   <Group justify="space-between" mb="xs">
-    //     <Text size="sm" c="dimmed" fw={700} tt="uppercase">
-    //       {data.title}
-    //     </Text>
-    //     <Box
-    //       p="6px"
-    //       style={{ backgroundColor: data.color, borderRadius: "8px" }}
-    //     >
-    //       {data.icon}
-    //     </Box>
-    //   </Group>
-
-    //   <Title order={2} mt="md">
-    //     {data.count.total}
-    //   </Title>
-    //   <Text size="xs" c="dimmed" mt={4}>
-    //     {data.count.subtext}
-    //   </Text>
-    // </Paper>
   );
 };
 
