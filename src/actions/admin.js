@@ -8,8 +8,8 @@ import {
   reviews,
   users,
 } from "@/database/schema";
-import { gt, eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { eq, count, sum, avg, and, gte, lte } from "drizzle-orm";
+import { revalidatePath, unstable_cache } from "next/cache";
 import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
 import utc from "dayjs/plugin/utc";
@@ -22,60 +22,182 @@ import { imagekit } from "@/lib/imageKit";
 dayjs.extend(weekday);
 dayjs.extend(utc);
 
-export const getAdminStats = async () => {
-  try {
-    const weekStart = dayjs().utc().weekday(1).startOf("day").toDate();
+export const getAdminStats = unstable_cache(
+  async () => {
+    const now = dayjs();
+    const startOfThisMonth = now.startOf("month").toDate();
+    const startOfLastMonth = now.subtract(1, "month").startOf("month").toDate();
+    const endOfLastMonth = now.subtract(1, "month").endOf("month").toDate();
+    const today = now.startOf("day").toDate();
 
-    const totalUsers = await db.select().from(users);
-    const newUsers = await db
-      .select()
-      .from(users)
-      .where(gt(users.createdAt, weekStart));
+    try {
+      const getMetric = async (table, condition) => {
+        const [res] = await db
+          .select({ value: count() })
+          .from(table)
+          .where(condition);
+        return Number(res?.value ?? 0);
+      };
 
-    const totalAccs = await db.select().from(accommodations);
-    const newAccs = await db
-      .select()
-      .from(accommodations)
-      .where(gt(accommodations.createdAt, weekStart));
+      const [
+        revThisMonth,
+        revLastMonth,
+        bookedNights,
+        totalAccs,
+        activeBookings,
+        pendingBookings,
+        unreadMessages,
+        avgRating,
+      ] = await Promise.all([
+        db
+          .select({ val: sum(bookings.totalPrice) })
+          .from(bookings)
+          .where(
+            and(
+              eq(bookings.status, "CONFIRMED"),
+              gte(bookings.createdAt, startOfThisMonth),
+            ),
+          ),
 
-    const totalBookings = await db.select().from(bookings);
-    const newBookings = await db
-      .select()
-      .from(bookings)
-      .where(gt(bookings.createdAt, weekStart));
+        db
+          .select({ val: sum(bookings.totalPrice) })
+          .from(bookings)
+          .where(
+            and(
+              eq(bookings.status, "CONFIRMED"),
+              gte(bookings.createdAt, startOfLastMonth),
+              lte(bookings.createdAt, endOfLastMonth),
+            ),
+          ),
 
-    return {
-      users: {
-        total: totalUsers.length,
-        newThisWeek: newUsers.length,
-      },
-      accommodations: {
-        total: totalAccs.length,
-        newThisWeek: newAccs.length,
-      },
-      bookings: {
-        total: totalBookings.length,
-        newThisWeek: newBookings.length,
-      },
-    };
-  } catch (error) {
-    // console.error("Error fetching data: ", error);
-    return {
-      users: {
-        total: 0,
-        newThisWeek: 0,
-      },
-      accommodations: {
-        total: 0,
-        newThisWeek: 0,
-      },
-      bookings: {
-        total: 0,
-        newThisWeek: 0,
-      },
-    };
-  }
-};
+        db
+          .select({ val: sum(bookings.nights) })
+          .from(bookings)
+          .where(
+            and(
+              eq(bookings.status, "CONFIRMED"),
+              gte(bookings.checkIn, startOfThisMonth),
+            ),
+          ),
+
+        db.select({ val: count() }).from(accommodations),
+
+        getMetric(
+          bookings,
+          and(
+            eq(bookings.status, "CONFIRMED"),
+            lte(bookings.checkIn, today),
+            gte(bookings.checkOut, today),
+          ),
+        ),
+
+        getMetric(bookings, eq(bookings.status, "PENDING")),
+
+        getMetric(contactMessages, eq(contactMessages.status, "UNREAD")),
+
+        db.select({ val: avg(reviews.rating) }).from(reviews),
+      ]);
+
+      const currentRev = Number(revThisMonth[0]?.val ?? 0);
+      const lastRev = Number(revLastMonth[0]?.val ?? 0);
+      const revenueGrowth =
+        lastRev === 0 ? 100 : ((currentRev - lastRev) / lastRev) * 100;
+
+      const daysInMonth = now.daysInMonth();
+      const capacity = Number(totalAccs[0]?.val ?? 0) * daysInMonth;
+      const actualNights = Number(bookedNights[0]?.val ?? 0);
+      const occupancyRate =
+        capacity === 0 ? 0 : (actualNights / capacity) * 100;
+
+      return {
+        revenue: {
+          total: currentRev,
+          growth: revenueGrowth.toFixed(1),
+        },
+        occupancy: occupancyRate.toFixed(1),
+        activeInHouse: activeBookings,
+        pendingActions: pendingBookings + unreadMessages,
+        rating: Number(avgRating[0]?.val ?? 0).toFixed(1),
+      };
+    } catch (error) {
+      // console.log("admin stats error: ", error);
+      return null;
+    }
+  },
+  ["admin-stats-cache"],
+  {
+    revalidate: 3600,
+    tags: ["admin-stats"],
+  },
+);
+
+// export const getAdminStats = unstable_cache(
+//   async () => {
+//     const weekStart = dayjs().utc().weekday(1).startOf("day").toDate();
+//     const todayStart = dayjs().utc().startOf("day").toDate();
+
+//     try {
+//       // reusable function to get the various tables. leaving it for now.
+//       const getCountForTable = async (table) => {
+//         const [totalRes] = await db.select({ value: count() }).from(table);
+//         const [newRes] = await db
+//           .select({ value: count() })
+//           .from(table)
+//           .where(gt(table.createdAt, weekStart));
+
+//         return {
+//           total: Number(totalRes?.value ?? 0),
+//           newThisWeek: Number(newRes?.value ?? 0),
+//         };
+//       };
+
+//       const [
+//         userStats,
+//         accStats,
+//         bookingStats,
+//         reviewStats,
+//         messageStats,
+//         revenueRes,
+//         unreadRes,
+//         ratingRes,
+//       ] = await Promise.all([
+//         getCountForTable(users),
+//         getCountForTable(accommodations),
+//         getCountForTable(bookings),
+//         getCountForTable(reviews),
+//         getCountForTable(contactMessages),
+
+//         db
+//           .select({ val: sum(bookings.totalPrice) })
+//           .from(bookings)
+//           .where(eq(bookings.status, "CONFIRMED")),
+
+//         db
+//           .select({ val: count() })
+//           .from(contactMessages)
+//           .where(eq(contactMessages.isRead, false)),
+
+//         db.select({ val: avg(reviews.rating) }).from(reviews),
+//       ]);
+
+//       return {
+//         users: userStats,
+//         accommodations: accStats,
+//         bookings: bookingStats,
+//         reviews: reviewStats,
+//         messages: messageStats,
+//         revenue: Number(revenueRes[0]?.val ?? 0),
+//         unreadCount: Number(unreadRes[0]?.val ?? 0),
+//         averageRating: Number(ratingRes[0]?.val ?? 0).toFixed(1),
+//       };
+//     } catch (error) {
+//       console.log("admin stats error: ", error);
+//       return null;
+//     }
+//   },
+//   ["admin-stats-cache"],
+//   { revalidate: 3600, tags: ["admin-stats"] },
+// );
 
 export const reviewModeration = async (id, status) => {
   const session = await auth();

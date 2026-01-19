@@ -6,6 +6,7 @@ import { workflowClient } from "@/lib/email";
 import { stripe } from "@/lib/stripe";
 import { eq } from "drizzle-orm";
 import { logEvent } from "@/lib/logEvent";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 const endpointSecret = config.env.stripe.webhookSecret;
 
@@ -56,6 +57,9 @@ export async function POST(req) {
             .set({ status: "CONFIRMED", isPaid: true })
             .where(eq(bookings.id, bookingId));
 
+          revalidateTag("admin-stats");
+          revalidatePath("/admin");
+
           await logEvent({
             actorId: booking.userId,
             type: "BOOKING_CONFIRMED",
@@ -95,6 +99,8 @@ export async function POST(req) {
             .update(bookings)
             .set({ status: "CANCELLED" })
             .where(eq(bookings.id, bookingId));
+
+          revalidateTag("admin-stats");
 
           await logEvent({
             actorId: booking.userId,

@@ -4,7 +4,7 @@ import { db } from "@/database/drizzle";
 import { contactMessages } from "@/database/schema";
 import { logEvent } from "@/lib/logEvent";
 import { verificationStatus } from "@/lib/verification-status";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export const sendContactMessage = async (data) => {
   try {
@@ -26,6 +26,7 @@ export const sendContactMessage = async (data) => {
       metadata: { email: data.email, subject: data.subject },
     });
 
+    revalidateTag("admin-stats");
     revalidatePath("/admin/messages");
     return { success: true };
   } catch (error) {

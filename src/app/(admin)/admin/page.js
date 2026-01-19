@@ -1,5 +1,10 @@
 import { getAdminStats } from "@/actions/admin";
-import { IconAppointment, IconHouse, IconUser } from "@/components/icons";
+import {
+  IconAlert,
+  IconReceipt,
+  IconSingleBed,
+  IconUser,
+} from "@/components/icons";
 import { Container, Box, Grid, GridCol, Text } from "@mantine/core";
 import StatsCard from "@/features/admin/components/StatsCard";
 
@@ -7,33 +12,58 @@ const AdminPage = async () => {
   const stats = await getAdminStats();
 
   if (!stats) {
-    return <Text>Error loading stats.</Text>;
+    return (
+      <Container fluid>
+        <Text>Error loading stats.</Text>
+      </Container>
+    );
   }
 
   const statsCardData = [
     {
-      title: "Users",
-      count: stats?.users ?? 0,
-      subtext: stats?.users.newThisWeek ?? 0,
-      icon: <IconUser height={20} width={20} />,
-      href: "/admin/users",
-      color: "lightblue",
-    },
-    {
-      title: "Accommodations",
-      count: stats?.accommodations ?? 0,
-      subtext: stats?.accommodations.newThisWeek ?? 0,
-      icon: <IconHouse height={20} width={20} />,
-      href: "/admin/accommodations",
-      color: "lightpink",
-    },
-    {
-      title: "Bookings",
-      count: stats?.bookings ?? 0,
-      subtext: stats?.bookings.newThisWeek ?? 0,
-      icon: <IconAppointment height={20} width={20} />,
+      title: "Revenue (MTD)",
+      count: {
+        total: `$${stats.revenue.total.toLocaleString()}`,
+        subtext: "Compared to previous month.",
+        growth: stats.revenue.growth,
+      },
+      icon: <IconReceipt height={20} width={20} />,
+      color: "var(--mantine-color-green-1)",
       href: "/admin/bookings",
-      color: "lightgreen",
+    },
+    {
+      title: "Occupancy Rate",
+      count: {
+        total: `${stats.occupancy}%`,
+        subtext: "Capacity usage",
+        progress: parseFloat(stats.occupancy),
+      },
+      icon: <IconSingleBed height={20} width={20} />,
+      color: "var(--mantine-color-blue-1)",
+      href: "/admin/accommodations",
+    },
+    {
+      title: "Pending Actions",
+      count: {
+        total: stats.pendingActions,
+        subtext: "New messages & requests",
+      },
+      icon: <IconAlert height={20} width={20} />,
+      color:
+        stats.pendingActions > 0
+          ? "var(--mantine-color-red-1)"
+          : "var(--mantine-color-gray-1)",
+      href: "/admin/messages",
+    },
+    {
+      title: "Active Guests",
+      count: {
+        total: stats.activeInHouse,
+        subtext: "Currently in-house",
+      },
+      icon: <IconUser height={20} width={20} />,
+      color: "var(--mantine-color-teal-1)",
+      href: "/admin/bookings",
     },
   ];
 
@@ -42,7 +72,7 @@ const AdminPage = async () => {
       <Box mt={"lg"}>
         <Grid>
           {statsCardData.map((data) => (
-            <GridCol key={data.title} span={{ base: 12, sm: 8, lg: 4 }}>
+            <GridCol key={data.title} span={{ base: 12, sm: 8, lg: 3 }}>
               <StatsCard {...data} />
             </GridCol>
           ))}

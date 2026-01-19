@@ -38,3 +38,6 @@ export { default as IconAppointment } from "./appointment-01-stroke-rounded";
 export { default as IconCheckIn } from "./calendar-check-in-01-stroke-rounded";
 export { default as IconCheckOut } from "./calendar-check-out-01-stroke-rounded";
 export { default as IconArrowLeft02 } from "./arrow-left-02-stroke-rounded";
+export { default as IconReceipt } from "./receipt-dollar-stroke-rounded";
+export { default as IconArrowUpRight } from "./arrow-up-right-01-stroke-rounded";
+export { default as IconArrowDownRight } from "./arrow-down-right-01-stroke-rounded";
