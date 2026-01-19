@@ -13,21 +13,19 @@ import { usePathname } from "next/navigation";
 import AdminLogOut from "./AdminLogOut";
 
 export const sideBarLinks = [
-  { href: "/admin", label: "Home" },
+  { href: "/admin", label: "Overview" },
   { href: "/admin/accommodations", label: "Accommodations" },
   { href: "/admin/bookings", label: "Bookings" },
   { href: "/admin/users", label: "Users" },
   { href: "/admin/reviews", label: "Reviews" },
+  { href: "/admin/messages", label: "Messages" },
   { href: "/admin/settings", label: "Settings" },
 ];
 
-const SidebarLink = ({ href, label }) => {
+const SidebarLink = ({ href, label, onClick }) => {
   const pathname = usePathname();
-
   const isActive = pathname === href || pathname?.startsWith(`/admin/${href}/`);
 
-  // console.log("pathname", pathname);
-  // console.log("isActive", isActive);
   return (
     <Box component="li" className={`sidebar__list-item`} mb={"sm"}>
       <Box
@@ -35,6 +33,7 @@ const SidebarLink = ({ href, label }) => {
         p={"xs"}
         href={href}
         className={`sidebar__link ${isActive && "active"}`}
+        onClick={onClick}
       >
         {label}
       </Box>
@@ -70,11 +69,15 @@ const Sidebar = ({ opened, onClick, session }) => {
           </Flex>
           <Box component="ul" className="appshellnavbar__ul">
             {sideBarLinks.map((item, i) => (
-              <SidebarLink key={item.href} {...item} />
+              <SidebarLink key={item.href} {...item} onClick={onClick} />
             ))}
           </Box>
         </Flex>
-        <SidebarLink href={"/account"} label={"Back to Holidaze"} />
+        <SidebarLink
+          href={"/account"}
+          label={"Back to Holidaze"}
+          onClick={onClick}
+        />
         <AdminLogOut session={session} />
       </AppShellSection>
     </AppShellNavbar>
