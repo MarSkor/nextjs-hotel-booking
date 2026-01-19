@@ -1,4 +1,4 @@
-import { SimpleGrid, Container, Flex } from "@mantine/core";
+import { Container, Grid, GridCol } from "@mantine/core";
 import { ContactInformation } from "@/features/contact/components";
 import { ContactForm } from "@/features/contact/forms";
 
@@ -12,12 +12,14 @@ const ContactPage = () => {
         mt="xl"
         mb="xl"
       >
-        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing={"lg"}>
-          <ContactInformation />
-          <Flex className="contactform__container" justify={"center"}>
+        <Grid gutter={"sm"}>
+          <GridCol span={{ base: 12, md: 6, lg: 5 }}>
+            <ContactInformation />
+          </GridCol>
+          <GridCol span={{ base: 12, md: 6, lg: 7 }}>
             <ContactForm />
-          </Flex>
-        </SimpleGrid>
+          </GridCol>
+        </Grid>
       </Container>
     </article>
   );

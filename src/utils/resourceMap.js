@@ -1,4 +1,10 @@
-import { accommodations, bookings, reviews, users } from "@/database/schema";
+import {
+  accommodations,
+  bookings,
+  contactMessages,
+  reviews,
+  users,
+} from "@/database/schema";
 
 export const RESOURCE_MAP = {
   accommodations: {
@@ -23,6 +29,12 @@ export const RESOURCE_MAP = {
     table: users,
     path: "/admin/users",
     label: "User",
+    hasFiles: false,
+  },
+  contactMessages: {
+    table: contactMessages,
+    path: "/admin/messages",
+    label: "Messages",
     hasFiles: false,
   },
 };

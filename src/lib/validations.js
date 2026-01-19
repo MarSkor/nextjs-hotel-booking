@@ -17,7 +17,7 @@ export const registerSchema = z.object({
     .max(50, "Full name must be less than 50 characters")
     .regex(
       /^[a-zA-Z\s'-]+$/,
-      "Full name can only contain letters, spaces, hyphens, or apostrophes"
+      "Full name can only contain letters, spaces, hyphens, or apostrophes",
     )
     .trim(),
   email: z.email({ error: "Please enter a valid email." }).trim(),
@@ -118,7 +118,7 @@ export const accommodationSchema = z
         {
           message:
             "Street must contain at least 1 word, each with at least 1 character",
-        }
+        },
       )
       .regex(/^[a-zA-Z0-9\s.,'-]+$/, "Street name contains invalid characters"),
     buildingNumber: z.number().min(1),
@@ -156,13 +156,13 @@ export const bookingSchema = z
           required_error: "Check-in date is required",
           invalid_type_error: "",
         })
-        .refine((val) => val !== null, "Check-in date is required")
+        .refine((val) => val !== null, "Check-in date is required"),
     ),
     checkOut: z.preprocess(
       (val) => (val instanceof Date ? val : val ? new Date(val) : null),
       z
         .date({ required_error: "Check-out date is required" })
-        .refine((val) => val !== null, "Check-out date is required")
+        .refine((val) => val !== null, "Check-out date is required"),
     ),
   })
   .refine((data) => data.checkOut > data.checkIn, {
@@ -178,7 +178,7 @@ export const bookingEnquirySchema = z.object({
     .max(50, "Full name must be less than 50 characters")
     .regex(
       /^[a-zA-Z\s'-]+$/,
-      "Full name can only contain letters, spaces, hyphens, or apostrophes"
+      "Full name can only contain letters, spaces, hyphens, or apostrophes",
     )
     .trim(),
   phone: z
@@ -195,14 +195,10 @@ export const bookingEnquirySchema = z.object({
     .or(z.literal("")),
 });
 
-export const reviewSchema = z.object({
-  id: z.uuid().optional(),
-  propertyId: z.uuid(),
-  guestId: z.uuid(),
-  rating: z.number().min(1).max(5),
-  comment: z
-    .string()
-    .min(10, { error: "Comment must be at least 10 characters" }),
-  media: z.array(z.url()).optional(),
-  createdAt: z.iso.datetime(),
+export const contactMessageSchema = z.object({
+  firstName: z.string().min(2, "First name must be at least 2 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  subject: z.string().min(5, "Subject must be at least 5 characters"),
+  email: z.email("Please enter a valid email address"),
+  message: z.string().min(10, "Message must be at least 10 characters"),
 });

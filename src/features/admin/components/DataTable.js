@@ -43,7 +43,7 @@ const DataTable = ({
 
   return (
     <ScrollArea>
-      <TableScrollContainer minWidth={360}>
+      <TableScrollContainer minWidth={460}>
         <Table striped highlightOnHover withRowBorders>
           <TableThead>
             <TableTr>

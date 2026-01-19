@@ -1,7 +1,13 @@
 "use server";
 
 import { db } from "@/database/drizzle";
-import { accommodations, bookings, reviews, users } from "@/database/schema";
+import {
+  accommodations,
+  bookings,
+  contactMessages,
+  reviews,
+  users,
+} from "@/database/schema";
 import { gt, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import dayjs from "dayjs";
@@ -153,6 +159,40 @@ export const deleteResourceAction = async (resource, id) => {
       success: false,
       error: verificationStatus.ERROR,
       message: "An error occurred deleting the resource.",
+    };
+  }
+};
+
+export const messageModeration = async (id, status) => {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") {
+    return {
+      success: false,
+      error: verificationStatus.UNAUTHORIZED,
+      message: "Unauthorized",
+    };
+  }
+
+  try {
+    await db
+      .update(contactMessages)
+      .set({ status })
+      .where(eq(contactMessages.id, id));
+
+    await logEvent({
+      actorId: session.user.id,
+      type: "ADMIN_MESSAGE_READ",
+      targetId: id,
+      metadata: { newStatus: status },
+    });
+    revalidatePath("/admin/messages");
+    return { success: true };
+  } catch (error) {
+    console.log("error: ", error);
+    return {
+      success: false,
+      error: verificationStatus.ERROR,
+      message: "Failed to update status",
     };
   }
 };

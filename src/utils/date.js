@@ -1,4 +1,9 @@
 import dayjs from "dayjs";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+
+dayjs.extend(localizedFormat);
+
+dayjs().format("L LT");
 
 export const parseDate = (iso) => {
   const date = dayjs(iso);
@@ -19,7 +24,7 @@ export const sqlOverlap = (
   existingCheckInIso,
   existingCheckOutIso,
   newCheckInIso,
-  newCheckOutIso
+  newCheckOutIso,
 ) => {
   const existingStart = parseDate(existingCheckInIso);
   const existingEnd = parseDate(existingCheckOutIso);

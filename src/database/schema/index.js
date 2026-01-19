@@ -7,3 +7,4 @@ export * from "./favorites";
 export * from "./emailVerifications";
 export * from "./passwordReset";
 export * from "./auditLogs";
+export * from "./contactMessages";

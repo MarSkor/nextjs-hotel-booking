@@ -20,6 +20,7 @@ export const eventTypeEnum = pgEnum("enumEventType", [
   "BOOKING_CREATED",
   "BOOKING_CONFIRMED",
   "BOOKING_CANCELLED",
+  "CONTACT_FORM_SUBMITTED",
 
   // Admin Actions
   "ADMIN_BOOKING_CANCELLED",
@@ -31,6 +32,7 @@ export const eventTypeEnum = pgEnum("enumEventType", [
   "ADMIN_REVIEW_REJECTED",
   "ADMIN_REVIEW_REPLIED",
   "ADMIN_RESOURCE_DELETE",
+  "ADMIN_MESSAGE_READ",
   "SYSTEM_SETTING_CHANGED",
 ]);
 

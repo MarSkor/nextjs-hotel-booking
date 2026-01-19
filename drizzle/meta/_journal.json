@@ -36,6 +36,20 @@
       "when": 1768767576355,
       "tag": "0004_black_stellaris",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1768773747729,
+      "tag": "0005_stale_shaman",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1768818057282,
+      "tag": "0006_cloudy_ogun",
+      "breakpoints": true
     }
   ]
 }
