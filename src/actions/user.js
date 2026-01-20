@@ -163,7 +163,6 @@ export const deleteAccount = async () => {
 
     return { success: true };
   } catch (error) {
-    console.log("delete user error: ", error);
     return { success: false, error: "Failed to delete account." };
   }
 };

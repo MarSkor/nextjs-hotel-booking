@@ -51,7 +51,7 @@ export const AuthSection = ({ variant }) => {
               href={"/account"}
               leftSection={<IconUser height={14} width={14} />}
             >
-              Profile
+              Account
             </Menu.Item>
             <Menu.Item
               component={Link}
