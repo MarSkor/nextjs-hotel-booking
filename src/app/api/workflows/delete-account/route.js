@@ -2,16 +2,17 @@ import { sendEmail } from "@/lib/email";
 import { serve } from "@upstash/workflow/nextjs";
 
 export const { POST } = serve(async (context) => {
-  const { fullname, email } = context.requestPayload;
+  const { email } = context.requestPayload;
 
   await context.run("send-delete-account-confirmation", async () => {
     console.log("send-delete-account-confirmation");
     await sendEmail({
       email,
-      subject: "Security Alert: Account Deletion Confirmation",
+      subject: "Goodbye from Holidaze.",
       html: `
-      <h2>Hi, ${fullname}!</h2>
-      <p>We're sad to see you go, but your account and all your data has now been permanently deleted.</p>
+      <p>We have processed your request, and your account, along with all personal data (name, email, payment methods), has been permanently deleted from our systems.</p>
+      <p>Please note that any reviews you have posted will remain on our site to help other travelers, but they have been made anonymous and cannot be linked back to you.</p>
+      <p>We are sorry to see you go and hope to welcome you back in the future.</p>
       `,
     });
   });

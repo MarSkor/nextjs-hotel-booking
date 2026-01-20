@@ -24,7 +24,7 @@ const ReviewCard = ({ onOpenFull, ...data }) => {
   const hasReply = !!data.reply;
   const isCommentLong = data.comment && data.comment.length > 100;
   const isLong = isCommentLong || hasReply;
-
+  const displayName = data.user?.fullName || "Anonymous Guest";
   const isEdited =
     new Date(data.updatedAt).getTime() - new Date(data.createdAt).getTime() >
     60000;
@@ -33,7 +33,12 @@ const ReviewCard = ({ onOpenFull, ...data }) => {
     <Paper radius={"sm"} p={"md"} key={data.id}>
       <Flex direction={"column"} mb={"sm"}>
         <Flex justify={"space-between"}>
-          <Rating value={3.5} fractions={2} readOnly mb={"xs"} />
+          <Rating
+            value={parseFloat(data.rating) || 0}
+            fractions={2}
+            readOnly
+            mb={"xs"}
+          />
           <Text size="xs" c="dimmed">
             {dayjs(data.createdAt).format("MMM D, YYYY")}
             {isEdited && (
@@ -49,21 +54,24 @@ const ReviewCard = ({ onOpenFull, ...data }) => {
           </Text>
         </Flex>
         <Flex align={"center"}>
-          <Avatar src={data.user?.image} alt={data.user?.name} size="sm" />
-
-          <Stack gap={0} ml="sm">
-            <Text size="sm" fw={600} style={{ lineHeight: 1.2 }}>
-              {data.user?.name || "Anonymous Guest"}
+          <Stack gap={0}>
+            <Text
+              size="sm"
+              fw={600}
+              style={{ lineHeight: 1.2 }}
+              tt={"capitalize"}
+            >
+              {displayName}
             </Text>
             <Badge
               mt={"4px"}
               variant="light"
               color="blue"
-              size="xs"
+              size="sm"
               h={rem(14)}
               px={4}
               styles={{
-                label: { fontSize: rem(8), textTransform: "capitalize" },
+                label: { fontSize: rem(10), textTransform: "capitalize" },
               }}
             >
               Verified Guest

@@ -3,7 +3,7 @@
 import { db } from "@/database/drizzle";
 import { auth } from "../../auth";
 import { and, desc, eq, sql } from "drizzle-orm";
-import { bookings, favorites, users } from "@/database/schema";
+import { bookings, favorites, reviews, users } from "@/database/schema";
 import { FAVORITES_PER_PAGE, BOOKINGS_PER_PAGE } from "@/utils/constants";
 import { revalidatePath } from "next/cache";
 import config from "@/lib/config";
@@ -14,7 +14,7 @@ import { logEvent } from "@/lib/logEvent";
 export const fetchAllBookings = async (userId, offset) => {
   try {
     const data = await db.query.bookings.findMany({
-      where: and(eq(bookings.userId, userId), eq(bookings.status, "CONFIRMED")),
+      where: and(eq(bookings.userId, userId)),
       with: { accommodation: true },
       orderBy: [desc(bookings.createdAt)],
       limit: BOOKINGS_PER_PAGE,
@@ -107,25 +107,6 @@ export const deleteAccount = async () => {
   const fullName = session.user.name;
 
   try {
-    await db
-      .update(bookings)
-      .set({
-        name: "Deleted User",
-        email: "deleted@example.com",
-        phone: null,
-        message: null,
-        paymentIntentId: null,
-        checkoutSessionId: null,
-      })
-      .where(eq(bookings.userId, userId));
-
-    // add the same for reviews
-    //     await db.update(reviews)
-    // .set({
-    //   userName: "Anonymous",
-    // })
-    // .where(eq(reviews.userId, userId));
-
     const user = await db.query.users.findFirst({
       where: (users, { eq }) => eq(users.id, userId),
       with: {
@@ -141,7 +122,7 @@ export const deleteAccount = async () => {
       targetId: userId,
       metadata: {
         email: user.email,
-        name: user.name,
+        name: user.fullName,
         // reason: formData.reason, if a reason input is added when user deletes their account.
         activeBookings: user.bookings?.filter((b) => b.status === "CONFIRMED")
           .length,
@@ -149,12 +130,36 @@ export const deleteAccount = async () => {
       },
     });
 
+    await db
+      .update(bookings)
+      .set({
+        name: "Deleted User",
+        email: "deleted@example.com",
+        phone: null,
+        message: null,
+        paymentIntentId: null,
+        checkoutSessionId: null,
+      })
+      .where(eq(bookings.userId, userId));
+
+    await db
+      .update(reviews)
+      .set({
+        name: "Anonymous",
+        email: "deleted@example.com",
+        phone: null,
+        message: null,
+        paymentIntentId: null,
+        checkoutSessionId: null,
+      })
+      .where(eq(bookings.userId, userId));
+
+    await db.delete(users).where(eq(users.id, userId));
+
     await workflowClient.trigger({
       url: `${config.env.apiEndpoint}/api/workflows/delete-account`,
       body: { email, fullName },
     });
-
-    await db.delete(users).where(eq(users.id, userId));
 
     return { success: true };
   } catch (error) {

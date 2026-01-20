@@ -1,0 +1,1 @@
+ALTER TABLE "accommodations" ADD COLUMN "review_count" integer DEFAULT 0 NOT NULL;

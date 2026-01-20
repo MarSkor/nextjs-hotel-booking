@@ -20,9 +20,7 @@ export const reviewStatusEnum = pgEnum("review_status", [
 
 export const reviews = pgTable("reviews", {
   id: uuid("id").notNull().primaryKey().defaultRandom(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "set null" }),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
   accommodationId: uuid("accommodation_id")
     .notNull()
     .references(() => accommodations.id, { onDelete: "cascade" }),

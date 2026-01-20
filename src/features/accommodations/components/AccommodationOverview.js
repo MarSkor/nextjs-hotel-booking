@@ -48,7 +48,11 @@ const AccommodationOverview = ({
         <Flex direction={"column"}>
           <Flex align={"center"} justify={"space-between"}>
             <Flex align={"center"}>
-              <Rating value={averageRating} fractions={2} readOnly />
+              <Rating
+                value={parseFloat(averageRating) || 0}
+                fractions={2}
+                readOnly
+              />
               <Anchor
                 className="card__rating--text"
                 href={`#details__reviews`}

@@ -14,8 +14,6 @@ import {
   Flex,
   Title,
   rem,
-  Tooltip,
-  Box,
   Rating,
 } from "@mantine/core";
 
@@ -105,7 +103,7 @@ const AccommodationCard = (item) => {
           <Flex className="card__rating" align="center">
             <Flex align="center" gap={4}>
               <Rating
-                value={averageRating || 0}
+                value={parseFloat(averageRating) || 0}
                 fractions={2}
                 readOnly
                 size="xs"

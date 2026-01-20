@@ -131,74 +131,6 @@ export const getAdminStats = unstable_cache(
   },
 );
 
-// export const getAdminStats = unstable_cache(
-//   async () => {
-//     const weekStart = dayjs().utc().weekday(1).startOf("day").toDate();
-//     const todayStart = dayjs().utc().startOf("day").toDate();
-
-//     try {
-//       // reusable function to get the various tables. leaving it for now.
-//       const getCountForTable = async (table) => {
-//         const [totalRes] = await db.select({ value: count() }).from(table);
-//         const [newRes] = await db
-//           .select({ value: count() })
-//           .from(table)
-//           .where(gt(table.createdAt, weekStart));
-
-//         return {
-//           total: Number(totalRes?.value ?? 0),
-//           newThisWeek: Number(newRes?.value ?? 0),
-//         };
-//       };
-
-//       const [
-//         userStats,
-//         accStats,
-//         bookingStats,
-//         reviewStats,
-//         messageStats,
-//         revenueRes,
-//         unreadRes,
-//         ratingRes,
-//       ] = await Promise.all([
-//         getCountForTable(users),
-//         getCountForTable(accommodations),
-//         getCountForTable(bookings),
-//         getCountForTable(reviews),
-//         getCountForTable(contactMessages),
-
-//         db
-//           .select({ val: sum(bookings.totalPrice) })
-//           .from(bookings)
-//           .where(eq(bookings.status, "CONFIRMED")),
-
-//         db
-//           .select({ val: count() })
-//           .from(contactMessages)
-//           .where(eq(contactMessages.isRead, false)),
-
-//         db.select({ val: avg(reviews.rating) }).from(reviews),
-//       ]);
-
-//       return {
-//         users: userStats,
-//         accommodations: accStats,
-//         bookings: bookingStats,
-//         reviews: reviewStats,
-//         messages: messageStats,
-//         revenue: Number(revenueRes[0]?.val ?? 0),
-//         unreadCount: Number(unreadRes[0]?.val ?? 0),
-//         averageRating: Number(ratingRes[0]?.val ?? 0).toFixed(1),
-//       };
-//     } catch (error) {
-//       console.log("admin stats error: ", error);
-//       return null;
-//     }
-//   },
-//   ["admin-stats-cache"],
-//   { revalidate: 3600, tags: ["admin-stats"] },
-// );
-
 export const reviewModeration = async (id, status) => {
   const session = await auth();
 
@@ -221,8 +153,7 @@ export const reviewModeration = async (id, status) => {
     revalidatePath("/admin/reviews");
     return { success: true };
   } catch (error) {
-    // console.error(error);
-    return { error: "Failed to update review" };
+    return { success: false, error: "Failed to update review" };
   }
 };
 
@@ -249,7 +180,6 @@ export const deleteResourceAction = async (resource, id) => {
       try {
         await imagekit.deleteFile(item.featuredImage.fileId);
       } catch (err) {
-        // console.error("ImageKit deletion failed, proceeding with DB delete...");
         return {
           success: false,
           error: verificationStatus.ERROR,
@@ -276,7 +206,6 @@ export const deleteResourceAction = async (resource, id) => {
 
     return { success: true };
   } catch (error) {
-    // console.error(`Delete failed for ${resource}:`, error);
     return {
       success: false,
       error: verificationStatus.ERROR,
@@ -307,14 +236,47 @@ export const messageModeration = async (id, status) => {
       targetId: id,
       metadata: { newStatus: status },
     });
+
     revalidatePath("/admin/messages");
     return { success: true };
   } catch (error) {
-    console.log("error: ", error);
     return {
       success: false,
       error: verificationStatus.ERROR,
       message: "Failed to update status",
     };
+  }
+};
+
+export const bookingModeration = async (bookingId) => {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  try {
+    const [updatedBooking] = await db
+      .update(bookings)
+      .set({ status: "CANCELLED" })
+      .where(eq(bookings.id, bookingId))
+      .returning();
+
+    if (!updatedBooking) throw new Error("Booking not found");
+
+    await logEvent({
+      actorId: session.user.id,
+      type: "ADMIN_BOOKING_CANCELLED",
+      targetId: bookingId,
+      metadata: {
+        cancelledBy: session.user.email,
+        bookingName: updatedBooking.name,
+        bookingEmail: updatedBooking.email,
+      },
+    });
+
+    revalidatePath("/admin/bookings");
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: "Failed to cancel booking." };
   }
 };

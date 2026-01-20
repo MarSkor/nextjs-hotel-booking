@@ -50,6 +50,20 @@
       "when": 1768818057282,
       "tag": "0006_cloudy_ogun",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1768900369565,
+      "tag": "0007_fancy_retro_girl",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1768910389373,
+      "tag": "0008_fearless_spyke",
+      "breakpoints": true
     }
   ]
 }

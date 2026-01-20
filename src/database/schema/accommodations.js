@@ -48,6 +48,7 @@ export const accommodations = pgTable("accommodations", {
   averageRating: numeric("average_rating", { precision: 4, scale: 2 })
     .default("0.00")
     .notNull(),
+  reviewCount: integer("review_count").default(0).notNull(),
 });
 
 export const accommodationsRelations = relations(
@@ -55,5 +56,5 @@ export const accommodationsRelations = relations(
   ({ many }) => ({
     bookings: many(bookings),
     reviews: many(reviews),
-  })
+  }),
 );

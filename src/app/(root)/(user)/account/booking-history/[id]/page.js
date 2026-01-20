@@ -15,9 +15,11 @@ import {
   Divider,
   Anchor,
   Spoiler,
+  Badge,
 } from "@mantine/core";
 import ReviewForm from "@/features/account/forms/ReviewForm";
 import Link from "next/link";
+import BookingStatusBadge from "@/components/ui/BookingStatusBadge";
 
 const ExpandableMessage = ({ message }) => {
   if (!message) {
@@ -41,9 +43,7 @@ const ExpandableMessage = ({ message }) => {
         },
       }}
     >
-      <Text size="sm" style={{ whiteSpace: "pre-wrap" }}>
-        {message}
-      </Text>
+      <Text style={{ whiteSpace: "pre-wrap" }}>{message}</Text>
     </Spoiler>
   );
 };
@@ -71,21 +71,24 @@ const UserBookingDetailPage = async ({ params }) => {
     nights,
     totalPrice,
     review,
+    status,
   } = bookingDetails;
 
   if (!bookingDetails) redirect("/404");
 
   return (
-    <Container px={0} size={"xs"}>
+    <Container px={0} size={"sm"}>
       <Paper p={"md"} mt={"xl"} shadow="xs">
         <Flex direction={"column"}>
-          <Title order={1} size={"h3"}>
+          <Title order={1} size={"h3"} mb={"4px"}>
             Booking Receipt #{id.slice(0, 8).toUpperCase()}
           </Title>
-          <Text mt={"xs"} c={"dimmed"}>
-            Holidaze Private Residences - Bergen
+          <Text mt={"4px"} size="sm" c={"dimmed"}>
+            {id}
           </Text>
+          <Text mt={"xs"}>Holidaze Private Residences - Bergen</Text>
         </Flex>
+        <BookingStatusBadge status={status} />
         <Divider my={"lg"} />
         <Grid align="center">
           <GridCol span={{ base: 6 }}>

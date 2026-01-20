@@ -36,6 +36,7 @@ const BookingEnquiry = () => {
   const router = useRouter();
 
   const [bookingData, setBookingData] = useState(pendingBookingData());
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const imagePath = bookingData?.featuredImage || PLACEHOLDER_IMAGE_PATH;
   const totalNights = bookingData
@@ -60,8 +61,8 @@ const BookingEnquiry = () => {
     reset,
     formState: { errors, isSubmitting },
   } = useForm({
+    resolver: zodResolver(bookingEnquirySchema),
     defaultValues: {
-      resolver: zodResolver(bookingEnquirySchema),
       name: "",
       email: "",
       message: "",
@@ -72,15 +73,33 @@ const BookingEnquiry = () => {
   });
 
   useEffect(() => {
-    if (status === "authenticated" && session?.user) {
+    if (status === "authenticated" && session?.user && !isInitialized) {
+      const saved = localStorage.getItem("pendingBooking");
+      const savedData = saved ? JSON.parse(saved) : null;
+
       reset({
-        name: session.user.name || "",
-        email: session.user.email || "",
-        message: "",
-        phone: session.user.phone || "",
+        name: savedData?.name || session.user.name || "",
+        email: savedData?.email || session.user.email || "",
+        message: savedData?.message || "",
+        phone: savedData?.phone || session.user.phone || "",
       });
+      setIsInitialized(true);
     }
-  }, [session, status, reset]);
+
+    if (status === "unauthenticated" && !isInitialized) {
+      const saved = localStorage.getItem("pendingBooking");
+      if (saved) {
+        const savedData = JSON.parse(saved);
+        reset({
+          name: savedData.name || "",
+          email: savedData.email || "",
+          phone: savedData.phone || "",
+          message: savedData.message || "",
+        });
+      }
+      setIsInitialized(true);
+    }
+  }, [session, status, reset, isInitialized]);
 
   useEffect(() => {
     if (!bookingData) return;
@@ -88,7 +107,7 @@ const BookingEnquiry = () => {
     const subscription = watch((values) => {
       localStorage.setItem(
         "pendingBooking",
-        JSON.stringify({ ...bookingData, ...values })
+        JSON.stringify({ ...bookingData, ...values }),
       );
     });
     return () => subscription.unsubscribe();

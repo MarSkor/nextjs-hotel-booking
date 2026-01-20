@@ -1,3 +1,4 @@
+import BookingStatusBadge from "@/components/ui/BookingStatusBadge";
 import { Text, Paper, Grid, GridCol } from "@mantine/core";
 import dayjs from "dayjs";
 import Link from "next/link";
@@ -13,14 +14,17 @@ const RecentBooking = (data) => {
       tabIndex={"0"}
     >
       <Grid component="ul">
-        <GridCol span={{ base: 12, sm: 4 }}>
-          <Text truncate="end">{data.id}</Text>
+        <GridCol span={{ base: 12, sm: 2 }}>
+          <Text>#{data.id.slice(0, 8).toUpperCase()}</Text>
         </GridCol>
         <GridCol span={{ base: 12, sm: 5 }}>
           <Text>{data.accommodation.title}</Text>
         </GridCol>
         <GridCol span={{ base: 12, sm: 3 }}>
           <Text>{dayjs(data.createdAt).format("DD/MM/YY")}</Text>
+        </GridCol>
+        <GridCol span={{ base: 12, sm: 2 }}>
+          <BookingStatusBadge status={data.status} />
         </GridCol>
       </Grid>
       <Link

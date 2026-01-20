@@ -30,14 +30,17 @@ const BookingHistoryPage = async ({ searchParams }) => {
         <Title>Booking History</Title>
       </Box>
       <Grid gutter={{ base: 5, xs: "sm", md: "md" }} mb={"md"}>
-        <GridCol span={{ base: 4 }} visibleFrom="sm">
+        <GridCol span={{ base: 2 }} visibleFrom="sm">
           <Text fw={500}>Booking ID</Text>
         </GridCol>
         <GridCol span={{ base: 5 }} visibleFrom="sm">
           <Text fw={500}>Accommodation</Text>
         </GridCol>
         <GridCol span={{ base: 3 }} visibleFrom="sm">
-          <Text fw={500}>Date</Text>
+          <Text fw={500}>Date Booked</Text>
+        </GridCol>
+        <GridCol span={{ base: 2 }} visibleFrom="sm">
+          <Text fw={500}>Status</Text>
         </GridCol>
       </Grid>
       <Box>{!result.length && <Text>You have no recent bookings.</Text>}</Box>

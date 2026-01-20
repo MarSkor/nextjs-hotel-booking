@@ -6,6 +6,9 @@ import { reviewReplies, reviews } from "@/database/schema";
 import { db } from "@/database/drizzle";
 import { revalidatePath } from "next/cache";
 import { logEvent } from "@/lib/logEvent";
+import config from "@/lib/config";
+import { workflowClient } from "@/lib/email";
+import { eq } from "drizzle-orm";
 
 export const submitReview = async (data) => {
   const session = await auth();
@@ -42,6 +45,17 @@ export const submitReview = async (data) => {
 
     const reviewId = res[0]?.id;
 
+    const review = await db.query.reviews.findFirst({
+      where: eq(reviews.id, reviewId),
+    });
+
+    if (review) {
+      await workflowClient.trigger({
+        url: `${config.env.apiEndpoint}/api/workflows/update-rating`,
+        body: { accommodationId: review.accommodationId },
+      });
+    }
+
     await logEvent({
       actorId: userId,
       type: "REVIEW_SUBMITTED",
@@ -69,7 +83,7 @@ export const submitReview = async (data) => {
     revalidatePath("/account/booking-history/[id]", "page");
     return { success: true };
   } catch (error) {
-    console.log("error: ", error);
+    // console.log("error: ", error);
     return { error: "Failed to submit review" };
   }
 };
@@ -105,7 +119,7 @@ export const upsertReviewReply = async (reviewId, replyText) => {
     revalidatePath("/admin/reviews");
     return { success: true };
   } catch (error) {
-    console.log("review reply error: ", error);
+    // console.log("review reply error: ", error);
     return { error: "Failed to save reply" };
   }
 };
