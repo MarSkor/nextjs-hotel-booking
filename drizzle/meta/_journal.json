@@ -5,64 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1768738563313,
-      "tag": "0000_foamy_thaddeus_ross",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1768740072715,
-      "tag": "0001_unique_tana_nile",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1768760308548,
-      "tag": "0002_legal_violations",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1768761663150,
-      "tag": "0003_wide_doctor_octopus",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1768767576355,
-      "tag": "0004_black_stellaris",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1768773747729,
-      "tag": "0005_stale_shaman",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1768818057282,
-      "tag": "0006_cloudy_ogun",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1768900369565,
-      "tag": "0007_fancy_retro_girl",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1768910389373,
-      "tag": "0008_fearless_spyke",
+      "when": 1768935747559,
+      "tag": "0000_fair_maria_hill",
       "breakpoints": true
     }
   ]

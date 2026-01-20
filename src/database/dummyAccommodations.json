@@ -19,7 +19,8 @@
     "images": null,
     "isAvailable": true,
     "isFeatured": true,
-    "averageRating": 4.8
+    "averageRating": 0.0,
+    "reviewCount": 0
   },
   {
     "id": "b3f1a6c4-3f3d-45c3-bcb2-0d6f7c9832a4",
@@ -41,7 +42,8 @@
     "images": null,
     "isAvailable": true,
     "isFeatured": false,
-    "averageRating": 4.6
+    "averageRating": 0.0,
+    "reviewCount": 0
   },
   {
     "id": "cfc05d02-0437-4f71-ae09-f0a7185482a1",
@@ -63,7 +65,8 @@
     "images": null,
     "isAvailable": true,
     "isFeatured": true,
-    "averageRating": 4.7
+    "averageRating": 0.0,
+    "reviewCount": 0
   },
   {
     "id": "49df59d8-9097-4b69-bd8c-1d8c95b94a7b",
@@ -85,7 +88,8 @@
     "images": null,
     "isAvailable": true,
     "isFeatured": false,
-    "averageRating": 4.5
+    "averageRating": 0.0,
+    "reviewCount": 0
   },
   {
     "id": "2b13af85-6329-43d3-80ee-b6ff2b00a087",
@@ -107,7 +111,8 @@
     "images": null,
     "isAvailable": true,
     "isFeatured": false,
-    "averageRating": 4.4
+    "averageRating": 0.0,
+    "reviewCount": 0
   },
   {
     "id": "e36c2618-fb3c-4695-8519-c33a848d2237",
@@ -129,7 +134,8 @@
     "images": null,
     "isAvailable": true,
     "isFeatured": true,
-    "averageRating": 4.9
+    "averageRating": 0.0,
+    "reviewCount": 0
   },
   {
     "id": "f1adf61c-80b3-45b7-98f5-0ee4bc8a39df",
@@ -151,7 +157,8 @@
     "images": null,
     "isAvailable": true,
     "isFeatured": false,
-    "averageRating": 4.8
+    "averageRating": 0.0,
+    "reviewCount": 0
   },
   {
     "id": "da6f2057-d8ee-4e40-89df-cb30d3837de1",
@@ -173,7 +180,8 @@
     "images": null,
     "isAvailable": true,
     "isFeatured": true,
-    "averageRating": 4.9
+    "averageRating": 0.0,
+    "reviewCount": 0
   },
   {
     "id": "e4a74270-9b23-44cf-9b2b-22a2c7cbbe47",
@@ -195,7 +203,8 @@
     "images": null,
     "isAvailable": true,
     "isFeatured": false,
-    "averageRating": 4.6
+    "averageRating": 0.0,
+    "reviewCount": 0
   },
   {
     "id": "13e31c77-2d2d-4fd1-9e18-6d4c1c7c57e6",
@@ -217,7 +226,8 @@
     "images": null,
     "isAvailable": true,
     "isFeatured": true,
-    "averageRating": 4.8
+    "averageRating": 0.0,
+    "reviewCount": 0
   },
   {
     "id": "b4d88e5c-fb25-4702-bfc6-98465a123d1d",
@@ -239,7 +249,8 @@
     "images": null,
     "isAvailable": true,
     "isFeatured": false,
-    "averageRating": 4.3
+    "averageRating": 0.0,
+    "reviewCount": 0
   },
   {
     "id": "83f6a012-21db-4ad6-9d27-46e0b22f594e",
@@ -261,7 +272,8 @@
     "images": null,
     "isAvailable": true,
     "isFeatured": true,
-    "averageRating": 4.9
+    "averageRating": 0.0,
+    "reviewCount": 0
   },
   {
     "id": "5b31e3cb-b2a0-4a68-8b5e-77ef9d05643e",
@@ -283,7 +295,8 @@
     "images": null,
     "isAvailable": true,
     "isFeatured": false,
-    "averageRating": 4.5
+    "averageRating": 0.0,
+    "reviewCount": 0
   },
   {
     "id": "42b9e87b-13d7-4a8c-a70a-3154e8c0d517",
@@ -305,7 +318,8 @@
     "images": null,
     "isAvailable": true,
     "isFeatured": false,
-    "averageRating": 4.4
+    "averageRating": 0.0,
+    "reviewCount": 0
   },
   {
     "id": "da2c1f25-2ce1-4e42-82a2-3c16f2c9c7e2",
@@ -327,6 +341,7 @@
     "images": null,
     "isAvailable": true,
     "isFeatured": false,
-    "averageRating": 4.7
+    "averageRating": 0.0,
+    "reviewCount": 0
   }
 ]

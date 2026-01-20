@@ -2,7 +2,8 @@ CREATE TYPE "public"."enumRole" AS ENUM('ADMIN', 'USER');--> statement-breakpoin
 CREATE TYPE "public"."enumPropertyType" AS ENUM('guesthouse', 'bed_and_breakfast', 'hotel');--> statement-breakpoint
 CREATE TYPE "public"."enumStatus" AS ENUM('PENDING', 'CONFIRMED', 'CANCELLED');--> statement-breakpoint
 CREATE TYPE "public"."review_status" AS ENUM('PENDING', 'APPROVED', 'REJECTED');--> statement-breakpoint
-CREATE TYPE "public"."enumEventType" AS ENUM('EMAIL_CHANGED', 'EMAIL_CHANGE_REQUESTED', 'EMAIL_VERIFICATION_RESENT', 'PASSWORD_RESET_REQUESTED', 'PASSWORD_CHANGED', 'PASSWORD_RESET', 'ACCOUNT_DELETED', 'REVIEW_SUBMITTED', 'BOOKING_CANCELLED_BY_USER', 'ADMIN_BOOKING_CANCELLED', 'ADMIN_PRICE_OVERRIDE', 'ADMIN_USER_BANNED', 'ADMIN_USER_DELETED', 'ADMIN_LISTING_APPROVED', 'ADMIN_REVIEW_APPROVED', 'ADMIN_REVIEW_REPLIED', 'SYSTEM_SETTING_CHANGED');--> statement-breakpoint
+CREATE TYPE "public"."enumEventType" AS ENUM('EMAIL_CHANGED', 'EMAIL_CHANGE_REQUESTED', 'EMAIL_VERIFICATION_RESENT', 'PASSWORD_RESET_REQUESTED', 'PASSWORD_CHANGED', 'PASSWORD_RESET', 'ACCOUNT_DELETED', 'REVIEW_SUBMITTED', 'REVIEW_DELETED', 'BOOKING_CREATED', 'BOOKING_CONFIRMED', 'BOOKING_CANCELLED', 'CONTACT_FORM_SUBMITTED', 'ADMIN_BOOKING_CANCELLED', 'ADMIN_PRICE_OVERRIDE', 'ADMIN_USER_BANNED', 'ADMIN_USER_DELETED', 'ADMIN_LISTING_APPROVED', 'ADMIN_REVIEW_APPROVED', 'ADMIN_REVIEW_REJECTED', 'ADMIN_REVIEW_REPLIED', 'ADMIN_RESOURCE_DELETE', 'ADMIN_MESSAGE_READ', 'SYSTEM_SETTING_CHANGED');--> statement-breakpoint
+CREATE TYPE "public"."contact_status" AS ENUM('UNREAD', 'READ', 'ARCHIVED');--> statement-breakpoint
 CREATE TABLE "users" (
 	"id" uuid PRIMARY KEY NOT NULL,
 	"full_name" varchar(255) NOT NULL,
@@ -40,6 +41,7 @@ CREATE TABLE "accommodations" (
 	"is_available" boolean DEFAULT true NOT NULL,
 	"is_featured" boolean DEFAULT false NOT NULL,
 	"average_rating" numeric(4, 2) DEFAULT '0.00' NOT NULL,
+	"review_count" integer DEFAULT 0 NOT NULL,
 	CONSTRAINT "accommodations_slug_unique" UNIQUE("slug"),
 	CONSTRAINT "accommodations_id_unique" UNIQUE("id")
 );
@@ -68,7 +70,7 @@ CREATE TABLE "bookings" (
 --> statement-breakpoint
 CREATE TABLE "reviews" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"user_id" uuid NOT NULL,
+	"user_id" uuid,
 	"accommodation_id" uuid NOT NULL,
 	"booking_id" uuid NOT NULL,
 	"rating" numeric(2, 1) NOT NULL,
@@ -87,7 +89,8 @@ CREATE TABLE "review_replies" (
 	"reply" text,
 	"created_at" timestamp with time zone DEFAULT now(),
 	"updated_at" timestamp with time zone DEFAULT now(),
-	CONSTRAINT "review_replies_id_unique" UNIQUE("id")
+	CONSTRAINT "review_replies_id_unique" UNIQUE("id"),
+	CONSTRAINT "review_replies_review_id_unique" UNIQUE("review_id")
 );
 --> statement-breakpoint
 CREATE TABLE "favorites" (
@@ -122,6 +125,17 @@ CREATE TABLE "audit_logs" (
 	"metadata" jsonb,
 	"ip" text,
 	"user_agent" text,
+	"created_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE "contact_messages" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"first_name" text NOT NULL,
+	"last_name" text NOT NULL,
+	"email" text NOT NULL,
+	"subject" text NOT NULL,
+	"message" text NOT NULL,
+	"status" "contact_status" DEFAULT 'UNREAD',
 	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint

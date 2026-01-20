@@ -2,13 +2,54 @@
 
 import { verificationStatus } from "@/lib/verification-status";
 import { auth } from "../../auth";
-import { reviewReplies, reviews } from "@/database/schema";
+import { reviewReplies, reviews, accommodations } from "@/database/schema";
 import { db } from "@/database/drizzle";
 import { revalidatePath } from "next/cache";
 import { logEvent } from "@/lib/logEvent";
 import config from "@/lib/config";
 import { workflowClient } from "@/lib/email";
 import { eq } from "drizzle-orm";
+
+export const deleteReview = async (reviewId) => {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) return { error: verificationStatus.UNAUTHORIZED };
+
+  try {
+    const review = await db.query.reviews.findFirst({
+      where: (rev, { and, eq }) =>
+        and(eq(rev.id, reviewId), eq(rev.userId, userId)),
+      with: {
+        accommodation: true,
+      },
+    });
+
+    if (!review) return { error: "Review not found" };
+
+    const accommodationSlug = review.accommodation.slug;
+    const accommodationId = review.accommodationId;
+
+    await db.delete(reviews).where(eq(reviews.id, reviewId));
+
+    await workflowClient.trigger({
+      url: `${config.env.apiEndpoint}/api/workflows/update-rating`,
+      body: { accommodationId },
+    });
+
+    await logEvent({
+      actorId: userId,
+      type: "REVIEW_DELETED",
+      targetId: reviewId,
+      metadata: { accommodationId, type: "review" },
+    });
+
+    revalidatePath("/account/booking-history/[id]", "page");
+    revalidatePath(`/accommodation/${accommodationSlug}`);
+    return { success: true };
+  } catch (error) {
+    return { error: "Failed to delete review" };
+  }
+};
 
 export const submitReview = async (data) => {
   const session = await auth();
@@ -42,6 +83,15 @@ export const submitReview = async (data) => {
         },
       })
       .returning({ id: reviews.id });
+
+    const acc = await db.query.accommodations.findFirst({
+      where: eq(accommodations.id, data.accommodationId),
+      columns: { slug: true },
+    });
+
+    if (acc) {
+      revalidatePath(`/accommodation/${acc.slug}`);
+    }
 
     const reviewId = res[0]?.id;
 
@@ -83,7 +133,6 @@ export const submitReview = async (data) => {
     revalidatePath("/account/booking-history/[id]", "page");
     return { success: true };
   } catch (error) {
-    // console.log("error: ", error);
     return { error: "Failed to submit review" };
   }
 };
@@ -119,7 +168,6 @@ export const upsertReviewReply = async (reviewId, replyText) => {
     revalidatePath("/admin/reviews");
     return { success: true };
   } catch (error) {
-    // console.log("review reply error: ", error);
     return { error: "Failed to save reply" };
   }
 };

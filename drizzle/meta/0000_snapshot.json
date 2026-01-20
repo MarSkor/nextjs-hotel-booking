@@ -1,5 +1,5 @@
 {
-  "id": "1e9e42e7-a19b-460d-987f-30d052f2330e",
+  "id": "fb91b78c-9950-47e7-aa66-641374ebbb99",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -255,6 +255,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'0.00'"
+        },
+        "review_count": {
+          "name": "review_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
         }
       },
       "indexes": {},
@@ -458,7 +465,7 @@
           "name": "user_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "accommodation_id": {
           "name": "accommodation_id",
@@ -649,6 +656,13 @@
           "nullsNotDistinct": false,
           "columns": [
             "id"
+          ]
+        },
+        "review_replies_review_id_unique": {
+          "name": "review_replies_review_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "review_id"
           ]
         }
       },
@@ -894,6 +908,71 @@
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
+    },
+    "public.contact_messages": {
+      "name": "contact_messages",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subject": {
+          "name": "subject",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "message": {
+          "name": "message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "contact_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'UNREAD'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
   "enums": {
@@ -944,15 +1023,31 @@
         "PASSWORD_RESET",
         "ACCOUNT_DELETED",
         "REVIEW_SUBMITTED",
-        "BOOKING_CANCELLED_BY_USER",
+        "REVIEW_DELETED",
+        "BOOKING_CREATED",
+        "BOOKING_CONFIRMED",
+        "BOOKING_CANCELLED",
+        "CONTACT_FORM_SUBMITTED",
         "ADMIN_BOOKING_CANCELLED",
         "ADMIN_PRICE_OVERRIDE",
         "ADMIN_USER_BANNED",
         "ADMIN_USER_DELETED",
         "ADMIN_LISTING_APPROVED",
         "ADMIN_REVIEW_APPROVED",
+        "ADMIN_REVIEW_REJECTED",
         "ADMIN_REVIEW_REPLIED",
+        "ADMIN_RESOURCE_DELETE",
+        "ADMIN_MESSAGE_READ",
         "SYSTEM_SETTING_CHANGED"
+      ]
+    },
+    "public.contact_status": {
+      "name": "contact_status",
+      "schema": "public",
+      "values": [
+        "UNREAD",
+        "READ",
+        "ARCHIVED"
       ]
     }
   },

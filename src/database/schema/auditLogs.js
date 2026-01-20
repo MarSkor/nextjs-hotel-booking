@@ -17,6 +17,7 @@ export const eventTypeEnum = pgEnum("enumEventType", [
   "PASSWORD_RESET",
   "ACCOUNT_DELETED",
   "REVIEW_SUBMITTED",
+  "REVIEW_DELETED",
   "BOOKING_CREATED",
   "BOOKING_CONFIRMED",
   "BOOKING_CANCELLED",
