@@ -20,6 +20,7 @@ const ReviewModeration = ({ review }) => {
   const [opened, setOpened] = useState(false);
   const [loading, setLoading] = useState(false);
   const [reply, setReply] = useState(review.reply?.reply || "");
+  const displayName = review.user?.fullName || "Anonymous Guest";
 
   const statusColors = {
     PENDING: "yellow",
@@ -30,7 +31,6 @@ const ReviewModeration = ({ review }) => {
   const handleAction = async (status) => {
     setLoading(true);
     const res = await reviewModeration(review.id, status);
-    console.log("res: ", res);
     setLoading(false);
     if (res.success) setOpened(false);
   };
@@ -59,7 +59,7 @@ const ReviewModeration = ({ review }) => {
           <Group justify="space-between" align="flex-start">
             <Stack gap={0}>
               <Text fw={700} size="lg">
-                {review.user?.name || "Anonymous"}
+                {displayName}
               </Text>
               <Text size="sm" c="dimmed">
                 Regarding: {review.accommodation?.title}
