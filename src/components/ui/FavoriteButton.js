@@ -40,12 +40,15 @@ const FavoriteButton = ({ initialFav, accommodationId }) => {
           cursor: !isLoggedIn ? "not-allowed" : isPending ? "wait" : "pointer",
           opacity: isPending ? 0.6 : 1,
           pointerEvents: isPending ? "none" : "auto",
+          backgroundColor: "lightgray",
+          borderRadius: "4px",
+          padding: "6px",
         }}
       >
         {favorite ? (
-          <IconHeart color="red" fill="red" />
+          <IconHeart height={24} width={24} color="red" fill="red" />
         ) : (
-          <IconHeart color="black" />
+          <IconHeart height={24} width={24} color="black" />
         )}
       </Box>
     </Tooltip>

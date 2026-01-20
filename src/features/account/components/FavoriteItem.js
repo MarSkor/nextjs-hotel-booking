@@ -12,19 +12,14 @@ const FavoriteItem = (data) => {
     <GridCol span={{ base: 12, sm: 6 }}>
       <Paper p={"sm"} withBorder>
         <Flex pos={"relative"} direction={"column"}>
-          <Title
-            order={3}
-            mb={"sm"}
-            component={Link}
-            href={`/accommodation/${data.accommodation.slug}`}
+          <Box
+            pos={"absolute"}
             style={{
-              textDecoration: "none",
-              color: "var(--mantine-color-anchor)",
+              top: 0,
+              right: 0,
+              zIndex: 20,
             }}
           >
-            {data.accommodation.title}
-          </Title>
-          <Box pos={"absolute"} style={{ top: 0, right: "10px", zIndex: 20 }}>
             <FavoriteButton
               initialFav={true}
               accommodationId={data.accommodationId}
@@ -44,6 +39,7 @@ const FavoriteItem = (data) => {
                 height: "100%",
                 position: "absolute",
                 display: "block",
+                borderRadius: "4px",
                 inset: 0,
                 zIndex: 0,
               }}
@@ -52,6 +48,18 @@ const FavoriteItem = (data) => {
               ]}
             />
           </Box>
+          <Title
+            order={3}
+            mt={"md"}
+            component={Link}
+            href={`/accommodation/${data.accommodation.slug}`}
+            style={{
+              textDecoration: "none",
+              color: "var(--mantine-color-anchor)",
+            }}
+          >
+            {data.accommodation.title}
+          </Title>
         </Flex>
       </Paper>
     </GridCol>
