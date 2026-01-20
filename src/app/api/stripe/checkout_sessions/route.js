@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { db } from "@/database/drizzle";
 import { bookings } from "@/database/schema";
-import { eq, inArray, sql, and, lt } from "drizzle-orm";
+import { eq, sql, and, lt } from "drizzle-orm";
 import dayjs from "dayjs";
 import { logEvent } from "@/lib/logEvent";
 
@@ -131,7 +131,7 @@ export async function POST(req) {
       { status: 200 },
     );
   } catch (error) {
-    console.error("Payment failed", error);
+    // console.error("Payment failed", error);
     return new NextResponse(
       { error: error.message },
       { status: error.statusCode || 500 },
