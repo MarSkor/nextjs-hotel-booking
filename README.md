@@ -135,17 +135,16 @@ To run this project, you will need to add the following environment variables to
 
 ```
 npx drizzle-kit push
-
 ```
 
 ## Workflows & Background Tasks
 
-- Booking Expiry: if a user doesn't complete a stripe payment within 1 hour, Qstash triggers a workflow to release the reserved dates back to the database.
+- Booking Expiry: if a user doesn't complete a stripe payment ~~within 1 hour~~ once a day (hobby accounts are limited to daily cron jobs.), Qstash triggers a workflow to release the reserved dates back to the database.
 
 ## To Implement ⏳
 
-[ ] Image carousel for accommodation/[slug]/page.
-[ ] More advanced stats for admin overview with charts.
-[ ] Profile Management: name change and avatar upload.
-[ ] Automatically schedule a review invitation _after_ the guest check-out date
-[ ] ...
+- [ ] Image carousel for accommodation/[slug]/page.
+- [ ] More advanced stats for admin overview with charts.
+- [ ] Profile Management: name change and avatar upload.
+- [ ] Automatically schedule a review invitation _after_ the guest check-out date
+- [ ] ...
