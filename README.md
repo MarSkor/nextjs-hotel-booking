@@ -1,40 +1,103 @@
 ![Logo](/public/assets/logo/logo.png)
 
-# Holidaze
+# Holidaze - Accommodation Booking Platform
 
-A accommodation booking website.
+A full-stack accommodation booking platform designed with a dual-sided interface for both users and admins built with Next.js. The platform features real-time booking management, secure payments and a automated serverless workflow for reservation life cycles.
 
 ## Demo
 
 ### Authentication process
 
+⏳...
+
 ### Admin side
 
-## About the Project
-
-Updating...
+⏳...
 
 ## Technologies
 
-- [Next.js](https://nextjs.org/)
-- [SCSS](https://sass-lang.com/)
-- [Mantine UI](https://mantine.dev/)
-- [Upstash](https://upstash.com/)
-- [Drizzle](https://orm.drizzle.team/)
-- [Neon](https://neon.com/)
-- [Auth.js](https://authjs.dev/)
-- [Stripe](https://docs.stripe.com/)
-- [ImageKit](https://imagekit.io/)
-- [React-hook-form](https://react-hook-form.com/)
-- [Zod](https://zod.dev/)
+- Framework: [Next.js (App Router)](https://nextjs.org/)
+- Database: [Neon (Serverless Postgres)](https://neon.com/)
+- ORM: [Drizzle ORM](https://orm.drizzle.team/)
+- Authentication: [Auth.js (NextAuth v5)](https://authjs.dev/) with `bcryptjs`
+- Background jobs: [Upstash Workflow & Qstash](https://upstash.com/)
+- Styling: [SASS (SCSS)](https://sass-lang.com/)
+- UI Library: [Mantine UI](https://mantine.dev/)
+- Payments: [Stripe API](https://docs.stripe.com/)
+- Form handling: [React Hook Form](https://react-hook-form.com/) with [Zod](https://zod.dev/) validation.
+- Image Management: [ImageKit](https://imagekit.io/)
+
+## User Features
+
+- Browse & Search: filter accommodations by type, price and dates.
+- Booking System: secure checkout flow via stripe.
+- Booking-History: account page to track reservation status (Pending, Confirmed, Cancelled)
+- Automated Notifications: receive emails powered by Upstash Workflows.
+- Profile Management: update personal information.
+
+## Admin Features
+
+- Property Management: Create, Read, Update and Delete accommodation listings.
+- Image Uploads: image uploads integrated with ImageKit
+- User Management: administrative control over user roles and accounts.
+- Dashboard Analytics: overview of revenue and occupancy rates.
+- Audit Logs: every critical action (cancellations, moderation, account deletions) is tracked in a system-wide log.
+
+## Project Structure
+
+```
+src/
+├── actions/              # Server Actions handling all CRUD operations
+├── app/                  # Next.js App Router (Routes & Layouts)
+│   ├── (admin)/          # Protected Admin dashboard & management routes
+│   ├── (auth)/           # Authentication routes (Login, Register)
+│   ├── (root)/           # Public-facing pages and User-specific routes
+│   └── api/              # Route Handlers (Stripe webhooks, ImageKit auth, Workflows)
+├── components/           # Reusable UI components
+│   ├── icons/            # SVG components and Icon library
+│   ├── layout/           # Structure components (Navbar, Footer, Sidebar)
+│   └── ui/               # Generic UI elements (Buttons, Badges, Modals, Cards)
+├── features/             # Domain-specific components grouped by functionality
+├── database/             # Database layer
+│   ├── schema/           # Drizzle ORM table definitions
+│   └── drizzle.js        # Neon DB connection and configuration
+├── lib/                  # Third-party SDK initializations (Stripe, ImageKit, Auth.js)
+├── utils/                # Helper functions, formatters, and shared constants
+└── styles/               # Global SASS/SCSS files and mixins
+
+```
+
+## Run Locally
+
+Clone the project
+
+```bash
+  git clone https://github.com/MarSkor/nextjs-hotel-booking
+```
+
+Go to the project directory
+
+```bash
+  cd nextjs-hotel-booking
+```
+
+Install dependencies
+
+```bash
+  npm install
+```
+
+Start the server
+
+```bash
+  npm run start
+```
 
 ## Environment Variables
 
-To run this project, you will need to add the following environment variables to your .env file.
+To run this project, you will need to add the following environment variables to your `.env.local` file.
 
-`NEXT_PUBLIC_API_ENDPOINT` = "https://your-site.com"
-
-`NEXT_PUBLIC_PROD_API_ENDPOINT`
+`NEXT_PUBLIC_API_ENDPOINT` = "your site here . com"
 
 `AUTH_SECRET`
 
@@ -56,36 +119,33 @@ To run this project, you will need to add the following environment variables to
 
 `RESEND_TOKEN`
 
+`RESEND_FROM_NAME`= for example `Holidaze`, which is the name of the application.
+
+`RESEND_FROM_BASE_EMAIL_ADDRESS`=`@your-resend-domain-here.com`
+
 `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
 
 `STRIPE_SECRET`
 
 `STRIPE_WEBHOOK_SECRET`
 
-## ✅ Implemented
+`CRON_SECRET`= A random string of at least 16 characters. [Securing cron jobs](https://vercel.com/docs/cron-jobs/manage-cron-jobs#securing-cron-jobs)
 
-### Users
+## Database Setup
 
-[x] Browse accommodations
-[x] Book an accommodation (authenticated or not)
-[x] Search bookings from hero section
-[x] User authentication (login / sign up with credentials)
-[x] Forgot password / Change password
-[x] Change email address
-[ ] Delete their account
-[ ] Search bookings
-[ ] Add / Remove accommodations to their favorites list
+```
+npx drizzle-kit push
 
-### Admin
+```
 
-[x] Dashboard of bookings and users made.
-[x] Create / Read / Update / Delete Accommodations.
-[ ] View table of users.
-[ ] View table of bookings.
+## Workflows & Background Tasks
 
-## ⏳ In Progress / Considering
+- Booking Expiry: if a user doesn't complete a stripe payment within 1 hour, Qstash triggers a workflow to release the reserved dates back to the database.
 
-[] Search bar typeahead (auto dropdown with hotel names that match what has been typed)
-[] Reviews
-[] (Admin) List of messages
-[] A contact page (different to enquiry page) which goes to the admin for Holidaze
+## To Implement ⏳
+
+[ ] Image carousel for accommodation/[slug]/page.
+[ ] More advanced stats for admin overview with charts.
+[ ] Profile Management: name change and avatar upload.
+[ ] Automatically schedule a review invitation _after_ the guest check-out date
+[ ] ...
