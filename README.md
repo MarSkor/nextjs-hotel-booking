@@ -93,6 +93,21 @@ Start the server
   npm run start
 ```
 
+Upstash Workflow is built on top of Upstash QStash.
+The QStash CLI provides a local development server that performs QStash functionality locally for development and testing purposes.
+
+To run Upstash Qstash development server
+
+```
+npx @upstash/qstash-cli dev
+```
+
+Populate the database with dummy data.
+
+```
+node src/database/seed.js
+```
+
 ## Environment Variables
 
 To run this project, you will need to add the following environment variables to your `.env.local` file.
@@ -139,7 +154,8 @@ npx drizzle-kit push
 
 ## Workflows & Background Tasks
 
-- Booking Expiry: if a user doesn't complete a stripe payment ~~within 1 hour~~ once a day (hobby accounts are limited to daily cron jobs.), Qstash triggers a workflow to release the reserved dates back to the database.
+- Booking Expiry: if a user doesn't complete a stripe payment ~~within 1 hour~~ once a day (hobby accounts are limited to only _daily_ cron jobs.), Qstash triggers a workflow to release the reserved dates back to the database.
+- Dynamic Ratings: When a review is approved or deleted by an admin, QStash triggers a background workflow to recalculate the accommodation's average rating and total review count.
 
 ## To Implement ⏳
 
@@ -147,4 +163,5 @@ npx drizzle-kit push
 - [ ] More advanced stats for admin overview with charts.
 - [ ] Profile Management: name change and avatar upload.
 - [ ] Automatically schedule a review invitation _after_ the guest check-out date
+- [ ] Password strength on auth form.
 - [ ] ...

@@ -111,6 +111,21 @@ const Hero = () => {
                         minDate={dayjs().startOf("day").toDate()}
                         valueFormat="ddd, MM/DD/YY"
                         placeholder="--/--/--"
+                        getDayProps={(date) => {
+                          if (dayjs(date).isSame(dayjs(), "day")) {
+                            return {
+                              style: {
+                                backgroundColor:
+                                  "var(--mantine-color-blue-light)",
+                                color: "var(--mantine-color-blue-filled)",
+                                fontWeight: 700,
+                                border:
+                                  "1px solid var(--mantine-color-blue-filled)",
+                              },
+                            };
+                          }
+                          return {};
+                        }}
                         classNames={{
                           input: "booking-section__form--input",
                           label: "booking-section__form--label",
@@ -130,6 +145,21 @@ const Hero = () => {
                         }
                         valueFormat="ddd, MM/DD/YY"
                         placeholder="--/--/--"
+                        getDayProps={(date) => {
+                          if (dayjs(date).isSame(dayjs(), "day")) {
+                            return {
+                              style: {
+                                backgroundColor:
+                                  "var(--mantine-color-blue-light)",
+                                color: "var(--mantine-color-blue-filled)",
+                                fontWeight: 700,
+                                border:
+                                  "1px solid var(--mantine-color-blue-filled)",
+                              },
+                            };
+                          }
+                          return {};
+                        }}
                         classNames={{
                           input: "booking-section__form--input",
                           label: "booking-section__form--label",

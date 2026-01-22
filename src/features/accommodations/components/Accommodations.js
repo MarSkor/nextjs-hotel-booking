@@ -18,6 +18,8 @@ import {
   GridCol,
   Button,
 } from "@mantine/core";
+import { isDate } from "@/utils/date";
+import dayjs from "dayjs";
 
 const Accommodations = ({ accList, totalPages, totalCount }) => {
   const router = useRouter();
@@ -27,10 +29,10 @@ const Accommodations = ({ accList, totalPages, totalCount }) => {
   const [sort, setSort] = useState(searchParams.get("sort") || "price_asc");
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
   const [checkIn, setCheckIn] = useState(
-    searchParams.get("checkIn") ? new Date(searchParams.get("checkIn")) : null
+    isDate(searchParams.get("checkIn"), { asNative: true }),
   );
   const [checkOut, setCheckOut] = useState(
-    searchParams.get("checkOut") ? new Date(searchParams.get("checkOut")) : null
+    isDate(searchParams.get("checkOut"), { asNative: true }),
   );
 
   useEffect(() => {
@@ -39,14 +41,14 @@ const Accommodations = ({ accList, totalPages, totalCount }) => {
       guests: guests !== "all" ? guests : null,
       sort: sort !== "price_asc" ? sort : null,
       page: page > 1 ? page : null,
-      checkIn: checkIn ? checkIn.toISOString() : null,
-      checkOut: checkOut ? checkOut.toISOString() : null,
+      checkIn: checkIn ? dayjs(checkIn).format("YYYY-MM-DD") : null,
+      checkOut: checkOut ? dayjs(checkOut).format("YYYY-MM-DD") : null,
     });
     const newUrl = `?${query}`;
     if (window.location.search !== newUrl) {
-      router.replace(newUrl);
+      router.replace(newUrl, { scroll: false });
     }
-  }, [type, guests, sort, page, router]);
+  }, [type, guests, sort, page, checkIn, checkOut, router]);
 
   return (
     <Container
@@ -111,11 +113,18 @@ const Accommodations = ({ accList, totalPages, totalCount }) => {
                           label="Check in"
                           clearable
                           value={checkIn}
+                          minDate={dayjs().startOf("day").toDate()}
                           onChange={(val) => {
                             setCheckIn(val);
                             setPage(1);
+                            if (
+                              checkOut &&
+                              val &&
+                              !dayjs(val).isBefore(dayjs(checkOut), "day")
+                            ) {
+                              setCheckOut(null);
+                            }
                           }}
-                          minDate={new Date()}
                           valueFormat="ddd, MM/DD/YY"
                           placeholder="--/--/--"
                           classNames={{
@@ -133,7 +142,11 @@ const Accommodations = ({ accList, totalPages, totalCount }) => {
                             setCheckOut(val);
                             setPage(1);
                           }}
-                          minDate={checkIn || new Date()}
+                          minDate={
+                            checkIn
+                              ? dayjs(checkIn).add(1, "day").toDate()
+                              : new Date()
+                          }
                           valueFormat="ddd, MM/DD/YY"
                           placeholder="--/--/--"
                           classNames={{
@@ -179,6 +192,8 @@ const Accommodations = ({ accList, totalPages, totalCount }) => {
                       setGuests("all");
                       setSort("price_asc");
                       setPage(1);
+                      setCheckIn(null);
+                      setCheckOut(null);
                     }}
                   >
                     Reset
