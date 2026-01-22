@@ -152,6 +152,15 @@ To run this project, you will need to add the following environment variables to
 npx drizzle-kit push
 ```
 
+Stripe webhook listening to the following events
+
+```
+- checkout.session.async_payment_failed
+- checkout.session.async_payment_succeeded
+- checkout.session.completed
+- checkout.session.expired
+```
+
 ## Workflows & Background Tasks
 
 - Booking Expiry: if a user doesn't complete a stripe payment ~~within 1 hour~~ once a day (hobby accounts are limited to only _daily_ cron jobs.), Qstash triggers a workflow to release the reserved dates back to the database.
