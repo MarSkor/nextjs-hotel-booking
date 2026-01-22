@@ -1,0 +1,1 @@
+ALTER TABLE "reviews" ALTER COLUMN "comment" SET DATA TYPE varchar(1000);

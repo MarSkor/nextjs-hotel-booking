@@ -1,4 +1,4 @@
-import BookingStatusBadge from "@/components/ui/BookingStatusBadge";
+import StatusBadge from "@/components/ui/StatusBadge";
 import { Text, Paper, Grid, GridCol } from "@mantine/core";
 import dayjs from "dayjs";
 import Link from "next/link";
@@ -24,7 +24,7 @@ const RecentBooking = (data) => {
           <Text>{dayjs(data.createdAt).format("DD/MM/YY")}</Text>
         </GridCol>
         <GridCol span={{ base: 12, sm: 2 }}>
-          <BookingStatusBadge status={data.status} />
+          <StatusBadge status={data.status} />
         </GridCol>
       </Grid>
       <Link

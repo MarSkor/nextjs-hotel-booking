@@ -6,7 +6,7 @@ const statusConfig = {
   CANCELLED: { color: "red", label: "Cancelled" },
 };
 
-const BookingStatusBadge = ({ status }) => {
+const StatusBadge = ({ status }) => {
   const { color, label } = statusConfig[status] || {
     color: "gray",
     label: status,
@@ -19,4 +19,4 @@ const BookingStatusBadge = ({ status }) => {
   );
 };
 
-export default BookingStatusBadge;
+export default StatusBadge;

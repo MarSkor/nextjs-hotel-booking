@@ -5,6 +5,7 @@ import {
   timestamp,
   pgEnum,
   numeric,
+  varchar,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { users } from "./users.js";
@@ -30,7 +31,7 @@ export const reviews = pgTable("reviews", {
     .unique(),
   rating: numeric("rating", { precision: 2, scale: 1 }).notNull(),
   title: text("title"),
-  comment: text("comment"),
+  comment: varchar("comment", { length: 1000 }),
   status: reviewStatusEnum("status").default("PENDING"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true })
@@ -46,6 +47,10 @@ export const reviewsRelations = relations(reviews, ({ one }) => ({
   accommodation: one(accommodations, {
     fields: [reviews.accommodationId],
     references: [accommodations.id],
+  }),
+  booking: one(bookings, {
+    fields: [reviews.bookingId],
+    references: [bookings.id],
   }),
   reply: one(reviewReplies, {
     fields: [reviews.id],

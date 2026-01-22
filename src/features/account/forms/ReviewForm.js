@@ -15,6 +15,9 @@ import { useDisclosure } from "@mantine/hooks";
 import { deleteReview, submitReview } from "@/actions/review";
 import { useEffect, useState } from "react";
 import { modals } from "@mantine/modals";
+import { notifications } from "@mantine/notifications";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { reviewSchema } from "@/lib/validations";
 
 const ReviewForm = ({
   bookingId,
@@ -24,6 +27,7 @@ const ReviewForm = ({
 }) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const MAX_COMMENT_LENGTH = 1000;
 
   const {
     register,
@@ -31,14 +35,18 @@ const ReviewForm = ({
     setValue,
     watch,
     reset,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = useForm({
+    resolver: zodResolver(reviewSchema),
     defaultValues: {
       title: initialData?.title || "",
       rating: initialData ? parseFloat(initialData.rating) : 0,
       comment: initialData?.comment || "",
     },
+    criteriaMode: "all",
   });
+
+  const commentValue = watch("comment") || "";
 
   useEffect(() => {
     reset({
@@ -50,7 +58,20 @@ const ReviewForm = ({
 
   const onSubmit = async (data) => {
     const res = await submitReview({ ...data, bookingId, accommodationId });
-    if (res.success) close();
+    if (res.success) {
+      notifications.show({
+        title: initialData ? "Review updated" : "Review submitted",
+        message: "Your feedback is being processed.",
+        color: "green",
+      });
+      close();
+    } else {
+      notifications.show({
+        title: "Error",
+        message: res.error || "Failed to save review",
+        color: "red",
+      });
+    }
   };
 
   const handleDelete = () => {
@@ -70,12 +91,19 @@ const ReviewForm = ({
         const res = await deleteReview(initialData.id);
         setIsDeleting(false);
         if (res.success) {
-          reset({
-            title: "",
-            rating: 0,
-            comment: "",
+          notifications.show({
+            title: "Review deleted",
+            message: "Your review has been removed.",
+            color: "red",
           });
+          reset({ title: "", rating: 0, comment: "" });
           close();
+        } else {
+          notifications.show({
+            title: "Delete Failed",
+            message: res.error || "Could not delete review.",
+            color: "red",
+          });
         }
       },
     });
@@ -100,7 +128,12 @@ const ReviewForm = ({
       >
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack>
-            <TextInput label="Title" {...register("title")} required />
+            <TextInput
+              label="Title"
+              {...register("title")}
+              required
+              error={errors?.title?.message}
+            />
             <Text size="sm" fw={500}>
               Rating
             </Text>
@@ -110,16 +143,34 @@ const ReviewForm = ({
               onChange={(val) => setValue("rating", val)}
               fractions={2}
               required
+              error={errors?.rating?.message}
             />
-            <Textarea
-              autosize
-              minRows={6}
-              maxRows={8}
-              label="Comment"
-              placeholder="Tell us about your experience..."
-              {...register("comment")}
-              required
-            />
+            <Flex direction={"column"}>
+              <Textarea
+                autosize
+                minRows={8}
+                maxRows={12}
+                label="Comment"
+                placeholder="Tell us about your experience..."
+                {...register("comment")}
+                error={errors?.comment?.message}
+                required
+              />
+              <Flex justify="space-between" my={"xs"}>
+                <Text size="inherit" component="span">
+                  Share your feedback
+                </Text>
+                <Text
+                  size="inherit"
+                  component="span"
+                  c={
+                    commentValue.length > MAX_COMMENT_LENGTH ? "red" : "dimmed"
+                  }
+                >
+                  {commentValue.length} / {MAX_COMMENT_LENGTH}
+                </Text>
+              </Flex>
+            </Flex>
             <Flex gap="sm" direction={{ base: "column", sm: "row" }}>
               <Button type="submit" loading={isSubmitting} fullWidth>
                 {initialData ? "Update Review" : "Submit Review"}

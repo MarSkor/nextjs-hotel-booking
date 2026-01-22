@@ -202,3 +202,15 @@ export const contactMessageSchema = z.object({
   email: z.email("Please enter a valid email address"),
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
+
+export const reviewSchema = z.object({
+  title: z
+    .string()
+    .min(5, "Title must be at least 5 characters")
+    .max(100, "Title cannot exceed 100 characters"),
+  comment: z
+    .string()
+    .min(10, "Comment must be at least 10 characters")
+    .max(1000, "Comment cannot exceed 1000 characters"),
+  rating: z.number().min(0.5, "Please provide a rating").max(5),
+});

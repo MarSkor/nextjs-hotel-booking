@@ -30,7 +30,7 @@ const ReviewCard = ({ onOpenFull, ...data }) => {
     60000;
 
   return (
-    <Paper radius={"sm"} p={"md"} key={data.id}>
+    <Paper radius={"md"} p={"md"} key={data.id} withBorder mb="md">
       <Flex direction={"column"} mb={"sm"}>
         <Flex justify={"space-between"}>
           <Rating

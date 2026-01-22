@@ -18,6 +18,8 @@ import { auth } from "../../auth";
 import { verificationStatus } from "@/lib/verification-status";
 import { RESOURCE_MAP } from "@/utils/resourceMap";
 import { imagekit } from "@/lib/imageKit";
+import { workflowClient } from "@/lib/email";
+import config from "@/lib/config";
 
 dayjs.extend(weekday);
 dayjs.extend(utc);
@@ -46,6 +48,7 @@ export const getAdminStats = unstable_cache(
         totalAccs,
         activeBookings,
         pendingBookings,
+        pendingReviews,
         unreadMessages,
         avgRating,
       ] = await Promise.all([
@@ -93,6 +96,8 @@ export const getAdminStats = unstable_cache(
 
         getMetric(bookings, eq(bookings.status, "PENDING")),
 
+        getMetric(reviews, eq(reviews.status, "PENDING")),
+
         getMetric(contactMessages, eq(contactMessages.status, "UNREAD")),
 
         db.select({ val: avg(reviews.rating) }).from(reviews),
@@ -116,7 +121,7 @@ export const getAdminStats = unstable_cache(
         },
         occupancy: occupancyRate.toFixed(1),
         activeInHouse: activeBookings,
-        pendingActions: pendingBookings + unreadMessages,
+        pendingActions: pendingBookings + unreadMessages + pendingReviews,
         rating: Number(avgRating[0]?.val ?? 0).toFixed(1),
       };
     } catch (error) {
@@ -138,7 +143,26 @@ export const reviewModeration = async (id, status) => {
     return { success: false, error: verificationStatus.UNAUTHORIZED };
 
   try {
-    await db.update(reviews).set({ status }).where(eq(reviews.id, id));
+    const [updatedReview] = await db
+      .update(reviews)
+      .set({ status })
+      .where(eq(reviews.id, id))
+      .returning();
+
+    if (!updatedReview)
+      return {
+        success: false,
+        error: verificationStatus.ERROR,
+        message: "Review not found.",
+      };
+
+    if (status === "APPROVED" || status === "REJECTED") {
+      //upstash workflow must run locally (with its own local variables) or be deployed
+      await workflowClient.trigger({
+        url: `${config.env.apiEndpoint}/api/workflows/update-rating`,
+        body: { accommodationId: updatedReview.accommodationId },
+      });
+    }
 
     await logEvent({
       actorId: session.user.id,
@@ -147,7 +171,10 @@ export const reviewModeration = async (id, status) => {
           ? "ADMIN_REVIEW_APPROVED"
           : "ADMIN_REVIEW_REJECTED",
       targetId: id,
-      metadata: { newStatus: status },
+      metadata: {
+        newStatus: status,
+        accommodationId: updatedReview.accommodationId,
+      },
     });
 
     revalidatePath("/admin/reviews");
@@ -167,16 +194,27 @@ export const deleteResourceAction = async (resource, id) => {
     };
   }
 
-  const config = RESOURCE_MAP[resource];
-  if (!config) return { success: false, message: "Invalid resource type." };
+  const resourceConfig = RESOURCE_MAP[resource];
+  if (!resourceConfig)
+    return { success: false, message: "Invalid resource type." };
 
   try {
     const item = await db.query[resource].findFirst({
       where: (table, { eq }) => eq(table.id, id),
+      with:
+        resource === "reviews"
+          ? {
+              accommodation: {
+                columns: { slug: true },
+              },
+            }
+          : undefined,
     });
-    if (!item) return { success: false, message: `${config.label} not found.` };
 
-    if (config.hasFiles && item.featuredImage?.fileId) {
+    if (!item)
+      return { success: false, message: `${resourceConfig.label} not found.` };
+
+    if (resourceConfig.hasFiles && item.featuredImage?.fileId) {
       try {
         await imagekit.deleteFile(item.featuredImage.fileId);
       } catch (err) {
@@ -188,7 +226,20 @@ export const deleteResourceAction = async (resource, id) => {
       }
     }
 
-    await db.delete(config.table).where(eq(config.table.id, id));
+    await db
+      .delete(resourceConfig.table)
+      .where(eq(resourceConfig.table.id, id));
+
+    if (resource === "reviews" && item.accommodationId) {
+      try {
+        await workflowClient.trigger({
+          url: `${config.env.apiEndpoint}/api/workflows/update-rating`,
+          body: { accommodationId: item.accommodationId },
+        });
+      } catch (error) {
+        console.error("Workflow trigger failed. CHeck if QStash is running");
+      }
+    }
 
     await logEvent({
       actorId: session.user.id,
@@ -199,13 +250,23 @@ export const deleteResourceAction = async (resource, id) => {
         deletedData: item,
       },
     });
-    revalidatePath(config.path, "page");
+
+    if (resource === "reviews") {
+      const slug = item.accommodation?.slug;
+      if (slug) {
+        revalidatePath(`/accommodation/${slug}`);
+        revalidatePath("/accommodation/[slug]", "layout");
+      }
+    }
+
+    revalidatePath(resourceConfig.path, "page");
     if (resource === "accommodations") {
       revalidatePath(`/admin/accommodations/edit/${id}`, "page");
     }
 
     return { success: true };
   } catch (error) {
+    console.log("delete resource: ", error);
     return {
       success: false,
       error: verificationStatus.ERROR,

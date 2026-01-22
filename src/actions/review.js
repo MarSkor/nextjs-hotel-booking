@@ -2,13 +2,14 @@
 
 import { verificationStatus } from "@/lib/verification-status";
 import { auth } from "../../auth";
-import { reviewReplies, reviews, accommodations } from "@/database/schema";
+import { reviewReplies, reviews } from "@/database/schema";
 import { db } from "@/database/drizzle";
 import { revalidatePath } from "next/cache";
 import { logEvent } from "@/lib/logEvent";
 import config from "@/lib/config";
 import { workflowClient } from "@/lib/email";
 import { eq } from "drizzle-orm";
+import { reviewSchema } from "@/lib/validations";
 
 export const deleteReview = async (reviewId) => {
   const session = await auth();
@@ -19,34 +20,39 @@ export const deleteReview = async (reviewId) => {
     const review = await db.query.reviews.findFirst({
       where: (rev, { and, eq }) =>
         and(eq(rev.id, reviewId), eq(rev.userId, userId)),
-      with: {
-        accommodation: true,
-      },
+      with: { accommodation: true },
     });
 
     if (!review) return { error: "Review not found" };
 
     const accommodationSlug = review.accommodation.slug;
     const accommodationId = review.accommodationId;
+    const bookingId = review.bookingId;
 
     await db.delete(reviews).where(eq(reviews.id, reviewId));
 
-    await workflowClient.trigger({
-      url: `${config.env.apiEndpoint}/api/workflows/update-rating`,
-      body: { accommodationId },
-    });
+    try {
+      //upstash workflow must run locally (with its own local variables) or be deployed
+      await workflowClient.trigger({
+        url: `${config.env.apiEndpoint}/api/workflows/update-rating`,
+        body: { accommodationId },
+      });
 
-    await logEvent({
-      actorId: userId,
-      type: "REVIEW_DELETED",
-      targetId: reviewId,
-      metadata: { accommodationId, type: "review" },
-    });
+      await logEvent({
+        actorId: userId,
+        type: "REVIEW_DELETED",
+        targetId: reviewId,
+        metadata: { accommodationId, type: "review" },
+      });
+    } catch (error) {
+      console.error("Side-effect failed, but review was deleted", error);
+    }
 
-    revalidatePath("/account/booking-history/[id]", "page");
+    revalidatePath(`/account/booking-history/${bookingId}`);
     revalidatePath(`/accommodation/${accommodationSlug}`);
     return { success: true };
   } catch (error) {
+    console.log(error);
     return { error: "Failed to delete review" };
   }
 };
@@ -55,6 +61,11 @@ export const submitReview = async (data) => {
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) return { error: verificationStatus.UNAUTHORIZED };
+
+  const validation = reviewSchema.safeParse(data);
+  if (!validation.success) {
+    return { error: "Invalid data: " + validation.error.errors[0].message };
+  }
 
   try {
     const existingReview = await db.query.reviews.findFirst({
@@ -70,7 +81,7 @@ export const submitReview = async (data) => {
         rating: data.rating.toString(),
         comment: data.comment,
         title: data.title,
-        status: "APPROVED",
+        status: "PENDING",
       })
       .onConflictDoUpdate({
         target: reviews.bookingId,
@@ -79,58 +90,48 @@ export const submitReview = async (data) => {
           comment: data.comment,
           title: data.title,
           updatedAt: new Date(),
-          status: "APPROVED",
+          status: "PENDING",
         },
       })
       .returning({ id: reviews.id });
 
-    const acc = await db.query.accommodations.findFirst({
-      where: eq(accommodations.id, data.accommodationId),
-      columns: { slug: true },
-    });
-
-    if (acc) {
-      revalidatePath(`/accommodation/${acc.slug}`);
-    }
-
     const reviewId = res[0]?.id;
+    if (!reviewId) throw new Error("Database failed to return ID");
 
-    const review = await db.query.reviews.findFirst({
-      where: eq(reviews.id, reviewId),
-    });
-
-    if (review) {
-      await workflowClient.trigger({
-        url: `${config.env.apiEndpoint}/api/workflows/update-rating`,
-        body: { accommodationId: review.accommodationId },
+    try {
+      await logEvent({
+        actorId: userId,
+        type: "REVIEW_SUBMITTED",
+        targetId: reviewId,
+        metadata: {
+          accommodationId: data.accommodationId,
+          bookingId: data.bookingId,
+          rating: data.rating,
+          isUpdate: !!existingReview,
+          payload: {
+            rating: data.rating,
+            title: data.title,
+            comment: data.comment,
+          },
+          previous: existingReview
+            ? {
+                rating: existingReview.rating,
+                title: existingReview.title,
+                comment: existingReview.comment,
+              }
+            : null,
+        },
       });
+    } catch (error) {
+      console.log("error: ", error);
     }
 
-    await logEvent({
-      actorId: userId,
-      type: "REVIEW_SUBMITTED",
-      targetId: reviewId,
-      metadata: {
-        accommodationId: data.accommodationId,
-        bookingId: data.bookingId,
-        rating: data.rating,
-        isUpdate: !!existingReview,
-        payload: {
-          rating: data.rating,
-          title: data.title,
-          comment: data.comment,
-        },
-        previous: existingReview
-          ? {
-              rating: existingReview.rating,
-              title: existingReview.title,
-              comment: existingReview.comment,
-            }
-          : null,
-      },
+    const acc = await db.query.accommodations.findFirst({
+      where: (table, { eq }) => eq(table.id, data.accommodationId),
     });
 
-    revalidatePath("/account/booking-history/[id]", "page");
+    if (acc) revalidatePath(`/accommodation/${acc.slug}`);
+    revalidatePath(`/account/booking-history/${data.bookingId}`);
     return { success: true };
   } catch (error) {
     return { error: "Failed to submit review" };

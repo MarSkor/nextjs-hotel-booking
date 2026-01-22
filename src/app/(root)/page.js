@@ -4,27 +4,39 @@ import {
   Banner,
   About,
   Stats,
-  Testimonials,
+  Reviews,
 } from "@/features/home/components";
 import { db } from "@/database/drizzle";
+import { reviews } from "@/database/schema";
+import { desc, eq } from "drizzle-orm";
 
 const HomePage = async () => {
-  const featuredAccommodations = await db.query.accommodations.findMany({
-    where: (acc, { eq, and, gte }) =>
-      and(eq(acc.isFeatured, true), gte(acc.averageRating, 4)),
-    limit: 3,
-    orderBy: (acc, { desc }) => [desc(acc.averageRating)],
-  });
+  const [reviewsData, featuredAccs] = await Promise.all([
+    db.query.reviews.findMany({
+      where: eq(reviews.status, "APPROVED"),
+      limit: 12,
+      orderBy: [desc(reviews.createdAt)],
+      with: { user: true, accommodation: true },
+    }),
+    db.query.accommodations.findMany({
+      where: (acc, { eq, and, or, gte }) =>
+        and(
+          eq(acc.isFeatured, true),
+          or(gte(acc.averageRating, "4.00"), eq(acc.averageRating, "0.00")),
+        ),
+      limit: 3,
+    }),
+  ]);
 
   return (
-    <article>
+    <>
       <Hero />
-      <Featured data={featuredAccommodations} />
+      <Featured data={featuredAccs} />
       <Banner />
       <About />
       <Stats />
-      <Testimonials />
-    </article>
+      <Reviews data={reviewsData} />
+    </>
   );
 };
 

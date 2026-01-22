@@ -20,10 +20,13 @@ export const { POST } = serve(async (context) => {
         ),
       );
 
-    const reviewCount = Number(result[0]?.count ?? 0);
+    const reviewCount = Number(result[0]?.reviewCount ?? 0);
+    const rawAvg = result[0]?.avgRating ?? "0";
+    const formattedAvg =
+      reviewCount > 0 ? parseFloat(rawAvg).toFixed(1) : "0.0";
 
     return {
-      avgRating: reviewCount > 0 ? (result[0]?.avgRating ?? "0.00") : "0.00",
+      avgRating: formattedAvg,
       count: reviewCount,
     };
   });

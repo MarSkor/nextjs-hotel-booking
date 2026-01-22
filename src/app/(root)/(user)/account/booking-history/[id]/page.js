@@ -16,10 +16,14 @@ import {
   Anchor,
   Spoiler,
   Badge,
+  Group,
+  Box,
+  Rating,
+  Stack,
 } from "@mantine/core";
 import ReviewForm from "@/features/account/forms/ReviewForm";
 import Link from "next/link";
-import BookingStatusBadge from "@/components/ui/BookingStatusBadge";
+import StatusBadge from "@/components/ui/StatusBadge";
 
 const ExpandableMessage = ({ message }) => {
   if (!message) {
@@ -88,31 +92,53 @@ const UserBookingDetailPage = async ({ params }) => {
           </Text>
           <Text mt={"xs"}>Holidaze Private Residences - Bergen</Text>
         </Flex>
-        <BookingStatusBadge status={status} />
-        <Divider my={"lg"} />
-        <Grid align="center">
-          <GridCol span={{ base: 6 }}>
-            <Text>Review:</Text>
-          </GridCol>
-          <GridCol span={{ base: 6 }}>
-            {review ? (
+        <Group mt={"sm"}>
+          <Text>Booking: </Text>
+          <StatusBadge status={status} />
+        </Group>
+
+        <Divider my={"lg"} label="Your Experience" labelPosition="center" />
+        {review ? (
+          <Box mb="md">
+            <Paper withBorder p="sm" radius="md" bg="gray.0">
+              <Flex justify="space-between" align="center" mb="xs">
+                <Rating value={parseFloat(review.rating)} readOnly size="sm" />
+                <Badge>{review.status} </Badge>
+              </Flex>
+
+              <Text fw={600} size="sm" mb={4}>
+                {review.title}
+              </Text>
+              <Text size="xs" c="dimmed" lineClamp={2} mb="md">
+                "{review.comment}"
+              </Text>
+
               <ReviewForm
                 bookingId={id}
                 accommodationId={bookingDetails.accommodation.id}
                 accommodationTitle={bookingDetails.accommodation.title}
                 initialData={review}
               />
-            ) : (
-              <ReviewForm
-                initialData={review}
-                bookingId={id}
-                accommodationId={bookingDetails.accommodation.id}
-                accommodationTitle={bookingDetails.accommodation.title}
-              />
-            )}
-          </GridCol>
-        </Grid>
-        <Divider my={"lg"} />
+            </Paper>
+            <Text size="xs" c="dimmed" mt={5} ta="center">
+              Reviews are moderated before appearing publicly.
+            </Text>
+          </Box>
+        ) : (
+          <Stack align="center" py="sm">
+            <Text size="sm" c="dimmed">
+              You haven't reviewed this stay yet.
+            </Text>
+            <ReviewForm
+              bookingId={id}
+              accommodationId={bookingDetails.accommodation.id}
+              accommodationTitle={bookingDetails.accommodation.title}
+              initialData={null}
+            />
+          </Stack>
+        )}
+        <Divider my={"lg"} label="Booking Details" labelPosition="center" />
+
         {/* ---- */}
         <Flex direction={"column"}>
           <Text fw={"bold"} size="xs" tt="uppercase">
