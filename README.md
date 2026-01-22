@@ -108,6 +108,15 @@ Populate the database with dummy data.
 node src/database/seed.js
 ```
 
+Stripe webhook listening to the following events
+
+```
+- checkout.session.async_payment_failed
+- checkout.session.async_payment_succeeded
+- checkout.session.completed
+- checkout.session.expired
+```
+
 ## Environment Variables
 
 To run this project, you will need to add the following environment variables to your `.env.local` file.
@@ -150,15 +159,6 @@ To run this project, you will need to add the following environment variables to
 
 ```
 npx drizzle-kit push
-```
-
-Stripe webhook listening to the following events
-
-```
-- checkout.session.async_payment_failed
-- checkout.session.async_payment_succeeded
-- checkout.session.completed
-- checkout.session.expired
 ```
 
 ## Workflows & Background Tasks
