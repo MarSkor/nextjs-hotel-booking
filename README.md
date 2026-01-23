@@ -6,13 +6,13 @@ A full-stack accommodation booking platform designed with a dual-sided interface
 
 ## Demo
 
-### Authentication process
+### User side
 
-⏳...
+<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/7bc0ec3871f947779a29aea780dc9302" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
 
 ### Admin side
 
-⏳...
+<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/acc121d1c97d4ff381216966bbd6f6b0" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
 
 ## Technologies
 
