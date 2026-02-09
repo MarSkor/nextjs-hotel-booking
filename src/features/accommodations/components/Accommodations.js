@@ -230,6 +230,12 @@ const Accommodations = ({ accList, totalPages, totalCount }) => {
         </Flex>
       </Flex>
       {/*----- accommodations result -----*/}
+      {!accList || accList.length === 0 ? (
+        <Text size="lg" ta="center" mt="xl">
+          No accommodations found.
+        </Text>
+      ) : null}
+
       <SimpleGrid
         cols={{ base: 1, sm: 2, lg: 3 }}
         spacing={{ base: 10, sm: "xl" }}
